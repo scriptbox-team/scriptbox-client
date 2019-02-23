@@ -1,13 +1,13 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 
-let mainWindow: Electron.BrowserWindow;
+let mainWindow: Electron.BrowserWindow | null;
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
-    width: 800,
+    width: 800
   });
 
   // and load the index.html of the app.

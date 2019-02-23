@@ -6,6 +6,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json -p tsconfig.json",
+    "test": "jest",
     "start": "npm run build && electron ./dist/main.js"
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
@@ -20,8 +21,14 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@types/jest": "^23.3.10",
     "electron": "^2.0.2",
+    "jest": "^24.1.0",
+    "mock-socket": "^8.0.5",
+    "ts-jest": "^24.0.0",
     "tslint": "^5.10.0",
+    "tslint-eslint-rules": "^5.4.0",
     "typescript": "^2.8.3"
-  }
+  },
+  "dependencies": {}
 }

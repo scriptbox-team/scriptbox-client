@@ -1,22 +1,28 @@
 {
-  "extends": "tslint:recommended",
-  "rules": {
-    "max-line-length": {
-      "options": [
-        120
-      ]
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "no-console": [false],
+        "trailing-comma": [false],
+        "jsdoc-format": true,
+        "no-empty": false,
+        "brace-style": [
+            true,
+            "stroustrup",
+            {
+                "allowSingleLine": true
+            }
+        ],
+        "one-line": [false],
+        "ordered-imports": [true, {
+          "import-sources-order": "any",
+          "named-imports-order": "case-insensitive"
+        }]
     },
-    "new-parens": true,
-    "no-arg": true,
-    "no-bitwise": true,
-    "no-conditional-assignment": true,
-    "no-consecutive-blank-lines": false
-  },
-  "jsRules": {
-    "max-line-length": {
-      "options": [
-        120
-      ]
-    }
-  }
+    "rulesDirectory": [
+        "node_modules/tslint-eslint-rules/dist/rules"
+    ]
 }
