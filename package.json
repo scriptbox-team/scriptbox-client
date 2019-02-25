@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start-typescript",
-  "version": "1.0.0",
-  "description": "A minimal Electron application written with Typescript",
+  "name": "scriptbox-client",
+  "version": "0.0.1",
+  "description": "A client for scriptbox which can be deployed to both electron and browser",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -9,20 +9,14 @@
     "test": "jest",
     "start": "npm run build && electron ./dist/main.js"
   },
-  "repository": "https://github.com/electron/electron-quick-start-typescript",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo",
-    "typescript"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com/scriptbox-team/scriptbox-client"
+  },
+  "author": "Aaron Freytag",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@types/jest": "^23.3.10",
-    "electron": "^2.0.2",
     "jest": "^24.1.0",
     "mock-socket": "^8.0.5",
     "ts-jest": "^24.0.0",
@@ -30,5 +24,7 @@
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^2.8.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "electron": "^4.0.5"
+  }
 }
