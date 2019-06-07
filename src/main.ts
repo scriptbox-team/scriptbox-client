@@ -1,7 +1,15 @@
+/* tslint:disable */
+import "module-alias/register";
+import "source-map-support/register";
+import Game from "core/game";
 import { app, BrowserWindow } from "electron";
+import WindowInputProxy from "input/window-input-proxy";
 import * as path from "path";
+/* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
+
+let game: Game | null = null;
 
 function createWindow() {
   // Create the browser window.
@@ -23,6 +31,8 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+  game = new Game(new WindowInputProxy());
+  game.start();
 }
 
 // This method will be called when Electron has finished
