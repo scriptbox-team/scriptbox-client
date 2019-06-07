@@ -29,7 +29,7 @@ export default class ResourceManager<T> {
      * @returns {(T | undefined)} The resource if found, undefined otherwise
      * @memberof ResourceManager
      */
-    public getResource(id: string): T | undefined {
+    public get(id: string): T | undefined {
         const resource = this._resources.get(id);
         if (resource === undefined && this.onResourceMissing !== undefined) {
             this.onResourceMissing(id);
@@ -43,7 +43,7 @@ export default class ResourceManager<T> {
      * @param {T} data The resource to add
      * @memberof ResourceManager
      */
-    public setResource(id: string, data: T) {
+    public set(id: string, data: T) {
         this._resources.set(id, data);
     }
 }
