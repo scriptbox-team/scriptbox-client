@@ -78,7 +78,7 @@ export default class GameLoop {
      * This will skip a frame if the loop has fallen too far behind.
      *
      * @private
-     * @param {() => void} func The functoin to perform in a tick.
+     * @param {() => void} func The function to perform in a tick.
      * @memberof GameLoop
      */
     private nextTickDo(func: () => void) {

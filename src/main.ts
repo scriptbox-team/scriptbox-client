@@ -5,17 +5,28 @@ import Game from "core/game";
 import { app, BrowserWindow } from "electron";
 import WindowInputProxy from "input/window-input-proxy";
 import * as path from "path";
+import ScreenRendererProxy from "rendering/screen-renderer-proxy";
 /* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
 
-let game: Game | null = null;
+let game: Game;
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
-    width: 800
+    width: 800,
+    show: false
+  });
+
+  game = new Game(new WindowInputProxy(), new ScreenRendererProxy(mainWindow.webContents));
+
+  mainWindow.on("ready-to-show", () => {
+    if (mainWindow !== null) {
+      mainWindow.show();
+      game.start();
+    }
   });
 
   // and load the index.html of the app.
@@ -31,8 +42,6 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-  game = new Game(new WindowInputProxy());
-  game.start();
 }
 
 // This method will be called when Electron has finished

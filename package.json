@@ -40,6 +40,7 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
+    "@types/pngjs": "^3.3.2",
     "@types/ws": "^6.0.1",
     "browser-process-hrtime": "^1.0.0",
     "electron": "^4.2.0",
@@ -47,6 +48,7 @@
     "lodash": "^4.17.11",
     "module-alias": "^2.2.0",
     "pixi.js": "^5.0.3",
+    "pngjs": "^3.4.0",
     "source-map-support": "^0.5.12",
     "ws": "^6.2.1"
   },
@@ -54,6 +56,7 @@
     "core": "dist/core",
     "input": "dist/input",
     "ipc": "dist/ipc",
-    "networking": "dist/networking"
+    "networking": "dist/networking",
+    "rendering": "dist/rendering"
   }
 }

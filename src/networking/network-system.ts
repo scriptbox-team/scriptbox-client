@@ -73,4 +73,14 @@ export default class NetworkSystem {
     get netEventHandler() {
         return this._networkRecievingSubsystem.netEventHandler;
     }
+
+    /**
+     * Get whether the network system is connected to a server or not
+     *
+     * @readonly
+     * @memberof NetworkSystem
+     */
+    get connected() {
+        return this._netConnection.connected;
+    }
 }
