@@ -67,22 +67,13 @@ export default class Game {
     public start() {
         // Connecting on startup is temporary until there are menus.
         // this._networkSystem.connect();
-        this._screenRenderer.updateRenderObject(
-            new RenderObject(
-                0,
-                "test.png",
-                {x1: 0, y1: 0, x2: 32, y2: 32},
-                {x: 40, y: 40},
-                1
-            )
-        );
 
         this._screenRenderer.updateRenderObject(
             new RenderObject(
                 0,
-                "test.png",
-                {x1: 0, y1: 0, x2: 32, y2: 32},
-                {x: 40, y: 40},
+                "testCombined.png",
+                {x: 0, y: 0, width: 32, height: 32},
+                {x: 80, y: 80},
                 1
             )
         );
@@ -90,9 +81,9 @@ export default class Game {
         this._screenRenderer.updateRenderObject(
             new RenderObject(
                 1,
-                "test2.png",
-                {x1: 0, y1: 0, x2: 32, y2: 32},
-                {x: 80, y: 80},
+                "testCombined.png",
+                {x: 32, y: 0, width: 32, height: 32},
+                {x: 40, y: 40},
                 1
             )
         );

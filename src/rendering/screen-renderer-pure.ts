@@ -14,7 +14,7 @@ import TextureFetcher from "./texture-fetcher";
 export default class ScreenRendererPure extends ScreenRenderer {
     private _textureFetcher: TextureFetcher;
     private _sprites: Map<number, PIXI.Sprite>;
-    private _currentTextures: Map<number, PIXI.Texture>;
+    private _currentTextures: Map<number, {time: number, texture: string | undefined}>;
     private _app: PIXI.Application;
     /**
      * Creates an instance of ScreenRendererPure.
@@ -31,7 +31,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         });
         document.body.appendChild(this._app.view);
         this._sprites = new Map<number, PIXI.Sprite>();
-        this._currentTextures = new Map<number, PIXI.Texture>();
+        this._currentTextures = new Map<number, {time: number, texture: string | undefined}>();
         this._app.renderer.autoResize = true;
         this._textureFetcher = new TextureFetcher(".");
     }
@@ -47,26 +47,31 @@ export default class ScreenRendererPure extends ScreenRenderer {
             sprite = new PIXI.Sprite();
             this._sprites.set(renderObject.id, sprite);
             this._app.stage.addChild(sprite);
+            this._currentTextures.set(renderObject.id, {time: 0, texture: undefined});
         }
 
         sprite.x = renderObject.position.x;
         sprite.y = renderObject.position.y;
         sprite.zIndex = renderObject.depth;
-        if (this._currentTextures.get(renderObject.id) !== sprite.texture) {
+        sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+        const time = Date.now();
+        const currTexData = this._currentTextures.get(renderObject.id);
+        if (currTexData !== undefined && currTexData.texture !== renderObject.texture) {
             this._textureFetcher.get(renderObject.texture)
             .then((newBaseTex) => {
-                if (sprite !== undefined) {
+                // We need to get the texture data again to check against what it is when the texture loads
+                // This is so we can make sure by the time the texture loads it's still relevant
+                const nextTexData = this._currentTextures.get(renderObject.id);
+                if (sprite !== undefined && time > nextTexData!.time) {
                     sprite.texture.destroy();
                     sprite.texture = new PIXI.Texture(
-                        newBaseTex,
-                        new PIXI.Rectangle(
-                            renderObject.textureSubregion.x1,
-                            renderObject.textureSubregion.y1,
-                            renderObject.textureSubregion.x2 - renderObject.textureSubregion.x1,
-                            renderObject.textureSubregion.y2 - renderObject.textureSubregion.y1
-                        )
+                        newBaseTex
                     );
-                    this._currentTextures.set(renderObject.id, sprite.texture);
+                    sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+                    this._currentTextures.set(renderObject.id, {
+                        time,
+                        texture: renderObject.texture
+                    });
                 }
             });
         }
@@ -94,5 +99,19 @@ export default class ScreenRendererPure extends ScreenRenderer {
     public update() {
         // Does nothing for now
         // Eventually will handle interpolation
+    }
+
+    private makeFrameRectangle(
+            tex: PIXI.Texture,
+            rect: {x: number, y: number, width: number, height: number}): PIXI.Rectangle {
+        const x = this.clamp(rect.x, 0, tex.baseTexture.width);
+        const y = this.clamp(rect.y, 0, tex.baseTexture.height);
+        const width = this.clamp(rect.width, 0, tex.baseTexture.width - x);
+        const height = this.clamp(rect.height, 0, tex.baseTexture.height - y);
+        return new PIXI.Rectangle(x, y, width, height);
+    }
+
+    private clamp(val: number, min: number, max: number) {
+        return Math.min(max, Math.max(val, min));
     }
 }
