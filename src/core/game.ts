@@ -7,8 +7,8 @@ import NetworkSystem from "networking/network-system";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
-import PIXI from "pixi.js";
-import ResourceManager from "./resource-manager";
+import RenderObject from "rendering/render-object";
+import ScreenRenderer from "rendering/screen-renderer";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
@@ -18,21 +18,21 @@ import ResourceManager from "./resource-manager";
  */
 export default class Game {
     private _windowInput: WindowInput;
+    private _screenRenderer: ScreenRenderer;
     private _inputHandler: InputHandler;
     private _networkSystem: NetworkSystem;
     private _gameLoop: GameLoop;
-    private _imageResourceManager: ResourceManager<PIXI.Texture>;
     /**
      * Creates an instance of Game.
      * This will take in different parameters depending on whether it's running through electron or browser.
      * @param {WindowInput} windowInput The type of WindowInput to use.
      * @memberof Game
      */
-    constructor(windowInput: WindowInput) {
+    constructor(windowInput: WindowInput, screenRenderer: ScreenRenderer) {
         this._windowInput = windowInput;
+        this._screenRenderer = screenRenderer;
         this._inputHandler = new InputHandler();
         this._networkSystem = new NetworkSystem({address: "ws://localhost:7777"});
-        this._imageResourceManager = new ResourceManager<PIXI.Texture>();
         this._windowInput.onKeyPressed = (event: KeyInputEvent) => {
             this._inputHandler.onKeyPress(event);
         };
@@ -56,10 +56,6 @@ export default class Game {
         this._networkSystem.netEventHandler.addMessageDelegate((packet: ServerChatMessagePacket) => {
             console.log("MSG: " + packet.message);
         });
-        this._imageResourceManager.onResourceMissing = (id) => {
-            console.log("Could not find image of ID " + id);
-            // TODO: Send packet to request image
-        };
         this._gameLoop = new GameLoop(this.tick.bind(this), 60);
     }
 
@@ -70,7 +66,28 @@ export default class Game {
      */
     public start() {
         // Connecting on startup is temporary until there are menus.
-        this._networkSystem.connect();
+        // this._networkSystem.connect();
+
+        this._screenRenderer.updateRenderObject(
+            new RenderObject(
+                0,
+                "testCombined.png",
+                {x: 0, y: 0, width: 32, height: 32},
+                {x: 80, y: 80},
+                1
+            )
+        );
+
+        this._screenRenderer.updateRenderObject(
+            new RenderObject(
+                1,
+                "testCombined.png",
+                {x: 32, y: 0, width: 32, height: 32},
+                {x: 40, y: 40},
+                1
+            )
+        );
+
         this._gameLoop.start();
     }
 
@@ -81,6 +98,9 @@ export default class Game {
      * @memberof Game
      */
     private tick() {
-        this._networkSystem.sendMessages();
+        this._screenRenderer.update();
+        if (this._networkSystem.connected) {
+            this._networkSystem.sendMessages();
+        }
     }
 }
