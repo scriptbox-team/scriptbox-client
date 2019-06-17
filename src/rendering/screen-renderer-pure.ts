@@ -14,7 +14,7 @@ import TextureFetcher from "./texture-fetcher";
 export default class ScreenRendererPure extends ScreenRenderer {
     private _textureFetcher: TextureFetcher;
     private _sprites: Map<number, PIXI.Sprite>;
-    private _currentTextures: Map<number, string>;
+    private _currentTextures: Map<number, PIXI.Texture>;
     private _app: PIXI.Application;
     /**
      * Creates an instance of ScreenRendererPure.
@@ -31,7 +31,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         });
         document.body.appendChild(this._app.view);
         this._sprites = new Map<number, PIXI.Sprite>();
-        this._currentTextures = new Map<number, string>();
+        this._currentTextures = new Map<number, PIXI.Texture>();
         this._app.renderer.autoResize = true;
         this._textureFetcher = new TextureFetcher(".");
     }
@@ -44,10 +44,20 @@ export default class ScreenRendererPure extends ScreenRenderer {
     public updateRenderObject(renderObject: RenderObject) {
         let sprite = this._sprites.get(renderObject.id);
         if (sprite === undefined) {
-            const newBaseTex = this._textureFetcher.get(renderObject.texture);
-            if (newBaseTex !== undefined) {
-                sprite = new PIXI.Sprite(
-                    new PIXI.Texture(
+            sprite = new PIXI.Sprite();
+            this._sprites.set(renderObject.id, sprite);
+            this._app.stage.addChild(sprite);
+        }
+
+        sprite.x = renderObject.position.x;
+        sprite.y = renderObject.position.y;
+        sprite.zIndex = renderObject.depth;
+        if (this._currentTextures.get(renderObject.id) !== sprite.texture) {
+            this._textureFetcher.get(renderObject.texture)
+            .then((newBaseTex) => {
+                if (sprite !== undefined) {
+                    sprite.texture.destroy();
+                    sprite.texture = new PIXI.Texture(
                         newBaseTex,
                         new PIXI.Rectangle(
                             renderObject.textureSubregion.x1,
@@ -55,33 +65,10 @@ export default class ScreenRendererPure extends ScreenRenderer {
                             renderObject.textureSubregion.x2 - renderObject.textureSubregion.x1,
                             renderObject.textureSubregion.y2 - renderObject.textureSubregion.y1
                         )
-                    )
-                );
-            }
-            else {
-                sprite = new PIXI.Sprite();
-            }
-            this._sprites.set(renderObject.id, sprite);
-            this._currentTextures.set(renderObject.id, renderObject.texture);
-            this._app.stage.addChild(sprite);
-        }
-
-        sprite.x = renderObject.position.x;
-        sprite.y = renderObject.position.y;
-        sprite.zIndex = renderObject.depth;
-        if (this._currentTextures.get(renderObject.id) !== renderObject.texture) {
-            const newBaseTex = this._textureFetcher.get(renderObject.texture);
-            if (newBaseTex !== undefined) {
-                sprite.texture = new PIXI.Texture(
-                    newBaseTex,
-                    new PIXI.Rectangle(
-                        renderObject.textureSubregion.x1,
-                        renderObject.textureSubregion.y1,
-                        renderObject.textureSubregion.x2 - renderObject.textureSubregion.x1,
-                        renderObject.textureSubregion.y2 - renderObject.textureSubregion.y1
-                    )
-                );
-            }
+                    );
+                    this._currentTextures.set(renderObject.id, sprite.texture);
+                }
+            });
         }
     }
 

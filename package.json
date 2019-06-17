@@ -5,18 +5,18 @@
   "private": true,
   "scripts": {
     "build": "npm run build-web && npm run build-electron",
-    "build-electron": "tsc",
-    "build-web": "webpack",
+    "build-electron": "tsc && cpx \"./res/electron/**/*\" dist/electron && cpx \"./res/shared/**/*\" dist/electron",
+    "build-web": "webpack && cpx \"./res/web/**/*\" dist/web && cpx \"./res/shared/**/*\" dist/web",
     "watch-electron": "tsc -w",
     "watch-web": "tsc -w --p tsconfig-web.json",
     "watch": "npm-run-all --parallel watch-electron watch-web",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest",
     "start": "npm run start-electron",
-    "start-electron": "electron ./dist/main.js",
+    "start-electron": "electron ./dist/electron/main.js",
     "start-web": "npm run serve",
-    "manual-test": "node ./dist/manual_tests/main.js",
-    "serve": "live-server dist-web"
+    "manual-test": "node ./dist/electron/manual_tests/main.js",
+    "serve": "live-server dist/web"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.14",
     "awesome-typescript-loader": "^5.2.1",
+    "cpx": "^1.5.0",
     "jest": "^24.8.0",
     "jest-websocket-mock": "^1.3.0",
     "mock-socket": "^8.0.5",
@@ -40,6 +41,7 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
+    "@types/module-alias": "^2.0.0",
     "@types/pngjs": "^3.3.2",
     "@types/ws": "^6.0.1",
     "browser-process-hrtime": "^1.0.0",
@@ -51,12 +53,5 @@
     "pngjs": "^3.4.0",
     "source-map-support": "^0.5.12",
     "ws": "^6.2.1"
-  },
-  "_moduleAliases": {
-    "core": "dist/core",
-    "input": "dist/input",
-    "ipc": "dist/ipc",
-    "networking": "dist/networking",
-    "rendering": "dist/rendering"
   }
 }

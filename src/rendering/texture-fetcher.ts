@@ -11,11 +11,8 @@ import * as PIXI from "pixi.js";
  */
 export default class TextureFetcher {
     private _baseURL: string;
-    private _queue: string[];
-    private _freeLoaders: Array<PIXI.Loader>;
-    private _occupiedLoaders: Array<PIXI.Loader>;
-    private _promiseQueue: Array<{id: string, promiseResolve: Function}>;
-    private _resources: Map<string, PIXI.BaseTexture>;
+    private _freeLoaders: PIXI.Loader[];
+    private _resources: Map<string, Promise<PIXI.BaseTexture>>;
 
     /**
      * Creates an instance of TextureFetcher.
@@ -24,80 +21,58 @@ export default class TextureFetcher {
      */
     constructor(baseURL: string) {
         this._baseURL = baseURL;
-        this._queue = [];
-        this._promiseQueue = [];
         this._freeLoaders = [];
-        this._occupiedLoaders = [];
-        this._resources = new Map<string, PIXI.BaseTexture>();
-
-        const loaderPoolSize = 5;
-        for (let i = 0; i < loaderPoolSize; i++) {
-            this._freeLoaders.push(new PIXI.Loader());
-        }
+        this._resources = new Map<string, Promise<PIXI.BaseTexture>>();
     }
 
     /**
-     * Get a base texture by its ID.
-     * If the texture has not been loaded, it will be automatially queued for loading.
+     * Asynchronously get a texture by its ID.
+     * This will automatically load the texture if it is not already loaded.
      *
-     * @param {string} id The ID of the base texture to fetch
-     * @returns {(PIXI.BaseTexture | undefined)} The base texture if loaded, undefined if ont loaded
+     * @param {string} id The ID of the texture to load
+     * @returns {Promise<PIXI.BaseTexture>} A promise which resolves to the base texture when loaded.
+     * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public get(id: string): Promise<PIXI.BaseTexture> {
+    public async get(id: string): Promise<PIXI.BaseTexture> {
         const url = Path.join(this._baseURL, "img", id);
-        const resource = this._resources.get(url);
+        let resourcePromise = this._resources.get(url);
         // Auto load the image if it doesn't exist
-        if (resource === undefined) {
-            return this.queue(id);
+        if (resourcePromise === undefined) {
+            resourcePromise = this.loadResource(url);
         }
-        else {
-            return Promise.resolve(resource);
-        }
+        return await resourcePromise;
     }
 
     /**
-     * Queue a texture to load by its ID
+     * Load a texture asynchronously.
      *
-     * @param {string} id The ID of a texture to load
+     * @param {string} url The URL of the texture to load.
+     * @returns {Promise<PIXI.BaseTexture>} A promise which resolves to the base texture when loaded.
+     * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public queue(id: string) : Promise<PIXI.BaseTexture> {
+    public async loadResource(url: string): Promise<PIXI.BaseTexture> {
+        let loader = this._freeLoaders.pop()!;
+        // If there was no free loader, make a new one
+        if (loader === undefined) {
+            loader = new PIXI.Loader();
+        }
         const promise = new Promise<PIXI.BaseTexture>((resolve, reject) => {
-            this._promiseQueue.push({id, promiseResolve: resolve});
-        });
-        this._queue.push(id);
-        return promise;
-    }
-
-    /**
-     * If there are queued textures and the loader isn't running, fetch textures
-     *
-     * @memberof TextureFetcher
-     */
-    public update() {
-        if (this._queue.length > 0 && this._freeLoaders.length > 0) {
-            this.loadQueued();
-        }
-    }
-
-    private loadQueued() {
-        const loader = this._freeLoaders.pop();
-        if (loader !== undefined) {
-            loader.reset();
-            for (const r of this._queue) {
-                loader.add(r);
-            }
-            loader.load((fetchedResources: any) => {
-                for (const key of fetchedResources.keys()) {
-                    this._resources.set(key, fetchedResources[key].baseTexture);
+            loader.add(url);
+            loader.load((retunedloader: any, resources: any) => {
+                const error = resources[url].error;
+                if (error) {
+                    reject(error);
+                    return;
                 }
-                for (const promiseObject of this._promiseQueue) {
-                    promiseObject.promiseResolve(fetchedResources[promiseObject.id].baseTexture);
-                }
+                const res = resources[url].texture.baseTexture;
+                loader.reset();
+                this._freeLoaders.push(loader);
+                resolve(res);
             });
-
-            this._queue = [];
-        }
+        });
+        this._resources.set(url, promise);
+        return promise;
     }
 }

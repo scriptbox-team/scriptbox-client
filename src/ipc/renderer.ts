@@ -4,6 +4,17 @@
  */
 /* tslint:disable */
 import "module-alias/register";
+import ModuleAlias from "module-alias";
+import * as path from "path";
+
+ModuleAlias.addAliases({
+    core: path.join(__dirname, "..", "core"),
+    input: path.join(__dirname, "..", "input"),
+    ipc: path.join(__dirname, "..", "ipc"),
+    networking: path.join(__dirname, "..", "networking"),
+    rendering: path.join(__dirname, "..", "rendering")
+  });
+
 import "source-map-support/register";
 
 import { ipcRenderer } from "electron";

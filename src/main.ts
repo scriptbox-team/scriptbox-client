@@ -1,10 +1,20 @@
 /* tslint:disable */
 import "module-alias/register";
+import ModuleAlias from "module-alias";
+import * as path from "path";
+
+ModuleAlias.addAliases({
+  core: path.join(__dirname, "core"),
+  input: path.join(__dirname, "input"),
+  ipc: path.join(__dirname, "ipc"),
+  networking: path.join(__dirname, "networking"),
+  rendering: path.join(__dirname, "rendering")
+});
+
 import "source-map-support/register";
 import Game from "core/game";
 import { app, BrowserWindow } from "electron";
 import WindowInputProxy from "input/window-input-proxy";
-import * as path from "path";
 import ScreenRendererProxy from "rendering/screen-renderer-proxy";
 /* tslint:enable */
 
@@ -30,7 +40,7 @@ function createWindow() {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "../index.html"));
+  mainWindow.loadFile(path.join(__dirname, "index.html"));
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
