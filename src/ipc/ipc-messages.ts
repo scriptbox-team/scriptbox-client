@@ -5,6 +5,9 @@
  */
 enum ipcMessages {
     KeyPress = "KeyPress",
-    KeyRelease = "KeyRelease"
+    KeyRelease = "KeyRelease",
+    RenderObjectUpdate = "RenderObjectUpdate",
+    RenderObjectDelete = "RenderObjectDelete",
+    RenderUpdate = "RenderUpdate"
 }
 export default ipcMessages;

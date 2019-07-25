@@ -4,9 +4,12 @@ import KeyInputEvent from "input/key-input-event";
 import WindowInput from "input/window-input";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
 import NetworkSystem from "networking/network-system";
+import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
+import ServerDisplayPacket from "networking/packets/server-display-packet";
+import ScreenRenderer from "rendering/screen-renderer";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
@@ -16,6 +19,7 @@ import ServerDisconnectionPacket from "networking/packets/server-disconnection-p
  */
 export default class Game {
     private _windowInput: WindowInput;
+    private _screenRenderer: ScreenRenderer;
     private _inputHandler: InputHandler;
     private _networkSystem: NetworkSystem;
     private _gameLoop: GameLoop;
@@ -25,8 +29,9 @@ export default class Game {
      * @param {WindowInput} windowInput The type of WindowInput to use.
      * @memberof Game
      */
-    constructor(windowInput: WindowInput) {
+    constructor(windowInput: WindowInput, screenRenderer: ScreenRenderer) {
         this._windowInput = windowInput;
+        this._screenRenderer = screenRenderer;
         this._inputHandler = new InputHandler();
         this._networkSystem = new NetworkSystem({address: "ws://localhost:7777"});
         this._windowInput.onKeyPressed = (event: KeyInputEvent) => {
@@ -36,12 +41,20 @@ export default class Game {
             this._inputHandler.onKeyRelease(event);
         };
         this._inputHandler.onKeyPress = (event: KeyInputEvent) => {
-            console.log("Sending keypress " + event.key);
+            console.log("Sending keypress: ");
+            console.log(event);
+            const packet = new ClientKeyboardInputPacket(event.key, event.state, event.device);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.Input, event)
+                new ClientNetEvent(ClientEventType.Input, packet)
             );
         };
         this._inputHandler.onKeyRelease = (event: KeyInputEvent) => {
+            console.log("Sending key release " + event.key);
+            console.log(event);
+            const packet = new ClientKeyboardInputPacket(event.key, event.state, event.device);
+            this._networkSystem.queue(
+                new ClientNetEvent(ClientEventType.Input, packet)
+            );
         };
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
             console.log("Connected to server.");
@@ -49,8 +62,15 @@ export default class Game {
         this._networkSystem.netEventHandler.addDisconnectionDelegate((packet: ServerDisconnectionPacket) => {
             console.log("Disconnected from server.");
         });
-        this._networkSystem.netEventHandler.addMessageDelegate((packet: ServerChatMessagePacket) => {
+        this._networkSystem.netEventHandler.addChatMessageDelegate((packet: ServerChatMessagePacket) => {
             console.log("MSG: " + packet.message);
+        });
+        this._networkSystem.netEventHandler.addDisplayDelegate((packet: ServerDisplayPacket) => {
+            for (const renderObject of packet.displayPackage) {
+                this._screenRenderer.updateRenderObject(
+                    renderObject
+                );
+            }
         });
         this._gameLoop = new GameLoop(this.tick.bind(this), 60);
     }
@@ -73,6 +93,9 @@ export default class Game {
      * @memberof Game
      */
     private tick() {
-        this._networkSystem.sendMessages();
+        this._screenRenderer.update();
+        if (this._networkSystem.connected) {
+            this._networkSystem.sendMessages();
+        }
     }
 }

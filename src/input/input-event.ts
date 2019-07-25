@@ -6,9 +6,9 @@
  * @enum {number}
  */
 export enum InputType {
-    Press,
-    Release,
-    Move
+    Press = 0,
+    Release = 1,
+    Move = 2
 }
 
 /**
@@ -18,9 +18,9 @@ export enum InputType {
  * @enum {number}
  */
 export enum DeviceType {
-    Keyboard,
-    Mouse,
-    Controller
+    Keyboard = 0,
+    Mouse = 1,
+    Controller = 2
 }
 
 /**
@@ -37,7 +37,7 @@ export class InputEvent {
      * @type {number}
      * @memberof InputEvent
      */
-    public device: number;
+    public device: DeviceType;
     /**
      * The state change performed by the input
      *
@@ -52,7 +52,7 @@ export class InputEvent {
      * @memberof InputEvent
      */
     public time: number;
-    constructor(device: number, state: InputType, time: number) {
+    constructor(device: DeviceType, state: InputType, time: number) {
         this.device = device;
         this.state = state;
         this.time = time;
