@@ -10,7 +10,7 @@ import {InputEvent, InputType} from "./input-event";
 export default class KeyInputEvent extends InputEvent {
     public key: number;
     constructor(device: number, state: InputType, key: number, time: number) {
-        super(device, time, state);
+        super(device, state, time);
         this.key = key;
     }
 }

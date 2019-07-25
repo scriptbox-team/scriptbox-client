@@ -22,6 +22,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
      */
     constructor(width: number, height: number) {
         super();
+        this.resize = this.resize.bind(this);
         this._app = new PIXI.Application({
             width,
             height,
@@ -30,10 +31,12 @@ export default class ScreenRendererPure extends ScreenRenderer {
             resolution: 1
         });
         document.body.appendChild(this._app.view);
+        window.addEventListener("resize", this.resize);
         this._sprites = new Map<number, PIXI.Sprite>();
         this._currentTextures = new Map<number, {time: number, texture: string | undefined}>();
         this._app.renderer.autoResize = true;
         this._textureFetcher = new TextureFetcher(".");
+        this.resize();
     }
     /**
      * Updates or creates a RenderObject
@@ -99,6 +102,10 @@ export default class ScreenRendererPure extends ScreenRenderer {
     public update() {
         // Does nothing for now
         // Eventually will handle interpolation
+    }
+
+    public resize() {
+        this._app.renderer.resize(window.innerWidth, window.innerHeight);
     }
 
     private makeFrameRectangle(

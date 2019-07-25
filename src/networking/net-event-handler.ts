@@ -2,6 +2,7 @@ import Packet from "./packets/packet";
 import ServerChatMessagePacket from "./packets/server-chat-message-packet";
 import ServerConnectionPacket from "./packets/server-connection-packet";
 import ServerDisconnectionPacket from "./packets/server-disconnection-packet";
+import ServerDisplayPacket from "./packets/server-display-packet";
 import ServerNetEvent, { ServerEventType } from "./server-net-event";
 
 /**
@@ -14,6 +15,7 @@ export default class NetEventHandler {
     private _connectionDelegates: Array<(packet: ServerConnectionPacket) => void>;
     private _disconnectionDelgates: Array<(packet: ServerDisconnectionPacket) => void>;
     private _messageDelegates: Array<(packet: ServerChatMessagePacket) => void>;
+    private _displayDelegates: Array<(packet: ServerDisplayPacket) => void>;
     /**
      * Creates an instance of NetEventHandler.
      * @memberof NetEventHandler
@@ -22,6 +24,7 @@ export default class NetEventHandler {
         this._connectionDelegates = new Array<(packet: ServerConnectionPacket) => void>();
         this._disconnectionDelgates = new Array<(packet: ServerDisconnectionPacket) => void>();
         this._messageDelegates = new Array<(packet: ServerChatMessagePacket) => void>();
+        this._displayDelegates = new Array<(packet: ServerDisplayPacket) => void>();
     }
     /**
      * Add a delegate to respond to a connection packet
@@ -47,8 +50,12 @@ export default class NetEventHandler {
      * @param {(packet: ServerChatMessagePacket) => void} func The delegate to add
      * @memberof NetEventHandler
      */
-    public addMessageDelegate(func: (packet: ServerChatMessagePacket) => void) {
+    public addChatMessageDelegate(func: (packet: ServerChatMessagePacket) => void) {
         this._messageDelegates.push(func);
+    }
+
+    public addDisplayDelegate(func: (packet: ServerDisplayPacket) => void) {
+        this._displayDelegates.push(func);
     }
     /**
      * Handle a ServerNetEvent, deserializing it and passing it to the necessary delegates.
@@ -84,6 +91,16 @@ export default class NetEventHandler {
                     this.sendToDelegates(
                         data,
                         this._messageDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.DisplayPackage: {
+                const data = ServerDisplayPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this.sendToDelegates(
+                        data,
+                        this._displayDelegates
                     );
                 }
                 break;

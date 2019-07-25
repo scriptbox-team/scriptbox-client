@@ -4,10 +4,11 @@ import KeyInputEvent from "input/key-input-event";
 import WindowInput from "input/window-input";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
 import NetworkSystem from "networking/network-system";
+import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
-import RenderObject from "rendering/render-object";
+import ServerDisplayPacket from "networking/packets/server-display-packet";
 import ScreenRenderer from "rendering/screen-renderer";
 
 /**
@@ -40,12 +41,20 @@ export default class Game {
             this._inputHandler.onKeyRelease(event);
         };
         this._inputHandler.onKeyPress = (event: KeyInputEvent) => {
-            console.log("Sending keypress " + event.key);
+            console.log("Sending keypress: ");
+            console.log(event);
+            const packet = new ClientKeyboardInputPacket(event.key, event.state, event.device);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.Input, event)
+                new ClientNetEvent(ClientEventType.Input, packet)
             );
         };
         this._inputHandler.onKeyRelease = (event: KeyInputEvent) => {
+            console.log("Sending key release " + event.key);
+            console.log(event);
+            const packet = new ClientKeyboardInputPacket(event.key, event.state, event.device);
+            this._networkSystem.queue(
+                new ClientNetEvent(ClientEventType.Input, packet)
+            );
         };
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
             console.log("Connected to server.");
@@ -53,8 +62,15 @@ export default class Game {
         this._networkSystem.netEventHandler.addDisconnectionDelegate((packet: ServerDisconnectionPacket) => {
             console.log("Disconnected from server.");
         });
-        this._networkSystem.netEventHandler.addMessageDelegate((packet: ServerChatMessagePacket) => {
+        this._networkSystem.netEventHandler.addChatMessageDelegate((packet: ServerChatMessagePacket) => {
             console.log("MSG: " + packet.message);
+        });
+        this._networkSystem.netEventHandler.addDisplayDelegate((packet: ServerDisplayPacket) => {
+            for (const renderObject of packet.displayPackage) {
+                this._screenRenderer.updateRenderObject(
+                    renderObject
+                );
+            }
         });
         this._gameLoop = new GameLoop(this.tick.bind(this), 60);
     }
@@ -66,28 +82,7 @@ export default class Game {
      */
     public start() {
         // Connecting on startup is temporary until there are menus.
-        // this._networkSystem.connect();
-
-        this._screenRenderer.updateRenderObject(
-            new RenderObject(
-                0,
-                "testCombined.png",
-                {x: 0, y: 0, width: 32, height: 32},
-                {x: 80, y: 80},
-                1
-            )
-        );
-
-        this._screenRenderer.updateRenderObject(
-            new RenderObject(
-                1,
-                "testCombined.png",
-                {x: 32, y: 0, width: 32, height: 32},
-                {x: 40, y: 40},
-                1
-            )
-        );
-
+        this._networkSystem.connect();
         this._gameLoop.start();
     }
 
