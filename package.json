@@ -41,13 +41,14 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.136",
     "@types/module-alias": "^2.0.0",
     "@types/pngjs": "^3.3.2",
     "@types/ws": "^6.0.1",
     "browser-process-hrtime": "^1.0.0",
     "electron": "^4.2.0",
     "isomorphic-ws": "^4.0.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "module-alias": "^2.2.0",
     "pixi.js": "^5.0.3",
     "pngjs": "^3.4.0",

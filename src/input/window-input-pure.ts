@@ -11,22 +11,27 @@ import WindowInput from "./window-input";
  * @extends {WindowInput}
  */
 export default class WindowInputPure extends WindowInput {
+    private _keysPressed: Set<number>;
     constructor() {
         super();
+        this._keysPressed = new Set<number>();
+
         document.addEventListener("keydown", (ev) => {
-            if (this.onKeyPressed !== undefined) {
+            const code = ev.keyCode;
+            if (this.onKeyPressed !== undefined && !this._keysPressed.has(ev.keyCode)) {
+                this._keysPressed.add(ev.keyCode);
                 const time = Date.now();
                 const type = InputType.Press;
-                const code = ev.keyCode;
                 const e = new KeyInputEvent(0, type, code, time);
                 this.onKeyPressed(e);
             }
         });
         document.addEventListener("keyup", (ev) => {
-            if (this.onKeyReleased !== undefined) {
+            const code = ev.keyCode;
+            if (this.onKeyReleased !== undefined && this._keysPressed.has(ev.keyCode)) {
+                this._keysPressed.delete(ev.keyCode);
                 const time = Date.now();
                 const type = InputType.Release;
-                const code = ev.keyCode;
                 const e = new KeyInputEvent(0, type, code, time);
                 this.onKeyReleased(e);
             }
