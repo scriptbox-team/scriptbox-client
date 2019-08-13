@@ -30,7 +30,8 @@ export default class ScreenRendererPure extends ScreenRenderer {
             transparent: false,
             resolution: 1
         });
-        document.body.appendChild(this._app.view);
+        const doc = document.getElementById("screen");
+        doc!.appendChild(this._app.view);
         window.addEventListener("resize", this.resize);
         this._sprites = new Map<number, PIXI.Sprite>();
         this._currentTextures = new Map<number, {time: number, texture: string | undefined}>();

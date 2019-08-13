@@ -12,7 +12,8 @@ ModuleAlias.addAliases({
     input: path.join(__dirname, "..", "input"),
     ipc: path.join(__dirname, "..", "ipc"),
     networking: path.join(__dirname, "..", "networking"),
-    rendering: path.join(__dirname, "..", "rendering")
+    rendering: path.join(__dirname, "..", "rendering"),
+    ui: path.join(__dirname, "..", "ui")
   });
 
 import "source-map-support/register";
@@ -22,6 +23,7 @@ import WindowInput from "input/window-input-pure";
 import RenderObject from "rendering/render-object";
 import ScreenRendererPure from "rendering/screen-renderer-pure";
 import ipcMessages from "./ipc-messages";
+import UIManagerPure from "ui/ui-manager-pure";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
@@ -47,3 +49,14 @@ ipcRenderer.on(ipcMessages.RenderObjectDelete, (event: any, id: number) => {
 ipcRenderer.on(ipcMessages.RenderUpdate, (event: any) => {
     screenRendererPure.update();
 });
+
+const uiManagerPure = new UIManagerPure();
+uiManagerPure.onPlayerMessageEntry = (message: string) => {
+    ipcRenderer.send(ipcMessages.PlayerMessageEntry, message);
+};
+ipcRenderer.on(ipcMessages.UIRender, (event: any) => {
+    uiManagerPure.render();
+});
+ipcRenderer.on(ipcMessages.ChatMessage, (event: any, message: string) => {
+    uiManagerPure.receiveChatMessage(message);
+})

@@ -8,6 +8,9 @@ enum ipcMessages {
     KeyRelease = "KeyRelease",
     RenderObjectUpdate = "RenderObjectUpdate",
     RenderObjectDelete = "RenderObjectDelete",
-    RenderUpdate = "RenderUpdate"
+    RenderUpdate = "RenderUpdate",
+    UIRender = "UIRender",
+    ChatMessage = "ChatMessage",
+    PlayerMessageEntry = "PlayerMessageEntry"
 }
 export default ipcMessages;

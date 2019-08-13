@@ -3,8 +3,12 @@
   <head>
     <meta charset="UTF-8">
     <title>Scriptbox</title>
+    <link rel="stylesheet" type="text/css" href="style/style.css" />
   </head>
-  <body style="margin: 0; padding: 0; height: 100%; position: fixed;"></body>
+  <body style="margin: 0; padding: 0; height: 100%; position: fixed;">
+    <div id="screen" tabindex="0"></div>
+    <div id="ui"></div>
+  </body>
   <script>
     require('./ipc/renderer.js')
   </script>

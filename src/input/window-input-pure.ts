@@ -15,8 +15,9 @@ export default class WindowInputPure extends WindowInput {
     constructor() {
         super();
         this._keysPressed = new Set<number>();
+        const screen = document.getElementById("screen")!;
 
-        document.addEventListener("keydown", (ev) => {
+        screen.addEventListener("keydown", (ev) => {
             const code = ev.keyCode;
             if (this.onKeyPressed !== undefined && !this._keysPressed.has(ev.keyCode)) {
                 this._keysPressed.add(ev.keyCode);
@@ -26,7 +27,7 @@ export default class WindowInputPure extends WindowInput {
                 this.onKeyPressed(e);
             }
         });
-        document.addEventListener("keyup", (ev) => {
+        screen.addEventListener("keyup", (ev) => {
             const code = ev.keyCode;
             if (this.onKeyReleased !== undefined && this._keysPressed.has(ev.keyCode)) {
                 this._keysPressed.delete(ev.keyCode);

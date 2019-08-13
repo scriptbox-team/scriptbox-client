@@ -1,0 +1,11 @@
+#screen {
+    position: absolute;
+}
+
+#ui {
+    position: absolute;
+}
+
+.chat {
+    background-color: #FFFFFFFF;
+}
