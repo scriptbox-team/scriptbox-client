@@ -26,6 +26,7 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "@types/jest": "^23.3.14",
+    "@types/react-resize-detector": "^4.0.1",
     "awesome-typescript-loader": "^5.2.1",
     "cpx": "^1.5.0",
     "jest": "^24.8.0",
@@ -42,6 +43,8 @@
     "@types/lodash": "^4.14.136",
     "@types/module-alias": "^2.0.0",
     "@types/pngjs": "^3.3.2",
+    "@types/react": "^16.8.25",
+    "@types/react-dom": "^16.8.5",
     "@types/ws": "^6.0.1",
     "browser-process-hrtime": "^1.0.0",
     "electron": "^4.2.8",
@@ -50,6 +53,9 @@
     "module-alias": "^2.2.0",
     "pixi.js": "^5.1.0",
     "pngjs": "^3.4.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-resize-detector": "^4.2.0",
     "source-map-support": "^0.5.12",
     "ws": "^6.2.1"
   }

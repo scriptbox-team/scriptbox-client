@@ -1,0 +1,92 @@
+#screen {
+    position: absolute;
+}
+
+#ui {
+    position: absolute;
+}
+
+.chat {
+    background-color: #FFFFFFFF;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.scrollable {
+    overflow-y: scroll;
+}
+
+.chat-scroll {
+    flex: 1 1 auto;
+}
+
+.chat-display {
+    flex: 1 1 auto;
+    display: flex;
+}
+
+.chat-entry {
+    flex: 0 1 auto;
+    word-wrap: break-word;
+}
+
+.table {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, auto);
+    grid-auto-flow: row;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 11vmin auto;
+    grid-auto-flow: row;
+}
+
+.resource-list {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.resource-select {
+    background-color: #FFFFFFFF;
+    flex: 1 1 auto;
+}
+
+.resource-display {
+    background-color: #FFFFFFFF;
+    flex: 0 1 30vmin;
+}
+
+.resource-display .table-data input {
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+.grid-list {
+    height: 100%;
+    display: grid;
+}
+
+.grid-list-horizontal {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fit, 9.5vmin);
+    grid-template-columns: repeat(auto-fit, 9.5vmin);
+}
+
+.grid-list-vertical {
+    grid-auto-flow: row;
+    grid-template-rows: repeat(auto-fit, 9.5vmin);
+    grid-template-columns: repeat(auto-fit, 9.5vmin)
+}
+
+.named-image-button {
+    width: 100%;
+}
+
+.resource-display {
+    overflow-y: auto;
+}

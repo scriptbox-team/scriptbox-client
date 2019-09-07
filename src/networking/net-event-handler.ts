@@ -3,6 +3,10 @@ import ServerChatMessagePacket from "./packets/server-chat-message-packet";
 import ServerConnectionPacket from "./packets/server-connection-packet";
 import ServerDisconnectionPacket from "./packets/server-disconnection-packet";
 import ServerDisplayPacket from "./packets/server-display-packet";
+import ServerEntityInspectionListingPacket from "./packets/server-entity-inspection-listing-packet";
+import ServerResourceListingPacket from "./packets/server-resource-listing-packet";
+import ServerSoundPacket from "./packets/server-sound-packet";
+import ServerTokenPacket from "./packets/server-token-packet";
 import ServerNetEvent, { ServerEventType } from "./server-net-event";
 
 /**
@@ -16,6 +20,10 @@ export default class NetEventHandler {
     private _disconnectionDelgates: Array<(packet: ServerDisconnectionPacket) => void>;
     private _messageDelegates: Array<(packet: ServerChatMessagePacket) => void>;
     private _displayDelegates: Array<(packet: ServerDisplayPacket) => void>;
+    private _tokenDelegates: Array<(packet: ServerTokenPacket) => void>;
+    private _resourceListingDelegates: Array<(packet: ServerResourceListingPacket) => void>;
+    private _entityInspectListingDelegates: Array<(packet: ServerEntityInspectionListingPacket) => void>;
+    private _soundPlayDelegates: Array<(packet: ServerSoundPacket) => void>;
     /**
      * Creates an instance of NetEventHandler.
      * @memberof NetEventHandler
@@ -25,6 +33,10 @@ export default class NetEventHandler {
         this._disconnectionDelgates = new Array<(packet: ServerDisconnectionPacket) => void>();
         this._messageDelegates = new Array<(packet: ServerChatMessagePacket) => void>();
         this._displayDelegates = new Array<(packet: ServerDisplayPacket) => void>();
+        this._tokenDelegates = new Array<(packet: ServerTokenPacket) => void>();
+        this._resourceListingDelegates = new Array<(packet: ServerResourceListingPacket) => void>();
+        this._entityInspectListingDelegates = new Array<(packet: ServerEntityInspectionListingPacket) => void>();
+        this._soundPlayDelegates = new Array<(packet: ServerSoundPacket) => void>();
     }
     /**
      * Add a delegate to respond to a connection packet
@@ -56,6 +68,22 @@ export default class NetEventHandler {
 
     public addDisplayDelegate(func: (packet: ServerDisplayPacket) => void) {
         this._displayDelegates.push(func);
+    }
+
+    public addTokenDelegate(func: (packet: ServerTokenPacket) => void) {
+        this._tokenDelegates.push(func);
+    }
+
+    public addResourceListingDelegate(func: (packet: ServerResourceListingPacket) => void) {
+        this._resourceListingDelegates.push(func);
+    }
+
+    public addEntityInspectListingDelegate(func: (packet: ServerEntityInspectionListingPacket) => void) {
+        this._entityInspectListingDelegates.push(func);
+    }
+
+    public addSoundPlayDelegate(func: (packet: ServerSoundPacket) => void) {
+        this._soundPlayDelegates.push(func);
     }
     /**
      * Handle a ServerNetEvent, deserializing it and passing it to the necessary delegates.
@@ -101,6 +129,46 @@ export default class NetEventHandler {
                     this.sendToDelegates(
                         data,
                         this._displayDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.Token: {
+                const data = ServerTokenPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this.sendToDelegates(
+                        data,
+                        this._tokenDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.ResourceListing: {
+                const data = ServerResourceListingPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this.sendToDelegates(
+                        data,
+                        this._resourceListingDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.EntityInspectListing: {
+                const data = ServerEntityInspectionListingPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this.sendToDelegates(
+                        data,
+                        this._entityInspectListingDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.SoundPlay: {
+                const data = ServerSoundPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this.sendToDelegates(
+                        data,
+                        this._soundPlayDelegates
                     );
                 }
                 break;

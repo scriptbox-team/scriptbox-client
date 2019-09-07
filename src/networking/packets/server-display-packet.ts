@@ -1,5 +1,5 @@
 import _ from "lodash";
-import RenderObject from "rendering/render-object";
+import RenderObject from "resource-management/render-object";
 import Packet from "./packet";
 
 export default class ServerDisplayPacket extends Packet {
@@ -11,11 +11,13 @@ export default class ServerDisplayPacket extends Packet {
                 const renderObjectArray = [];
                 const allClear = _.every(obj.displayPackage, (elem) => {
                     const renderObject = RenderObject.serialize(
+                        elem.ownerID,
                         elem.id,
                         elem.texture,
                         elem.textureSubregion,
                         elem.position,
-                        elem.depth
+                        elem.depth,
+                        elem.deleted
                     );
                     if (renderObject !== undefined) {
                         renderObjectArray.push(renderObject);
