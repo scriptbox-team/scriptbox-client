@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import RenderObject from "resource-management/render-object";
-import TextureFetcher from "resource-management/texture-fetcher";
+import ResourceFetcher from "resource-management/resource-fetcher";
 import ScreenRenderer from "./screen-renderer";
 
 /**
@@ -12,7 +12,7 @@ import ScreenRenderer from "./screen-renderer";
  * @extends {ScreenRenderer}
  */
 export default class ScreenRendererPure extends ScreenRenderer {
-    private _textureFetcher: TextureFetcher;
+    private _textureFetcher: ResourceFetcher<PIXI.BaseTexture>;
     private _sprites: Map<number, PIXI.Sprite>;
     private _currentTextures: Map<number, {time: number, texture: string | undefined}>;
     private _app: PIXI.Application;
@@ -36,7 +36,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._sprites = new Map<number, PIXI.Sprite>();
         this._currentTextures = new Map<number, {time: number, texture: string | undefined}>();
         this._app.renderer.autoResize = true;
-        this._textureFetcher = new TextureFetcher(".");
+        this._textureFetcher = new ResourceFetcher(".");
         this.resize();
     }
     /**

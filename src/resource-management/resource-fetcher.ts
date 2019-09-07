@@ -9,10 +9,10 @@ import * as PIXI from "pixi.js";
  * @export
  * @class TextureFetcher
  */
-export default class TextureFetcher {
+export default class ResourceFetcher<T> {
     private _baseURL: string;
     private _freeLoaders: PIXI.Loader[];
-    private _resources: Map<string, Promise<PIXI.BaseTexture>>;
+    private _resources: Map<string, Promise<T>>;
 
     /**
      * Creates an instance of TextureFetcher.
@@ -22,7 +22,7 @@ export default class TextureFetcher {
     constructor(baseURL: string) {
         this._baseURL = baseURL;
         this._freeLoaders = [];
-        this._resources = new Map<string, Promise<PIXI.BaseTexture>>();
+        this._resources = new Map<string, Promise<T>>();
     }
 
     /**
@@ -30,11 +30,11 @@ export default class TextureFetcher {
      * This will automatically load the texture if it is not already loaded.
      *
      * @param {string} id The ID of the texture to load
-     * @returns {Promise<PIXI.BaseTexture>} A promise which resolves to the base texture when loaded.
+     * @returns {Promise<T>} A promise which resolves to the base texture when loaded.
      * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public async get(id: string): Promise<PIXI.BaseTexture> {
+    public async get(id: string): Promise<T> {
         const url = Path.join(this._baseURL, "img", id);
         let resourcePromise = this._resources.get(url);
         // Auto load the image if it doesn't exist
@@ -52,13 +52,13 @@ export default class TextureFetcher {
      * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public async loadResource(url: string): Promise<PIXI.BaseTexture> {
+    public async loadResource(url: string): Promise<T> {
         let loader = this._freeLoaders.pop()!;
         // If there was no free loader, make a new one
         if (loader === undefined) {
             loader = new PIXI.Loader();
         }
-        const promise = new Promise<PIXI.BaseTexture>((resolve, reject) => {
+        const promise = new Promise<T>((resolve, reject) => {
             loader.add(url);
             loader.load((retunedloader: any, resources: any) => {
                 const error = resources[url].error;
