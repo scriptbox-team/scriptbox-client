@@ -6,11 +6,24 @@
 enum ipcMessages {
     KeyPress = "KeyPress",
     KeyRelease = "KeyRelease",
+    MousePress = "MousePress",
+    MouseRelease = "MouseRelease",
+    MouseMove = "MouseMove",
     RenderObjectUpdate = "RenderObjectUpdate",
     RenderObjectDelete = "RenderObjectDelete",
     RenderUpdate = "RenderUpdate",
     UIRender = "UIRender",
     ChatMessage = "ChatMessage",
-    PlayerMessageEntry = "PlayerMessageEntry"
+    PlayerMessageEntry = "PlayerMessageEntry",
+    ToolChange = "ToolChange",
+    FileUpload = "FileUpload",
+    ResourceAPITokenRequest = "ResourceAPITokenRequest",
+    ResourceAPIToken = "ResourceAPIToken",
+    ResourceList = "ResourceList",
+    ResourceDelete = "ResourceDelete",
+    ResourceReupload = "ResourceReupload",
+    PlaySound = "PlaySound",
+    StopSound = "StopSound",
+    RunScript = "RunScript"
 }
 export default ipcMessages;

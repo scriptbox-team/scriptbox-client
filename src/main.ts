@@ -9,7 +9,8 @@ ModuleAlias.addAliases({
   ipc: path.join(__dirname, "ipc"),
   networking: path.join(__dirname, "networking"),
   rendering: path.join(__dirname, "rendering"),
-  ui: path.join(__dirname, "ui")
+  ui: path.join(__dirname, "ui"),
+  "resource-management": path.join(__dirname, "resource-management")
 });
 
 import "source-map-support/register";
@@ -18,6 +19,7 @@ import { app, BrowserWindow } from "electron";
 import WindowInputProxy from "input/window-input-proxy";
 import ScreenRendererProxy from "rendering/screen-renderer-proxy";
 import UIManagerProxy from "ui/ui-manager-proxy";
+import ResourceAPIInterfaceProxy from "networking/resource-api-interface-proxy";
 /* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
@@ -35,7 +37,8 @@ function createWindow() {
   game = new Game(
     new WindowInputProxy(),
     new ScreenRendererProxy(mainWindow.webContents),
-    new UIManagerProxy(mainWindow.webContents)
+    new UIManagerProxy(mainWindow.webContents),
+    new ResourceAPIInterfaceProxy(mainWindow.webContents)
   );
 
   mainWindow.on("ready-to-show", () => {

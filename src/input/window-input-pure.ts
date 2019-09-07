@@ -1,5 +1,6 @@
-import { InputEvent, InputType } from "./input-event";
+import { InputType } from "./input-event";
 import KeyInputEvent from "./key-input-event";
+import MouseInputEvent from "./mouse-input-event";
 import WindowInput from "./window-input";
 
 /**
@@ -21,9 +22,8 @@ export default class WindowInputPure extends WindowInput {
             const code = ev.keyCode;
             if (this.onKeyPressed !== undefined && !this._keysPressed.has(ev.keyCode)) {
                 this._keysPressed.add(ev.keyCode);
-                const time = Date.now();
                 const type = InputType.Press;
-                const e = new KeyInputEvent(0, type, code, time);
+                const e = new KeyInputEvent(0, type, code);
                 this.onKeyPressed(e);
             }
         });
@@ -31,10 +31,38 @@ export default class WindowInputPure extends WindowInput {
             const code = ev.keyCode;
             if (this.onKeyReleased !== undefined && this._keysPressed.has(ev.keyCode)) {
                 this._keysPressed.delete(ev.keyCode);
-                const time = Date.now();
                 const type = InputType.Release;
-                const e = new KeyInputEvent(0, type, code, time);
+                const e = new KeyInputEvent(0, type, code);
                 this.onKeyReleased(e);
+            }
+        });
+        screen.addEventListener("mousedown", (ev) => {
+            const button = ev.button;
+            if (this.onMousePressed !== undefined) {
+                const type = InputType.Press;
+                const x = ev.x;
+                const y = ev.y;
+                const e = new MouseInputEvent(0, type, button, x, y);
+                this.onMousePressed(e);
+            }
+        });
+        screen.addEventListener("mouseup", (ev) => {
+            const button = ev.button;
+            if (this.onMouseReleased !== undefined) {
+                const type = InputType.Press;
+                const x = ev.x;
+                const y = ev.y;
+                const e = new MouseInputEvent(0, type, button, x, y);
+                this.onMouseReleased(e);
+            }
+        });
+        screen.addEventListener("mousemove", (ev) => {
+            if (this.onMouseMoved !== undefined) {
+                const type = InputType.Move;
+                const x = ev.x;
+                const y = ev.y;
+                const e = new MouseInputEvent(0, type, -1, x, y);
+                this.onMouseMoved(e);
             }
         });
     }

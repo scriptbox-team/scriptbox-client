@@ -1,5 +1,6 @@
 export enum DebugLogType {
-    Input
+    Input,
+    UI
 }
 
 let enabled: DebugLogType[] = [];

@@ -12,14 +12,10 @@ interface IChatProperties {
 export default class ChatComponent extends React.Component<IChatProperties>{
     public render() {
         const className = "chat";
-        const style = {
-            bottom: 0,
-            left: 0,
-            height: 200,
-            width: 250
-        };
-        return <div className={className} style={style}>
-            <ChatDisplayComponent messages={this.props.messages}/>
+        return <div className={className}>
+            <ChatDisplayComponent
+                messages={this.props.messages}
+            />
             <TextEntryComponent
                 class="chat-entry"
                 value={this.props.chatEntryValue}

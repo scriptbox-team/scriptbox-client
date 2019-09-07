@@ -1,4 +1,4 @@
-import RenderObject from "./render-object";
+import RenderObject from "resource-management/render-object";
 
 export default abstract class ScreenRenderer {
     public abstract updateRenderObject(renderObject: RenderObject): void;

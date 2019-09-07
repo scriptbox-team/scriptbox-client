@@ -20,7 +20,7 @@ export default class TextEntryComponent extends React.Component<ITextEntryProper
             }
         };
         return <input type="text"
-            className={this.props.class}
+            className={`text-entry ${this.props.class}`}
             onKeyDown={callback}
             onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
             value={this.props.value}

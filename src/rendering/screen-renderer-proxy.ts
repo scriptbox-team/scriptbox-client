@@ -1,6 +1,6 @@
 import {WebContents} from "electron";
 import ipcMessages from "ipc/ipc-messages";
-import RenderObject from "./render-object";
+import RenderObject from "resource-management/render-object";
 import ScreenRenderer from "./screen-renderer";
 
 export default class ScreenRendererProxy extends ScreenRenderer {

@@ -45,16 +45,8 @@ export class InputEvent {
      * @memberof InputEvent
      */
     public state: InputType;
-    /**
-     * The time when the input took place, in epoch time
-     *
-     * @type {number}
-     * @memberof InputEvent
-     */
-    public time: number;
-    constructor(device: DeviceType, state: InputType, time: number) {
+    constructor(device: DeviceType, state: InputType) {
         this.device = device;
         this.state = state;
-        this.time = time;
     }
 }

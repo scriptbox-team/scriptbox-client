@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
-import RenderObject from "./render-object";
+import RenderObject from "resource-management/render-object";
+import TextureFetcher from "resource-management/texture-fetcher";
 import ScreenRenderer from "./screen-renderer";
-import TextureFetcher from "./texture-fetcher";
 
 /**
  * The implementation of the screen renderer.
@@ -46,6 +46,15 @@ export default class ScreenRendererPure extends ScreenRenderer {
      * @memberof ScreenRendererPure
      */
     public updateRenderObject(renderObject: RenderObject) {
+        // TODO: Allow players to delete render objects
+        if (renderObject.deleted) {
+            const spriteToDelete = this._sprites.get(renderObject.id);
+            if (spriteToDelete !== undefined) {
+                spriteToDelete.destroy();
+            }
+            this._sprites.delete(renderObject.id);
+            return;
+        }
         let sprite = this._sprites.get(renderObject.id);
         if (sprite === undefined) {
             sprite = new PIXI.Sprite();
