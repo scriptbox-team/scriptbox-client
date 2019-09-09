@@ -24,6 +24,9 @@ enum ipcMessages {
     ResourceReupload = "ResourceReupload",
     PlaySound = "PlaySound",
     StopSound = "StopSound",
+    PauseSound = "PauseSound",
+    ResumeSound = "ResumeSound",
+    SetVolume = "SetVolume",
     RunScript = "RunScript"
 }
 export default ipcMessages;
