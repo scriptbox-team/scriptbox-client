@@ -92,6 +92,9 @@ uiManagerPure.onResourceUpload = (files: FileList, resourceID?: string) => {
 uiManagerPure.onResourceDelete = (resourceID: string) => {
     fileSenderPure.delete(resourceID, url);
 };
+uiManagerPure.onResourceInfoModify = (resourceID: string, property: string, value: string) => {
+    ipcRenderer.send(ipcMessages.ResourceInfoModify, resourceID, property, value);
+};
 
 ipcRenderer.on(ipcMessages.UIRender, (event: any) => {
     uiManagerPure.render();

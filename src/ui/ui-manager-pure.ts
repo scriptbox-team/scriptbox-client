@@ -18,11 +18,13 @@ export default class UIManagerPure extends UIManager {
     private _chatEntryVal: string = "";
     private _selectedTool: string = "edit";
     private _resources: Resource[];
+    private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
     private _uploadID?: string;
     constructor() {
         super();
         this._resources = [];
+        this._modifiedAttributes = {};
     }
     public render() {
         const elems = [
@@ -63,6 +65,12 @@ export default class UIManagerPure extends UIManager {
                         onSoundStop: (resource: Resource) => {},
                         onScriptRun: (resource: Resource, args: string) => {
                             this.reportScriptRun(resource.id, args);
+                        },
+                        onInfoChange: (resource: Resource, kind: string, newValue: string) => {
+                            this.resourcePropertyChanged(resource, kind, newValue);
+                        },
+                        onInfoSubmit: (resource: Resource, kind: string, newValue: string) => {
+                            this.resourcePropertySubmit(resource, kind, newValue);
                         }
                         // TODO: Change functions like "report xxx" to better names
                     },
@@ -166,7 +174,16 @@ export default class UIManagerPure extends UIManager {
     }
 
     public setResourceList(resources: Resource[]) {
-        this._resources = resources;
+        const modifiedResources = Array.from(resources);
+        for (const resource of modifiedResources) {
+            for (const key of Object.keys(resource)) {
+                const val = this.getModified(resource.id, key);
+                if (val !== undefined) {
+                    (resource as any)[key] = val;
+                }
+            }
+        }
+        this._resources = modifiedResources;
     }
 
     private setTool = (toolID: string) => {
@@ -204,5 +221,37 @@ export default class UIManagerPure extends UIManager {
 
     private reportScriptRun = (resourceID: string, args: string) => {
         this.onScriptRun!(resourceID, args);
+    }
+
+    private resourcePropertyChanged = (resource: Resource, kind: string, value: string) => {
+        (resource as any)[kind] = value;
+        this.setModified(resource.id, kind, value);
+    }
+
+    private resourcePropertySubmit = (resource: Resource, kind: string, value: string) => {
+        (resource as any)[kind] = value;
+        this.onResourceInfoModify!(resource.id, kind, value);
+        this.unsetModified(resource.id, kind);
+    }
+
+    private getModified(resourceID: string, property: string) {
+        if (this._modifiedAttributes[resourceID] === undefined) {
+            return undefined;
+        }
+        return this._modifiedAttributes[resourceID][property];
+    }
+
+    private setModified(resourceID: string, property: string, value: string) {
+        if (this._modifiedAttributes[resourceID] === undefined) {
+            this._modifiedAttributes[resourceID] = {};
+        }
+        this._modifiedAttributes[resourceID][property] = value;
+    }
+
+    private unsetModified(resourceID: string, property: string) {
+        if (this._modifiedAttributes[resourceID] === undefined) {
+            this._modifiedAttributes[resourceID] = {};
+        }
+        this._modifiedAttributes[resourceID][property] = undefined;
     }
 }

@@ -12,6 +12,8 @@ interface IResourceListProperties {
     onSoundPlay: (resource: Resource) => void;
     onSoundStop: (resource: Resource) => void;
     onScriptRun: (resource: Resource, args: string) => void;
+    onInfoChange: (resource: Resource, kind: string, value: string) => void;
+    onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
 }
 
 interface IResourceListState {
@@ -45,6 +47,8 @@ export default class ResourceListComponent extends React.Component<IResourceList
                         onSoundPlay={this.onSoundPlay}
                         onSoundStop={this.onSoundStop}
                         onScriptRun={this.onScriptRun}
+                        onInfoChange={this.props.onInfoChange}
+                        onInfoSubmit={this.props.onInfoSubmit}
                     />;
                 }
                 return <div className="resource-display">Choose a resource to inspect.</div>;

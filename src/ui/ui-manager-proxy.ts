@@ -24,6 +24,15 @@ export default class UIManagerProxy extends UIManager {
                 this.onScriptRun(resourceID, args);
             }
         });
+        ipcMain.on(ipcMessages.ResourceInfoModify, (
+                event: any,
+                resourceID: string,
+                attribute: string,
+                value: string) => {
+            if (this.onResourceInfoModify !== undefined) {
+                this.onResourceInfoModify(resourceID, attribute, value);
+            }
+        });
     }
     public render() {
         if (!this._webContents.isDestroyed()) {
