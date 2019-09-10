@@ -13,7 +13,7 @@ export class AudioPlayerPure extends AudioPlayer {
         this._activeSounds = {};
     }
     public async play(sound: AudioObject) {
-        const soundResource = await this._soundFetcher.get(sound.resource)
+        const soundResource = await this._soundFetcher.get(sound.resource);
         soundResource.volume = sound.volume;
         soundResource.loop = sound.loop;
         if (this._activeSounds[sound.id] !== undefined) {
@@ -28,15 +28,23 @@ export class AudioPlayerPure extends AudioPlayer {
             }
             return;
         }
-        this._activeSounds[soundID].stop();
+        if (this._activeSounds[soundID] !== undefined) {
+            this._activeSounds[soundID].stop();
+        }
     }
     public pause(soundID: string) {
-        this._activeSounds[soundID].set("paused", true);
+        if (this._activeSounds[soundID] !== undefined) {
+            this._activeSounds[soundID].set("paused", true);
+        }
     }
     public resume(soundID: string) {
-        this._activeSounds[soundID].set("paused", false);
+        if (this._activeSounds[soundID] !== undefined) {
+            this._activeSounds[soundID].set("paused", false);
+        }
     }
     public setVolume(soundID: string, volume: number) {
-        this._activeSounds[soundID].set("volume", volume);
+        if (this._activeSounds[soundID] !== undefined) {
+            this._activeSounds[soundID].set("volume", volume);
+        }
     }
 }
