@@ -6,5 +6,4 @@ export default abstract class AudioPlayer {
     public abstract pause(soundID: string): void;
     public abstract resume(soundID: string): void;
     public abstract setVolume(soundID: string, volume: number): void;
-    public abstract update(): void;
 }
