@@ -20,7 +20,8 @@ export default class ChatComponent extends React.Component<IChatProperties>{
                 class="chat-entry"
                 value={this.props.chatEntryValue}
                 onChange={this.props.onMessageEntryChange}
-                onEnterKey={this.props.onMessageEntrySubmit}
+                onSubmit={this.props.onMessageEntrySubmit}
+                submitOnEnter
             />
         </div>;
     }

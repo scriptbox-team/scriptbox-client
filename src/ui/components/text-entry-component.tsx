@@ -4,7 +4,11 @@ interface ITextEntryProperties {
     class: string;
     value: string;
     onChange: (newValue: string) => void;
-    onEnterKey: (msg: string) => void;
+    onSubmit: (msg: string) => void;
+    submitOnUnfocus?: boolean;
+    submitOnEnter?: boolean;
+    multiline?: boolean;
+    pretty?: boolean;
 }
 
 export default class TextEntryComponent extends React.Component<ITextEntryProperties> {
@@ -15,15 +19,38 @@ export default class TextEntryComponent extends React.Component<ITextEntryProper
         const callback = (event: React.KeyboardEvent) => {
             // TODO: Holding shift shouldn't trigger this
             // And instead put a line break
-            if (event.keyCode === 13) {
-                this.props.onEnterKey(this.props.value);
+            if (event.keyCode === 13 && this.props.submitOnEnter) {
+                this.submit();
             }
         };
-        return <input type="text"
-            className={`text-entry ${this.props.class}`}
-            onKeyDown={callback}
-            onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
-            value={this.props.value}
-        />;
+        if (!this.props.multiline) {
+            return <input type="text"
+                className={`text-entry ${this.props.class} ${this.props.pretty ? "pretty-text-entry" : ""}`}
+                onKeyDown={callback}
+                onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
+                onBlur={(event: React.FocusEvent<HTMLElement>) => {
+                    if (this.props.submitOnUnfocus) {
+                        this.submit();
+                    }
+                }}
+                value={this.props.value}
+            />;
+        }
+        else {
+            return <textarea
+                className={`text-entry multiline ${this.props.class} ${this.props.pretty ? "pretty-text-entry" : ""}`}
+                onKeyDown={callback}
+                onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
+                onBlur={(event: React.FocusEvent<HTMLElement>) => {
+                    if (this.props.submitOnUnfocus) {
+                        this.submit();
+                    }
+                }}
+                value={this.props.value}
+            />;
+        }
+    }
+    private submit() {
+        this.props.onSubmit(this.props.value);
     }
 }

@@ -10,6 +10,7 @@ import NetworkSystem from "networking/network-system";
 import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
 import ClientExecuteScriptPacket from "networking/packets/client-execute-script-packet";
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
+import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
 import ClientObjectCreationPacket from "networking/packets/client-object-creation-packet";
 import ClientObjectDeletionPacket from "networking/packets/client-object-deletion-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
@@ -105,6 +106,14 @@ export default class Game {
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
                     new ClientExecuteScriptPacket(resourceID, args)
+                )
+            );
+        };
+        this._uiManager.onResourceInfoModify = (resourceID: string, attribute: string, value: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.ModifyMetadata,
+                    new ClientModifyMetadataPacket(resourceID, attribute, value)
                 )
             );
         };

@@ -1,12 +1,15 @@
 import React from "react";
 import Resource from "resource-management/resource";
 import TextEntryComponent from "../text-entry-component";
+import ResourceInfoComponent from "./resource-info-component";
 
 interface IScriptDisplayProperties {
     resource: Resource;
     onRun: (resource: Resource, args: string) => void;
     onEdit: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
+    onInfoChange: (kind: string, value: string) => void;
+    onInfoSubmit: (kind: string, value: string) => void;
 }
 
 interface IScriptDisplayState {
@@ -20,15 +23,19 @@ export default class ScriptDisplayComponent extends React.Component<IScriptDispl
     }
     public render() {
         return <div className="resource-display-component">
-            <div className="resource-name">{this.props.resource.name}</div>
-            <div className="resource-creator">{this.props.resource.creator}</div>
-            <div className="resource-description">{this.props.resource.description}</div>
+            <ResourceInfoComponent
+                name={this.props.resource.name}
+                creator={this.props.resource.creator}
+                description={this.props.resource.description}
+                onInfoChange={this.props.onInfoChange}
+                onInfoSubmit={this.props.onInfoSubmit}
+            />
             <div className="resource-options">
                 Execution Arguments: <TextEntryComponent
                     class="argument-text-entry"
                     value={this.state.args}
                     onChange={(newValue) => this.setState({args: newValue})}
-                    onEnterKey={() => {}}
+                    onSubmit={() => {}}
                 />
                 <button className="run-button" onClick={this.handleRun}>Run</button>
                 <button className="edit-button" onClick={this.handleEdit}>Edit</button>

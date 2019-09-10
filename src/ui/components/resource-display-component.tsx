@@ -14,6 +14,8 @@ interface IResourceDisplayProperties {
     onSoundPlay: (resource: Resource) => void;
     onSoundStop: (resource: Resource) => void;
     onScriptRun: (resource: Resource, args: string) => void;
+    onInfoChange: (resource: Resource, kind: string, value: string) => void;
+    onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
 }
 
 export default class ResourceDisplayComponent extends React.Component<IResourceDisplayProperties> {
@@ -29,6 +31,8 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                             resource={this.props.resource}
                             onReupload={this.onReupload}
                             onDelete={this.onDelete}
+                            onInfoChange={this.onInfoChange}
+                            onInfoSubmit={this.onInfoSubmit}
                         />;
                     }
                     case ResourceType.Sound: {
@@ -38,6 +42,8 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                             onDelete={this.onDelete}
                             onPlay={this.onSoundPlay}
                             onStop={this.onSoundStop}
+                            onInfoChange={this.onInfoChange}
+                            onInfoSubmit={this.onInfoSubmit}
                         />;
                     }
                     case ResourceType.Script: {
@@ -47,6 +53,8 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                             onEdit={this.onReupload}
                             onDelete={this.onDelete}
                             onRun={this.onScriptRun}
+                            onInfoChange={this.onInfoChange}
+                            onInfoSubmit={this.onInfoSubmit}
                         />;
                     }
                     default: {
@@ -55,6 +63,8 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                             resource={this.props.resource}
                             onReupload={this.onReupload}
                             onDelete={this.onDelete}
+                            onInfoChange={this.onInfoChange}
+                            onInfoSubmit={this.onInfoSubmit}
                         />;
                     }
                 }
@@ -83,5 +93,13 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
 
     private onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
+    }
+
+    private onInfoChange = (type: string, value: string) => {
+        this.props.onInfoChange(this.props.resource, type, value);
+    }
+
+    private onInfoSubmit = (type: string, value: string) => {
+        this.props.onInfoChange(this.props.resource, type, value);
     }
 }
