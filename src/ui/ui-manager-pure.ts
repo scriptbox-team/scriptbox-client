@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Resource from "resource-management/resource";
 import ResourceOption from "resource-management/resource-option";
-import ChatComponent from "./components/chat-component";
+import ChatWindowComponent from "./components/chat-window-component";
 import ComponentListComponent from "./components/component-list-component";
 import FileUploaderComponent from "./components/file-uploader-component";
 import NamedImageButtonComponent from "./components/named-image-button-component";
@@ -32,9 +32,9 @@ export default class UIManagerPure extends UIManager {
     }
     public render() {
         const elems = [
-            React.createElement(UIElementComponent, {key: "chat", id: "chat", x: 2, y: 2, width: 30, height: 35},
+            React.createElement(UIElementComponent, {key: "chat", class: "chat"},
                 React.createElement(
-                    ChatComponent,
+                    ChatWindowComponent,
                     {
                         chatEntryValue: this._chatEntryVal,
                         messages: this._messages,
@@ -47,11 +47,7 @@ export default class UIManagerPure extends UIManager {
             React.createElement(UIElementComponent,
                 {
                     key: "resources",
-                    id: "resources",
-                    x: 30,
-                    y: 70,
-                    width: 90,
-                    height: 25
+                    class: "resources"
                 },
                 React.createElement(
                     ResourceListComponent,
@@ -93,7 +89,7 @@ export default class UIManagerPure extends UIManager {
                     )
                 )
             ),
-            React.createElement(UIElementComponent, {key: "tools", id: "tools", x: 90, y: 50, width: 7, height: 30},
+            React.createElement(UIElementComponent, {key: "tools", class: "tools"},
                 React.createElement(
                     ToolButtonsComponent,
                     {
@@ -126,11 +122,14 @@ export default class UIManagerPure extends UIManager {
                 React.createElement(UIElementComponent,
                     {
                         key: "entity-inspection",
-                        id: "entity-inspection",
-                        x: 30,
-                        y: 40,
-                        width: 60,
-                        height: 35
+                        class: "entity-inspection",
+                        style: {
+                            top: "50vmin",
+                            left: "50vmin",
+                            width: "30vmin",
+                            height: "30vmin",
+                            position: "absolute"
+                        }
                     },
                     React.createElement(TitledWindowComponent,
                         {
@@ -169,11 +168,14 @@ export default class UIManagerPure extends UIManager {
                 React.createElement(UIElementComponent,
                     {
                         key: "upload",
-                        id: "upload",
-                        x: 50,
-                        y: 50,
-                        width: 20,
-                        height: 20
+                        class: "upload",
+                        style: {
+                            top: "48vmin",
+                            left: "48vmin",
+                            width: "30vmin",
+                            height: "30vmin",
+                            position: "absolute"
+                        }
                     },
                     React.createElement(TitledWindowComponent,
                         {

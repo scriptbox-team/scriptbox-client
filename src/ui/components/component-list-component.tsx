@@ -57,7 +57,7 @@ export default class ComponentListComponent extends React.Component<IComponentLi
         return this.props.components.find((res) => res.id === id);
     }
     private reportOptionUpdate(option: ResourceOption, newVal: string) {
-        this.props.onOptionUpdate(this.state.selectedComponent!, option, newVal);
+        this.props.onOptionUpdate(this.getComponent(this.state.selectedComponentID!)!, option, newVal);
     }
     private onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
