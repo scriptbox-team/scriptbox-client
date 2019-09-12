@@ -239,6 +239,8 @@ export default class UIManagerPure extends UIManager {
 
     public setEntityData(components: Resource[], entityID: number) {
         if (entityID === this._inspectedEntity) {
+            console.log(components);
+            console.log(this._entityData);
             this._entityData = components;
         }
     }

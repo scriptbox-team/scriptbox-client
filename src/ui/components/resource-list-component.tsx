@@ -17,13 +17,13 @@ interface IResourceListProperties {
 }
 
 interface IResourceListState {
-    selectedResource?: Resource;
+    selectedResourceID?: string;
 }
 
 export default class ResourceListComponent extends React.Component<IResourceListProperties, IResourceListState> {
     constructor(props: IResourceListProperties) {
         super(props);
-        this.state = {selectedResource: undefined};
+        this.state = {selectedResourceID: undefined};
         this.setResource = this.setResource.bind(this);
         this.reportOptionUpdate = this.reportOptionUpdate.bind(this);
     }
@@ -38,28 +38,34 @@ export default class ResourceListComponent extends React.Component<IResourceList
             {this.props.children}
             </GridListComponent>
             {(() => {
-                if (this.state.selectedResource !== undefined) {
-                    return <ResourceDisplayComponent
-                        resource={this.state.selectedResource}
-                        onOptionUpdate={this.reportOptionUpdate}
-                        onReupload={this.onReupload}
-                        onDelete={this.onDelete}
-                        onSoundPlay={this.onSoundPlay}
-                        onSoundStop={this.onSoundStop}
-                        onScriptRun={this.onScriptRun}
-                        onInfoChange={this.props.onInfoChange}
-                        onInfoSubmit={this.props.onInfoSubmit}
-                    />;
+                if (this.state.selectedResourceID !== undefined) {
+                    const resource = this.getResource(this.state.selectedResourceID);
+                    if (resource !== undefined) {
+                        return <ResourceDisplayComponent
+                            resource={resource}
+                            onOptionUpdate={this.reportOptionUpdate}
+                            onReupload={this.onReupload}
+                            onDelete={this.onDelete}
+                            onSoundPlay={this.onSoundPlay}
+                            onSoundStop={this.onSoundStop}
+                            onScriptRun={this.onScriptRun}
+                            onInfoChange={this.props.onInfoChange}
+                            onInfoSubmit={this.props.onInfoSubmit}
+                        />;
+                    }
                 }
                 return <div className="resource-display">Choose a resource to inspect.</div>;
             })()}
         </div>;
     }
     private setResource(id: string) {
-        this.setState({selectedResource: this.props.resources.find((res) => res.id === id)});
+        this.setState({selectedResourceID: id});
+    }
+    private getResource(id: string) {
+        return this.props.resources.find((res) => res.id === id);
     }
     private reportOptionUpdate(option: ResourceOption, newVal: string) {
-        this.props.onOptionUpdate(this.state.selectedResource!, option, newVal);
+        this.props.onOptionUpdate(this.getResource(this.state.selectedResourceID!)!, option, newVal);
     }
     private onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
