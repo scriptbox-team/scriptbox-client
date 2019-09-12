@@ -14,10 +14,12 @@ import ClientModifyMetadataPacket from "networking/packets/client-modify-metadat
 import ClientObjectCreationPacket from "networking/packets/client-object-creation-packet";
 import ClientObjectDeletionPacket from "networking/packets/client-object-deletion-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
+import ClientWatchEntityPacket from "networking/packets/client-watch-entity-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
 import ServerDisplayPacket from "networking/packets/server-display-packet";
+import ServerEntityInspectionListingPacket from "networking/packets/server-entity-inspection-listing-packet";
 import ServerResourceListingPacket from "networking/packets/server-resource-listing-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
@@ -84,6 +86,10 @@ export default class Game {
         });
         this._networkSystem.netEventHandler.addResourceListingDelegate((packet: ServerResourceListingPacket) => {
             this._uiManager.setResourceList(packet.resources);
+        });
+        this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
+                (packet: ServerEntityInspectionListingPacket) => {
+            this._uiManager.setEntityData(packet.resources, packet.entityID);
         });
         this._uiManager.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
@@ -190,6 +196,13 @@ export default class Game {
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.ObjectDeletion, packet)
             );
+        };
+        this._inputHandler.onEdit = (id: number | undefined) => {
+            const packet = new ClientWatchEntityPacket(id);
+            this._networkSystem.queue(
+                new ClientNetEvent(ClientEventType.WatchEntity, packet)
+            );
+            this._uiManager.inspect(id);
         };
     }
 }

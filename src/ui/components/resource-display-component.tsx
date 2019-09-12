@@ -1,7 +1,7 @@
 import React from "react";
 import Resource, { ResourceType } from "resource-management/resource";
 import ResourceOption from "resource-management/resource-option";
-import DefaultDisplayComponent from "./resource-display/default-display-component";
+import DefaultResourceDisplayComponent from "./resource-display/default-resource-display-component";
 import ImageDisplayComponent from "./resource-display/image-display-component";
 import ScriptDisplayComponent from "./resource-display/script-display-component";
 import SoundDisplayComponent from "./resource-display/sound-display-component";
@@ -59,7 +59,7 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                     }
                     default: {
 
-                        return <DefaultDisplayComponent
+                        return <DefaultResourceDisplayComponent
                             resource={this.props.resource}
                             onReupload={this.onReupload}
                             onDelete={this.onDelete}

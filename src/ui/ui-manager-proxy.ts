@@ -49,4 +49,14 @@ export default class UIManagerProxy extends UIManager {
             this._webContents.send(ipcMessages.ResourceList, resources);
         }
     }
+    public inspect(entityID?: number): void {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.SetInspectEntity, entityID);
+        }
+    }
+    public setEntityData(components: Resource[], entityID: number): void {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.UpdateEntityInspect, components, entityID);
+        }
+    }
 }

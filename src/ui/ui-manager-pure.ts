@@ -5,6 +5,7 @@ import * as ReactDOM from "react-dom";
 import Resource from "resource-management/resource";
 import ResourceOption from "resource-management/resource-option";
 import ChatComponent from "./components/chat-component";
+import ComponentListComponent from "./components/component-list-component";
 import FileUploaderComponent from "./components/file-uploader-component";
 import NamedImageButtonComponent from "./components/named-image-button-component";
 import ResourceListComponent from "./components/resource-list-component";
@@ -18,12 +19,15 @@ export default class UIManagerPure extends UIManager {
     private _chatEntryVal: string = "";
     private _selectedTool: string = "edit";
     private _resources: Resource[];
+    private _entityData: Resource[];
+    private _inspectedEntity?: number;
     private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
     private _uploadID?: string;
     constructor() {
         super();
         this._resources = [];
+        this._entityData = [];
         this._modifiedAttributes = {};
     }
     public render() {
@@ -117,6 +121,49 @@ export default class UIManagerPure extends UIManager {
             )
         ];
 
+        if (this._inspectedEntity !== undefined) {
+            elems.push(
+                React.createElement(UIElementComponent,
+                    {
+                        key: "entity-inspection",
+                        id: "entity-inspection",
+                        x: 30,
+                        y: 40,
+                        width: 60,
+                        height: 35
+                    },
+                    React.createElement(TitledWindowComponent,
+                        {
+                            title: "Entity Inspection",
+                            closeable: true,
+                            onClose: () => this.inspect(undefined)
+                        },
+                        React.createElement(
+                            ComponentListComponent,
+                            {
+                                components: this._entityData,
+                                onOptionUpdate: this.reportResourceOptionChange,
+                                onDelete: (resource: Resource) => {
+                                    this.reportComponentDeletion(resource.id);
+                                }
+                            },
+                            React.createElement(
+                                NamedImageButtonComponent,
+                                {
+                                    id: "-1",
+                                    image: "",
+                                    name: "Apply...",
+                                    onClick: () => {
+                                    }
+                                },
+                                null
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
         if (this._uploadWindowVisible) {
             elems.push(
                 React.createElement(UIElementComponent,
@@ -186,6 +233,30 @@ export default class UIManagerPure extends UIManager {
         this._resources = modifiedResources;
     }
 
+    public inspect(entityID?: number) {
+        this._inspectedEntity = entityID;
+    }
+
+    public setEntityData(components: Resource[], entityID: number) {
+        if (entityID === this._inspectedEntity) {
+            this._entityData = components;
+        }
+    }
+
+    public openFileUploadWindow = () => {
+        this._uploadWindowVisible = true;
+    }
+    public closeFileUploadWindow = () => {
+        this._uploadWindowVisible = false;
+    }
+
+    public beginFileUpload() {
+    }
+
+    public endFileUpload() {
+        this.closeFileUploadWindow();
+    }
+
     private setTool = (toolID: string) => {
         log(DebugLogType.UI, `Tool ID changed from ${this._selectedTool} to ${toolID}`);
         this._selectedTool = toolID;
@@ -204,12 +275,6 @@ export default class UIManagerPure extends UIManager {
             this.onToolChange(type);
         }
     }
-    private openFileUploadWindow = () => {
-        this._uploadWindowVisible = true;
-    }
-    private closeFileUploadWindow = () => {
-        this._uploadWindowVisible = false;
-    }
 
     private reportFilesUpload = (files: FileList, resourceID?: string) => {
         this.onResourceUpload!(files, resourceID);
@@ -217,6 +282,8 @@ export default class UIManagerPure extends UIManager {
 
     private reportResourceDeletion = (resourceID: string) => {
         this.onResourceDelete!(resourceID);
+    }
+    private reportComponentDeletion = (resourceID: string) => {
     }
 
     private reportScriptRun = (resourceID: string, args: string) => {

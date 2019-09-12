@@ -10,6 +10,7 @@ export default class ServerResourceListingPacket extends Packet {
             ) {
                 const resourceArray: Resource[] = [];
                 const allClear = _.every(obj.resources, (elem) => {
+                    console.log(elem);
                     const res = Resource.serialize(
                         elem.id,
                         elem.type,

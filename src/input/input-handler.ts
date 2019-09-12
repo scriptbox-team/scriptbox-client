@@ -12,10 +12,12 @@ import { ToolType } from "./tool-type";
  * @class InputHandler
  */
 export default class InputHandler {
+    // TODO: Replace all "| undefined" definitions possible with ? after var name
     public onKeyRelease: ((e: KeyInputEvent) => void) | undefined;
     public onKeyPress: ((e: KeyInputEvent) => void) | undefined;
     public onPlace: ((prefab: string, x: number, y: number) => void) | undefined;
     public onErase: ((id: number) => void) | undefined;
+    public onEdit: ((id: number | undefined) => void) | undefined;
 
     private _clickDetector: ClickDetector = new ClickDetector();
     private _selectedObject: RenderObject | undefined;
@@ -52,8 +54,8 @@ export default class InputHandler {
                 const ids = this._clickDetector.clickObjects(event.x, event.y);
                 log(DebugLogType.Input, ids);
                 if (ids.length <= 0) {
-                    // If nothing was clicked, deselect
-                    this._selectedObject = undefined;
+                    // If nothing was clicked, do nothing
+                    return;
                 }
                 else if (this._selectedObject !== undefined) {
                     // If there is already a selected object
@@ -70,9 +72,8 @@ export default class InputHandler {
                     this._selectedObject = ids[0];
                 }
                 log(DebugLogType.Input,
-                    `Selected ${this._selectedObject === undefined ? "undefined" : this._selectedObject.id}`);
-                // Not finished yet
-                // TODO: Finish the edit tool
+                    `Selected ${this._selectedObject === undefined ? "nothing" : this._selectedObject.id}`);
+                this.onEdit!(this._selectedObject !== undefined ? this._selectedObject.id : undefined);
                 break;
             }
             case ToolType.Place: {
@@ -88,6 +89,11 @@ export default class InputHandler {
                 break;
             }
         }
+    }
+
+    public deselect() {
+        this._selectedObject = undefined;
+        this.onEdit!(this._selectedObject);
     }
 
     public handleMouseRelease(event: MouseInputEvent) {

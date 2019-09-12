@@ -11,4 +11,6 @@ export default abstract class UIManager {
     public abstract render(): void;
     public abstract addChatMessage(message: string): void;
     public abstract setResourceList(resources: Resource[]): void;
+    public abstract inspect(entityID?: number): void;
+    public abstract setEntityData(components: Resource[], entityID: number): void;
 }

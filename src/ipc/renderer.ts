@@ -41,6 +41,13 @@ const url = "http://localhost:7778";
 // Anything super robust for debug output
 setDebugLogTypes([]);
 
+function undefinedIfNull<T>(kind: T | null) {
+    if (kind === null) {
+        return undefined;
+    }
+    return kind;
+}
+
 windowInputPure.onKeyPressed = (event) => {
     ipcRenderer.send(ipcMessages.KeyPress, event);
 };
@@ -87,7 +94,11 @@ fileSenderPure.onTokenRequest = (tokenType: TokenType) => {
 // Manually hook up the UI manager to the file sender so we don't have to go through the process
 // This avoids copying + reviving the file information which would be a massive pain
 uiManagerPure.onResourceUpload = (files: FileList, resourceID?: string) => {
-    fileSenderPure.send(files, url, resourceID);
+    uiManagerPure.beginFileUpload();
+    fileSenderPure.send(files, url, resourceID)
+        .then(() => {
+            uiManagerPure.endFileUpload();
+        });
 };
 uiManagerPure.onResourceDelete = (resourceID: string) => {
     fileSenderPure.delete(resourceID, url);
@@ -107,4 +118,10 @@ ipcRenderer.on(ipcMessages.ResourceAPIToken, (event: any, token: number, tokenTy
 });
 ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => {
     uiManagerPure.setResourceList(resources);
+});
+ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: number | null) => {
+    uiManagerPure.inspect(undefinedIfNull<number>(entityID));
+});
+ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, resources: Resource[], entityID: number) => {
+    uiManagerPure.setEntityData(resources, entityID);
 });
