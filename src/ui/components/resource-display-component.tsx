@@ -1,6 +1,5 @@
 import React from "react";
 import Resource, { ResourceType } from "resource-management/resource";
-import ResourceOption from "resource-management/resource-option";
 import DefaultResourceDisplayComponent from "./resource-display/default-resource-display-component";
 import ImageDisplayComponent from "./resource-display/image-display-component";
 import ScriptDisplayComponent from "./resource-display/script-display-component";
@@ -8,7 +7,6 @@ import SoundDisplayComponent from "./resource-display/sound-display-component";
 
 interface IResourceDisplayProperties {
     resource: Resource;
-    onOptionUpdate: (option: ResourceOption, newValue: string) => void;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
     onSoundPlay: (resource: Resource) => void;
@@ -71,10 +69,6 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
             })()
         }</div>;
     }
-    private onChange = (option: ResourceOption, newValue: string) => {
-        this.props.onOptionUpdate(option, newValue);
-    }
-
     private onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
     }

@@ -2,8 +2,10 @@ import { DebugLogType, log } from "core/debug-logger";
 import { ToolType } from "input/tool-type";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import ComponentInfo from "resource-management/component-info";
+import ComponentOption from "resource-management/component-option";
 import Resource from "resource-management/resource";
-import ResourceOption from "resource-management/resource-option";
+
 import ChatWindowComponent from "./components/chat-window-component";
 import ComponentListComponent from "./components/component-list-component";
 import FileUploaderComponent from "./components/file-uploader-component";
@@ -14,12 +16,15 @@ import ToolButtonsComponent from "./components/tool-buttons-component";
 import UIElementComponent from "./components/ui-element-component";
 import UIManager from "./ui-manager";
 
+// TODO: Replace arrow function properties [public blah = () => {}] with binds
+// It turns out that this makes mocking more difficult, among other things
+
 export default class UIManagerPure extends UIManager {
     private _messages: string[] = [];
     private _chatEntryVal: string = "";
     private _selectedTool: string = "edit";
     private _resources: Resource[];
-    private _entityData: Resource[];
+    private _entityData: ComponentInfo[];
     private _inspectedEntity?: number;
     private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
@@ -53,7 +58,6 @@ export default class UIManagerPure extends UIManager {
                     ResourceListComponent,
                     {
                         resources: this._resources,
-                        onOptionUpdate: this.reportResourceOptionChange,
                         onReupload: (resource: Resource) => {
                             this._uploadID = resource.id;
                             this.openFileUploadWindow();
@@ -141,9 +145,9 @@ export default class UIManagerPure extends UIManager {
                             ComponentListComponent,
                             {
                                 components: this._entityData,
-                                onOptionUpdate: this.reportResourceOptionChange,
-                                onDelete: (resource: Resource) => {
-                                    this.reportComponentDeletion(resource.id);
+                                onOptionUpdate: this.reportComponentOptionChange,
+                                onDelete: (component: ComponentInfo) => {
+                                    this.reportComponentDeletion(component.id);
                                 }
                             },
                             React.createElement(
@@ -215,10 +219,10 @@ export default class UIManagerPure extends UIManager {
             this._chatEntryVal = "";
         }
     }
-    public reportResourceOptionChange =
-            (resource: Resource, option: ResourceOption, newValue: string) => {
+    public reportComponentOptionChange =
+            (component: ComponentInfo, option: ComponentOption, newValue: string) => {
         // TODO: Replace all the ugly logs using concatenation with template literals
-        log(DebugLogType.UI, `\'${resource.name}:${option.name}\' changed from ${option.displayValue} to ${newValue}`);
+        log(DebugLogType.UI, `\'${component.name}:${option.name}\' changed from ${option.displayValue} to ${newValue}`);
         option.displayValue = newValue;
     }
 
@@ -239,10 +243,8 @@ export default class UIManagerPure extends UIManager {
         this._inspectedEntity = entityID;
     }
 
-    public setEntityData(components: Resource[], entityID: number) {
+    public setEntityData(components: ComponentInfo[], entityID: number) {
         if (entityID === this._inspectedEntity) {
-            console.log(components);
-            console.log(this._entityData);
             this._entityData = components;
         }
     }

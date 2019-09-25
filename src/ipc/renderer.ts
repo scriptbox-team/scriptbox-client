@@ -30,6 +30,7 @@ import UIManagerPure from "ui/ui-manager-pure";
 import ResourceAPIInterfacePure from "networking/resource-api-interface-pure";
 import Resource from "resource-management/resource";
 import { TokenType } from "networking/packets/server-token-packet";
+import ComponentInfo from "resource-management/component-info";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
@@ -122,6 +123,6 @@ ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => 
 ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: number | null) => {
     uiManagerPure.inspect(undefinedIfNull<number>(entityID));
 });
-ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, resources: Resource[], entityID: number) => {
-    uiManagerPure.setEntityData(resources, entityID);
+ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, components: ComponentInfo[], entityID: number) => {
+    uiManagerPure.setEntityData(components, entityID);
 });

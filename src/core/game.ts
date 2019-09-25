@@ -89,7 +89,7 @@ export default class Game {
         });
         this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
                 (packet: ServerEntityInspectionListingPacket) => {
-            this._uiManager.setEntityData(packet.resources, packet.entityID);
+            this._uiManager.setEntityData(packet.components, packet.entityID);
         });
         this._uiManager.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);

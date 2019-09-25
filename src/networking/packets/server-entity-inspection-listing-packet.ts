@@ -1,45 +1,44 @@
 import _ from "lodash";
-import Resource from "resource-management/resource";
+import ComponentInfo from "resource-management/component-info";
 import Packet from "./packet";
 
 export default class ServerEntityInspectionListingPacket extends Packet {
     public static deserialize(obj: any): ServerEntityInspectionListingPacket | undefined {
         if (typeof obj === "object" && obj !== null) {
             if (
-                Array.isArray(obj.resources)
+                Array.isArray(obj.components)
                 && typeof(obj.entityID) === "number"
             ) {
-                const resourceArray: Resource[] = [];
+                const componentArray: ComponentInfo[] = [];
                 const allClear = _.every(obj.resources, (elem) => {
-                    const res = Resource.serialize(
+                    const res = ComponentInfo.serialize(
                         elem.id,
-                        elem.type,
                         elem.name,
                         elem.creator,
                         elem.description,
                         elem.time,
                         elem.icon,
-                        elem.options
+                        elem.settings
                     );
                     if (res !== undefined) {
-                        resourceArray.push(res);
+                        componentArray.push(res);
                         return true;
                     }
                     return false;
                 });
                 if (allClear) {
-                    return new ServerEntityInspectionListingPacket(resourceArray, obj.entityID);
+                    return new ServerEntityInspectionListingPacket(obj.components, obj.entityID);
                 }
             }
             return undefined;
         }
     }
 
-    public resources: Resource[];
+    public components: ComponentInfo[];
     public entityID: number;
-    constructor(resources: Resource[], entityID: number) {
+    constructor(components: ComponentInfo[], entityID: number) {
         super();
-        this.resources = resources;
+        this.components = components;
         this.entityID = entityID;
     }
     public serialize() {

@@ -1,7 +1,9 @@
 import { ipcMain, WebContents } from "electron";
 import { ToolType } from "input/tool-type";
 import ipcMessages from "ipc/ipc-messages";
+import ComponentInfo from "resource-management/component-info";
 import Resource from "resource-management/resource";
+
 import UIManager from "./ui-manager";
 
 export default class UIManagerProxy extends UIManager {
@@ -54,7 +56,7 @@ export default class UIManagerProxy extends UIManager {
             this._webContents.send(ipcMessages.SetInspectEntity, entityID);
         }
     }
-    public setEntityData(components: Resource[], entityID: number): void {
+    public setEntityData(components: ComponentInfo[], entityID: number): void {
         if (!this._webContents.isDestroyed()) {
             this._webContents.send(ipcMessages.UpdateEntityInspect, components, entityID);
         }

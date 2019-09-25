@@ -1,15 +1,16 @@
 import React from "react";
-import Resource from "resource-management/resource";
-import ResourceOption from "resource-management/resource-option";
+import ComponentInfo from "resource-management/component-info";
+import ComponentOption from "resource-management/component-option";
+
 import GridListComponent from "./grid-list-component";
 import ComponentDisplayComponent from "./resource-display/component-display-component";
 
 interface IComponentListProperties {
-    components: Resource[];
-    onOptionUpdate: (resource: Resource, option: ResourceOption, newVal: string) => void;
-    onDelete: (resource: Resource) => void;
-    // onInfoChange: (resource: Resource, kind: string, value: string) => void;
-    // onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
+    components: ComponentInfo[];
+    onOptionUpdate: (resource: ComponentInfo, option: ComponentOption, newVal: string) => void;
+    onDelete: (resource: ComponentInfo) => void;
+    // onInfoChange: (resource: ComponentInfo, kind: string, value: string) => void;
+    // onInfoSubmit: (resource: ComponentInfo, kind: string, value: string) => void;
 }
 
 interface IComponentListState {
@@ -56,10 +57,10 @@ export default class ComponentListComponent extends React.Component<IComponentLi
     private getComponent(id: string) {
         return this.props.components.find((res) => res.id === id);
     }
-    private reportOptionUpdate(option: ResourceOption, newVal: string) {
+    private reportOptionUpdate(option: ComponentOption, newVal: string) {
         this.props.onOptionUpdate(this.getComponent(this.state.selectedComponentID!)!, option, newVal);
     }
-    private onDelete = (resource: Resource) => {
+    private onDelete = (resource: ComponentInfo) => {
         this.props.onDelete(resource);
     }
 }

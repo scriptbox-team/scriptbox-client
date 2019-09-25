@@ -1,12 +1,10 @@
 import React from "react";
 import Resource from "resource-management/resource";
-import ResourceOption from "resource-management/resource-option";
 import GridListComponent from "./grid-list-component";
 import ResourceDisplayComponent from "./resource-display-component";
 
 interface IResourceListProperties {
     resources: Resource[];
-    onOptionUpdate: (resource: Resource, option: ResourceOption, newVal: string) => void;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
     onSoundPlay: (resource: Resource) => void;
@@ -25,7 +23,6 @@ export default class ResourceListComponent extends React.Component<IResourceList
         super(props);
         this.state = {selectedResourceID: undefined};
         this.setResource = this.setResource.bind(this);
-        this.reportOptionUpdate = this.reportOptionUpdate.bind(this);
     }
     public render() {
         return <div className="resource-list">
@@ -43,7 +40,6 @@ export default class ResourceListComponent extends React.Component<IResourceList
                     if (resource !== undefined) {
                         return <ResourceDisplayComponent
                             resource={resource}
-                            onOptionUpdate={this.reportOptionUpdate}
                             onReupload={this.onReupload}
                             onDelete={this.onDelete}
                             onSoundPlay={this.onSoundPlay}
@@ -63,9 +59,6 @@ export default class ResourceListComponent extends React.Component<IResourceList
     }
     private getResource(id: string) {
         return this.props.resources.find((res) => res.id === id);
-    }
-    private reportOptionUpdate(option: ResourceOption, newVal: string) {
-        this.props.onOptionUpdate(this.getResource(this.state.selectedResourceID!)!, option, newVal);
     }
     private onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
