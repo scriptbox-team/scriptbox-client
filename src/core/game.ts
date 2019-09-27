@@ -1,4 +1,4 @@
-import {DebugLogType, log, setDebugLogTypes} from "core/debug-logger";
+import { DebugLogType, log, setDebugLogTypes } from "core/debug-logger";
 import GameLoop from "core/game-loop";
 import InputHandler from "input/input-handler";
 import KeyInputEvent from "input/key-input-event";
@@ -10,13 +10,17 @@ import NetworkSystem from "networking/network-system";
 import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
 import ClientExecuteScriptPacket from "networking/packets/client-execute-script-packet";
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
+import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
 import ClientObjectCreationPacket from "networking/packets/client-object-creation-packet";
 import ClientObjectDeletionPacket from "networking/packets/client-object-deletion-packet";
+import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
+import ClientWatchEntityPacket from "networking/packets/client-watch-entity-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
 import ServerDisplayPacket from "networking/packets/server-display-packet";
+import ServerEntityInspectionListingPacket from "networking/packets/server-entity-inspection-listing-packet";
 import ServerResourceListingPacket from "networking/packets/server-resource-listing-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
@@ -84,6 +88,10 @@ export default class Game {
         this._networkSystem.netEventHandler.addResourceListingDelegate((packet: ServerResourceListingPacket) => {
             this._uiManager.setResourceList(packet.resources);
         });
+        this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
+                (packet: ServerEntityInspectionListingPacket) => {
+            this._uiManager.setEntityData(packet.components, packet.entityID);
+        });
         this._uiManager.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
             const packet = new ClientChatMessagePacket(message);
@@ -100,11 +108,27 @@ export default class Game {
         this._uiManager.onResourceDelete = (resourceID: string) => {
             this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
         };
-        this._uiManager.onScriptRun = (resourceID: string, args: string) => {
+        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
-                    new ClientExecuteScriptPacket(resourceID, args)
+                    new ClientExecuteScriptPacket(resourceID, args, entityID)
+                )
+            );
+        };
+        this._uiManager.onResourceInfoModify = (resourceID: string, attribute: string, value: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.ModifyMetadata,
+                    new ClientModifyMetadataPacket(resourceID, attribute, value)
+                )
+            );
+        };
+        this._uiManager.onComponentDelete = (componentID: number) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.RemoveComponent,
+                    new ClientRemoveComponentPacket(componentID)
                 )
             );
         };
@@ -181,6 +205,13 @@ export default class Game {
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.ObjectDeletion, packet)
             );
+        };
+        this._inputHandler.onEdit = (id: number | undefined) => {
+            const packet = new ClientWatchEntityPacket(id);
+            this._networkSystem.queue(
+                new ClientNetEvent(ClientEventType.WatchEntity, packet)
+            );
+            this._uiManager.inspect(id);
         };
     }
 }

@@ -30,6 +30,7 @@ import UIManagerPure from "ui/ui-manager-pure";
 import ResourceAPIInterfacePure from "networking/resource-api-interface-pure";
 import Resource from "resource-management/resource";
 import { TokenType } from "networking/packets/server-token-packet";
+import ComponentInfo from "resource-management/component-info";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
@@ -40,6 +41,13 @@ const url = "http://localhost:7778";
 // But this will do good enough for now. This project probably won't require
 // Anything super robust for debug output
 setDebugLogTypes([]);
+
+function undefinedIfNull<T>(kind: T | null) {
+    if (kind === null) {
+        return undefined;
+    }
+    return kind;
+}
 
 windowInputPure.onKeyPressed = (event) => {
     ipcRenderer.send(ipcMessages.KeyPress, event);
@@ -76,8 +84,11 @@ uiManagerPure.onPlayerMessageEntry = (message: string) => {
 uiManagerPure.onToolChange = (tool: ToolType) => {
     ipcRenderer.send(ipcMessages.ToolChange, tool);
 };
-uiManagerPure.onScriptRun = (resourceID: string, args: string) => {
-    ipcRenderer.send(ipcMessages.RunScript, resourceID, args);
+uiManagerPure.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
+    ipcRenderer.send(ipcMessages.RunScript, resourceID, args, entityID);
+};
+uiManagerPure.onComponentDelete = (componentID: number) => {
+    ipcRenderer.send(ipcMessages.DeleteComponent, componentID);
 };
 
 const fileSenderPure = new ResourceAPIInterfacePure();
@@ -87,10 +98,17 @@ fileSenderPure.onTokenRequest = (tokenType: TokenType) => {
 // Manually hook up the UI manager to the file sender so we don't have to go through the process
 // This avoids copying + reviving the file information which would be a massive pain
 uiManagerPure.onResourceUpload = (files: FileList, resourceID?: string) => {
-    fileSenderPure.send(files, url, resourceID);
+    uiManagerPure.beginFileUpload();
+    fileSenderPure.send(files, url, resourceID)
+        .then(() => {
+            uiManagerPure.endFileUpload();
+        });
 };
 uiManagerPure.onResourceDelete = (resourceID: string) => {
     fileSenderPure.delete(resourceID, url);
+};
+uiManagerPure.onResourceInfoModify = (resourceID: string, property: string, value: string) => {
+    ipcRenderer.send(ipcMessages.ResourceInfoModify, resourceID, property, value);
 };
 
 ipcRenderer.on(ipcMessages.UIRender, (event: any) => {
@@ -104,4 +122,10 @@ ipcRenderer.on(ipcMessages.ResourceAPIToken, (event: any, token: number, tokenTy
 });
 ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => {
     uiManagerPure.setResourceList(resources);
+});
+ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: number | null) => {
+    uiManagerPure.inspect(undefinedIfNull<number>(entityID));
+});
+ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, components: ComponentInfo[], entityID: number) => {
+    uiManagerPure.setEntityData(components, entityID);
 });
