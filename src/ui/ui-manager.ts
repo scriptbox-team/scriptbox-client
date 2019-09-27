@@ -7,8 +7,9 @@ export default abstract class UIManager {
     public onToolChange?: (tool: ToolType) => void;
     public onResourceUpload?: (files: FileList, resourceID?: string) => void;
     public onResourceDelete?: (resourceID: string) => void;
-    public onScriptRun?: (resourceID: string, args: string) => void;
+    public onScriptRun?: (resourceID: string, args: string, entityID?: number) => void;
     public onResourceInfoModify?: (resourceID: string, attribute: string, value: string) => void;
+    public onComponentDelete?: (componentID: number) => void;
     public abstract render(): void;
     public abstract addChatMessage(message: string): void;
     public abstract setResourceList(resources: Resource[]): void;

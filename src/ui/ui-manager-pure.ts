@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import ComponentInfo from "resource-management/component-info";
 import ComponentOption from "resource-management/component-option";
-import Resource from "resource-management/resource";
+import Resource, { ResourceType } from "resource-management/resource";
 
 import ChatWindowComponent from "./components/chat-window-component";
 import ComponentListComponent from "./components/component-list-component";
@@ -23,6 +23,7 @@ export default class UIManagerPure extends UIManager {
     private _messages: string[] = [];
     private _chatEntryVal: string = "";
     private _selectedTool: string = "edit";
+    private _selectedResource?: string;
     private _resources: Resource[];
     private _entityData: ComponentInfo[];
     private _inspectedEntity?: number;
@@ -75,7 +76,12 @@ export default class UIManagerPure extends UIManager {
                         },
                         onInfoSubmit: (resource: Resource, kind: string, newValue: string) => {
                             this.resourcePropertySubmit(resource, kind, newValue);
-                        }
+                        },
+                        onResourceChange: (resourceID?: string) => {
+                            this._selectedResource = resourceID;
+                            console.log(`resource changed to ${this._selectedResource}`);
+                        },
+                        selectedResourceID: this._selectedResource
                         // TODO: Change functions like "report xxx" to better names
                     },
                     React.createElement(
@@ -157,6 +163,7 @@ export default class UIManagerPure extends UIManager {
                                     image: "",
                                     name: "Apply...",
                                     onClick: () => {
+                                        this.applyScript();
                                     }
                                 },
                                 null
@@ -222,8 +229,8 @@ export default class UIManagerPure extends UIManager {
     public reportComponentOptionChange =
             (component: ComponentInfo, option: ComponentOption, newValue: string) => {
         // TODO: Replace all the ugly logs using concatenation with template literals
-        log(DebugLogType.UI, `\'${component.name}:${option.name}\' changed from ${option.displayValue} to ${newValue}`);
-        option.displayValue = newValue;
+        log(DebugLogType.UI, `\'${component.name}:${option.name}\' changed from ${option.currentValue} to ${newValue}`);
+        option.currentValue = newValue;
     }
 
     public setResourceList(resources: Resource[]) {
@@ -289,11 +296,12 @@ export default class UIManagerPure extends UIManager {
     private reportResourceDeletion = (resourceID: string) => {
         this.onResourceDelete!(resourceID);
     }
-    private reportComponentDeletion = (resourceID: string) => {
+    private reportComponentDeletion = (componentID: number) => {
+        this.onComponentDelete!(componentID);
     }
 
-    private reportScriptRun = (resourceID: string, args: string) => {
-        this.onScriptRun!(resourceID, args);
+    private reportScriptRun = (resourceID: string, args: string, entityID?: number) => {
+        this.onScriptRun!(resourceID, args, entityID);
     }
 
     private resourcePropertyChanged = (resource: Resource, kind: string, value: string) => {
@@ -326,5 +334,12 @@ export default class UIManagerPure extends UIManager {
             this._modifiedAttributes[resourceID] = {};
         }
         this._modifiedAttributes[resourceID][property] = undefined;
+    }
+
+    private applyScript() {
+        const resource = this._resources.find((res) => res.id === this._selectedResource);
+        if (this._selectedResource !== undefined && resource !== undefined && resource.type === ResourceType.Script) {
+            this.reportScriptRun(this._selectedResource, "", this._inspectedEntity);
+        }
     }
 }

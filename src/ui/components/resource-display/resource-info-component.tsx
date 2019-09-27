@@ -21,7 +21,7 @@ export default class ResourceInfoComponent extends React.Component<IResourceInfo
                 submitOnEnter
                 pretty
             />
-            <div className="resource-creator">{this.props.creator}</div>
+            <div className="resource-creator">Created by {this.props.creator}</div>
             <TextEntryComponent
                 class="resource-description"
                 value={this.props.description}

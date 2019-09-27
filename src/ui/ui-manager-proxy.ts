@@ -21,9 +21,9 @@ export default class UIManagerProxy extends UIManager {
                 this.onToolChange(tool);
             }
         });
-        ipcMain.on(ipcMessages.RunScript, (event: any, resourceID: string, args: string) => {
+        ipcMain.on(ipcMessages.RunScript, (event: any, resourceID: string, args: string, entityID?: number) => {
             if (this.onScriptRun !== undefined) {
-                this.onScriptRun(resourceID, args);
+                this.onScriptRun(resourceID, args, entityID);
             }
         });
         ipcMain.on(ipcMessages.ResourceInfoModify, (
@@ -33,6 +33,11 @@ export default class UIManagerProxy extends UIManager {
                 value: string) => {
             if (this.onResourceInfoModify !== undefined) {
                 this.onResourceInfoModify(resourceID, attribute, value);
+            }
+        });
+        ipcMain.on(ipcMessages.DeleteComponent, (event: any, componentID: number) => {
+            if (this.onComponentDelete !== undefined) {
+                this.onComponentDelete(componentID);
             }
         });
     }

@@ -84,8 +84,11 @@ uiManagerPure.onPlayerMessageEntry = (message: string) => {
 uiManagerPure.onToolChange = (tool: ToolType) => {
     ipcRenderer.send(ipcMessages.ToolChange, tool);
 };
-uiManagerPure.onScriptRun = (resourceID: string, args: string) => {
-    ipcRenderer.send(ipcMessages.RunScript, resourceID, args);
+uiManagerPure.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
+    ipcRenderer.send(ipcMessages.RunScript, resourceID, args, entityID);
+};
+uiManagerPure.onComponentDelete = (componentID: number) => {
+    ipcRenderer.send(ipcMessages.DeleteComponent, componentID);
 };
 
 const fileSenderPure = new ResourceAPIInterfacePure();

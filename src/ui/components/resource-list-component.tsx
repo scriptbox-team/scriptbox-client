@@ -12,16 +12,13 @@ interface IResourceListProperties {
     onScriptRun: (resource: Resource, args: string) => void;
     onInfoChange: (resource: Resource, kind: string, value: string) => void;
     onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
-}
-
-interface IResourceListState {
+    onResourceChange: (resourceID?: string) => void;
     selectedResourceID?: string;
 }
 
-export default class ResourceListComponent extends React.Component<IResourceListProperties, IResourceListState> {
+export default class ResourceListComponent extends React.Component<IResourceListProperties> {
     constructor(props: IResourceListProperties) {
         super(props);
-        this.state = {selectedResourceID: undefined};
         this.setResource = this.setResource.bind(this);
     }
     public render() {
@@ -35,8 +32,8 @@ export default class ResourceListComponent extends React.Component<IResourceList
             {this.props.children}
             </GridListComponent>
             {(() => {
-                if (this.state.selectedResourceID !== undefined) {
-                    const resource = this.getResource(this.state.selectedResourceID);
+                if (this.props.selectedResourceID !== undefined) {
+                    const resource = this.getResource(this.props.selectedResourceID);
                     if (resource !== undefined) {
                         return <ResourceDisplayComponent
                             resource={resource}
@@ -54,8 +51,8 @@ export default class ResourceListComponent extends React.Component<IResourceList
             })()}
         </div>;
     }
-    private setResource(id: string) {
-        this.setState({selectedResourceID: id});
+    private setResource(id?: string) {
+        this.props.onResourceChange(id);
     }
     private getResource(id: string) {
         return this.props.resources.find((res) => res.id === id);

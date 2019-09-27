@@ -1,4 +1,4 @@
-import {DebugLogType, log, setDebugLogTypes} from "core/debug-logger";
+import { DebugLogType, log, setDebugLogTypes } from "core/debug-logger";
 import GameLoop from "core/game-loop";
 import InputHandler from "input/input-handler";
 import KeyInputEvent from "input/key-input-event";
@@ -13,6 +13,7 @@ import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-
 import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
 import ClientObjectCreationPacket from "networking/packets/client-object-creation-packet";
 import ClientObjectDeletionPacket from "networking/packets/client-object-deletion-packet";
+import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
 import ClientWatchEntityPacket from "networking/packets/client-watch-entity-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
@@ -107,11 +108,11 @@ export default class Game {
         this._uiManager.onResourceDelete = (resourceID: string) => {
             this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
         };
-        this._uiManager.onScriptRun = (resourceID: string, args: string) => {
+        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
-                    new ClientExecuteScriptPacket(resourceID, args)
+                    new ClientExecuteScriptPacket(resourceID, args, entityID)
                 )
             );
         };
@@ -120,6 +121,14 @@ export default class Game {
                 new ClientNetEvent(
                     ClientEventType.ModifyMetadata,
                     new ClientModifyMetadataPacket(resourceID, attribute, value)
+                )
+            );
+        };
+        this._uiManager.onComponentDelete = (componentID: number) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.RemoveComponent,
+                    new ClientRemoveComponentPacket(componentID)
                 )
             );
         };

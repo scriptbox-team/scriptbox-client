@@ -14,7 +14,7 @@ interface IComponentListProperties {
 }
 
 interface IComponentListState {
-    selectedComponentID?: string;
+    selectedComponentID?: number;
 }
 
 export default class ComponentListComponent extends React.Component<IComponentListProperties, IComponentListState> {
@@ -26,7 +26,7 @@ export default class ComponentListComponent extends React.Component<IComponentLi
     }
     public render() {
         return <div className="resource-list">
-            <GridListComponent
+            <GridListComponent<ComponentInfo, number>
                 class="resource-select"
                 direction="vertical"
                 resources={this.props.components}
@@ -51,10 +51,10 @@ export default class ComponentListComponent extends React.Component<IComponentLi
             })()}
         </div>;
     }
-    private setComponent(id: string) {
+    private setComponent(id?: number) {
         this.setState({selectedComponentID: id});
     }
-    private getComponent(id: string) {
+    private getComponent(id: number) {
         return this.props.components.find((res) => res.id === id);
     }
     private reportOptionUpdate(option: ComponentOption, newVal: string) {

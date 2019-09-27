@@ -27,6 +27,7 @@ enum ipcMessages {
     StopSound = "StopSound",
     RunScript = "RunScript",
     UpdateEntityInspect = "UpdateEntityInspect",
-    SetInspectEntity = "SetInspectEntity"
+    SetInspectEntity = "SetInspectEntity",
+    DeleteComponent = "DeleteComponent"
 }
 export default ipcMessages;

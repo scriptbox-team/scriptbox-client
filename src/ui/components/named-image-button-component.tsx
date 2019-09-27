@@ -1,18 +1,18 @@
 import React from "react";
 
-interface INamedImageButtonProperties {
-    id: string;
+interface INamedImageButtonProperties<T> {
+    id: T;
     image: string;
     name: string;
-    onClick: (id: string) => void;
+    onClick: () => void;
 }
 
-export default class NamedImageButtonComponent extends React.Component<INamedImageButtonProperties> {
-    constructor(props: INamedImageButtonProperties) {
+export default class NamedImageButtonComponent<T> extends React.Component<INamedImageButtonProperties<T>> {
+    constructor(props: INamedImageButtonProperties<T>) {
         super(props);
         this.onClick = this.onClick.bind(this);
     }
-    public shouldComponentUpdate(nextProps: INamedImageButtonProperties, nextState: Readonly<{}>, nextContext: any) {
+    public shouldComponentUpdate(nextProps: INamedImageButtonProperties<T>, nextState: Readonly<{}>, nextContext: any) {
         if (nextProps.id === this.props.id
         && (nextProps.image !== this.props.image
         || nextProps.name !== this.props.name
@@ -29,7 +29,8 @@ export default class NamedImageButtonComponent extends React.Component<INamedIma
             </div>
         </button>;
     }
-    private onClick() {
-        this.props.onClick(this.props.id);
+    private onClick(ev: React.MouseEvent<HTMLButtonElement>) {
+        ev.stopPropagation();
+        this.props.onClick();
     }
 }
