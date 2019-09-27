@@ -2,16 +2,16 @@ import * as React from "react";
 import ChatDisplayComponent from "./chat-display-component";
 import TextEntryComponent from "./text-entry-component";
 
-interface IChatProperties {
+interface IChatWindowProperties {
     messages: string[];
     chatEntryValue: string;
     onMessageEntryChange: (msg: string) => void;
     onMessageEntrySubmit: (msg: string) => void;
 }
 
-export default class ChatComponent extends React.Component<IChatProperties>{
+export default class ChatWindowComponent extends React.Component<IChatWindowProperties>{
     public render() {
-        const className = "chat";
+        const className = "chat-window";
         return <div className={className}>
             <ChatDisplayComponent
                 messages={this.props.messages}
@@ -20,7 +20,8 @@ export default class ChatComponent extends React.Component<IChatProperties>{
                 class="chat-entry"
                 value={this.props.chatEntryValue}
                 onChange={this.props.onMessageEntryChange}
-                onEnterKey={this.props.onMessageEntrySubmit}
+                onSubmit={this.props.onMessageEntrySubmit}
+                submitOnEnter
             />
         </div>;
     }

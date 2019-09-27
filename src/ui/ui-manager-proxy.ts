@@ -1,7 +1,9 @@
 import { ipcMain, WebContents } from "electron";
 import { ToolType } from "input/tool-type";
 import ipcMessages from "ipc/ipc-messages";
+import ComponentInfo from "resource-management/component-info";
 import Resource from "resource-management/resource";
+
 import UIManager from "./ui-manager";
 
 export default class UIManagerProxy extends UIManager {
@@ -19,9 +21,23 @@ export default class UIManagerProxy extends UIManager {
                 this.onToolChange(tool);
             }
         });
-        ipcMain.on(ipcMessages.RunScript, (event: any, resourceID: string, args: string) => {
+        ipcMain.on(ipcMessages.RunScript, (event: any, resourceID: string, args: string, entityID?: number) => {
             if (this.onScriptRun !== undefined) {
-                this.onScriptRun(resourceID, args);
+                this.onScriptRun(resourceID, args, entityID);
+            }
+        });
+        ipcMain.on(ipcMessages.ResourceInfoModify, (
+                event: any,
+                resourceID: string,
+                attribute: string,
+                value: string) => {
+            if (this.onResourceInfoModify !== undefined) {
+                this.onResourceInfoModify(resourceID, attribute, value);
+            }
+        });
+        ipcMain.on(ipcMessages.DeleteComponent, (event: any, componentID: number) => {
+            if (this.onComponentDelete !== undefined) {
+                this.onComponentDelete(componentID);
             }
         });
     }
@@ -38,6 +54,16 @@ export default class UIManagerProxy extends UIManager {
     public setResourceList(resources: Resource[]): void {
         if (!this._webContents.isDestroyed()) {
             this._webContents.send(ipcMessages.ResourceList, resources);
+        }
+    }
+    public inspect(entityID?: number): void {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.SetInspectEntity, entityID);
+        }
+    }
+    public setEntityData(components: ComponentInfo[], entityID: number): void {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.UpdateEntityInspect, components, entityID);
         }
     }
 }
