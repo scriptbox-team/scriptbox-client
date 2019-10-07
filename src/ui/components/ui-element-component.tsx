@@ -4,9 +4,6 @@ interface IUIElementProperties {
     class: string;
     style?: React.CSSProperties;
 }
-
-// TODO: Add anchors for UI Elements
-
 export default class UIElementComponent extends React.Component<IUIElementProperties>{
     public render() {
         const className = `ui-element ${this.props.class}`;

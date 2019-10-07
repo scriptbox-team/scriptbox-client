@@ -21,9 +21,10 @@ export default class UIManagerProxy extends UIManager {
                 this.onToolChange(tool);
             }
         });
-        ipcMain.on(ipcMessages.RunScript, (event: any, resourceID: string, args: string, entityID?: number) => {
+        ipcMain.on(ipcMessages.RunScript, (event: any, resourceID: string, args: string, entityID: number | null) => {
             if (this.onScriptRun !== undefined) {
-                this.onScriptRun(resourceID, args, entityID);
+                const fixedEntityID = entityID === null ? undefined : entityID;
+                this.onScriptRun(resourceID, args, fixedEntityID);
             }
         });
         ipcMain.on(ipcMessages.ResourceInfoModify, (
