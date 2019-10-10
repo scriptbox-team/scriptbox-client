@@ -16,8 +16,8 @@ export default class InputHandler {
     public onKeyRelease: ((e: KeyInputEvent) => void) | undefined;
     public onKeyPress: ((e: KeyInputEvent) => void) | undefined;
     public onPlace: ((prefab: string, x: number, y: number) => void) | undefined;
-    public onErase: ((id: number) => void) | undefined;
-    public onEdit: ((id: number | undefined) => void) | undefined;
+    public onErase: ((id: string) => void) | undefined;
+    public onEdit: ((id: string | undefined) => void) | undefined;
 
     private _clickDetector: ClickDetector = new ClickDetector();
     private _selectedObject: RenderObject | undefined;

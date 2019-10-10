@@ -26,7 +26,7 @@ export default class UIManagerPure extends UIManager {
     private _selectedResource?: string;
     private _resources: Resource[];
     private _entityData: ComponentInfo[];
-    private _inspectedEntity?: number;
+    private _inspectedEntity?: string;
     private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
     private _uploadID?: string;
@@ -246,11 +246,11 @@ export default class UIManagerPure extends UIManager {
         this._resources = modifiedResources;
     }
 
-    public inspect(entityID?: number) {
+    public inspect(entityID?: string) {
         this._inspectedEntity = entityID;
     }
 
-    public setEntityData(components: ComponentInfo[], entityID: number) {
+    public setEntityData(components: ComponentInfo[], entityID: string) {
         if (entityID === this._inspectedEntity) {
             this._entityData = components;
         }
@@ -296,11 +296,11 @@ export default class UIManagerPure extends UIManager {
     private reportResourceDeletion = (resourceID: string) => {
         this.onResourceDelete!(resourceID);
     }
-    private reportComponentDeletion = (componentID: number) => {
+    private reportComponentDeletion = (componentID: string) => {
         this.onComponentDelete!(componentID);
     }
 
-    private reportScriptRun = (resourceID: string, args: string, entityID?: number) => {
+    private reportScriptRun = (resourceID: string, args: string, entityID?: string) => {
         this.onScriptRun!(resourceID, args, entityID);
     }
 

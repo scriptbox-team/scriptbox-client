@@ -108,7 +108,7 @@ export default class Game {
         this._uiManager.onResourceDelete = (resourceID: string) => {
             this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
         };
-        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
+        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
@@ -124,7 +124,7 @@ export default class Game {
                 )
             );
         };
-        this._uiManager.onComponentDelete = (componentID: number) => {
+        this._uiManager.onComponentDelete = (componentID: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.RemoveComponent,
@@ -200,13 +200,13 @@ export default class Game {
                 new ClientNetEvent(ClientEventType.ObjectCreation, packet)
             );
         };
-        this._inputHandler.onErase = (id: number) => {
+        this._inputHandler.onErase = (id: string) => {
             const packet = new ClientObjectDeletionPacket(id);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.ObjectDeletion, packet)
             );
         };
-        this._inputHandler.onEdit = (id: number | undefined) => {
+        this._inputHandler.onEdit = (id: string | undefined) => {
             const packet = new ClientWatchEntityPacket(id);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.WatchEntity, packet)
