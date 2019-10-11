@@ -37,19 +37,19 @@ export default class ScriptDisplayComponent extends React.Component<IScriptDispl
                     onChange={(newValue) => this.setState({args: newValue})}
                     onSubmit={() => {}}
                 />
-                <button className="run-button" onClick={this.handleRun}>Run</button>
-                <button className="edit-button" onClick={this.handleEdit}>Edit</button>
-                <button className="delete-button" onClick={this.handleDelete}>Delete</button>
+                <button className="run-button" onClick={this._handleRun}>Run</button>
+                <button className="edit-button" onClick={this._handleEdit}>Edit</button>
+                <button className="delete-button" onClick={this._handleDelete}>Delete</button>
             </div>
         </div>;
     }
-    private handleRun = () => {
+    private _handleRun = () => {
         this.props.onRun(this.props.resource, this.state.args);
     }
-    private handleEdit = () => {
+    private _handleEdit = () => {
         this.props.onEdit(this.props.resource);
     }
-    private handleDelete = () => {
+    private _handleDelete = () => {
         this.props.onDelete(this.props.resource);
     }
 }

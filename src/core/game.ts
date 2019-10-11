@@ -61,7 +61,7 @@ export default class Game {
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
         this._resourceAPIURL = "http://localhost:7778";
-        this.hookupInputs();
+        this._hookupInputs();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
             console.log("Connected to server.");
         });
@@ -138,7 +138,7 @@ export default class Game {
                 new ClientNetEvent(ClientEventType.TokenRequest, packet)
             );
         };
-        this._gameLoop = new GameLoop(this.tick.bind(this), 60);
+        this._gameLoop = new GameLoop(this._tick.bind(this), 60);
     }
 
     /**
@@ -158,7 +158,7 @@ export default class Game {
      * @private
      * @memberof Game
      */
-    private tick() {
+    private _tick() {
         this._screenRenderer.update();
         this._uiManager.render();
         if (this._networkSystem.connected) {
@@ -166,7 +166,7 @@ export default class Game {
         }
     }
 
-    private hookupInputs() {
+    private _hookupInputs() {
         this._windowInput.onKeyPressed = (event: KeyInputEvent) => {
             this._inputHandler.handleKeyPress(event);
         };

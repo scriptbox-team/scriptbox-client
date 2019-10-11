@@ -64,18 +64,18 @@ export default class UIManagerPure extends UIManager {
                             this.openFileUploadWindow();
                         },
                         onDelete: (resource: Resource) => {
-                            this.reportResourceDeletion(resource.id);
+                            this._reportResourceDeletion(resource.id);
                         },
                         onSoundPlay: (resource: Resource) => {},
                         onSoundStop: (resource: Resource) => {},
                         onScriptRun: (resource: Resource, args: string) => {
-                            this.reportScriptRun(resource.id, args);
+                            this._reportScriptRun(resource.id, args);
                         },
                         onInfoChange: (resource: Resource, kind: string, newValue: string) => {
-                            this.resourcePropertyChanged(resource, kind, newValue);
+                            this._resourcePropertyChanged(resource, kind, newValue);
                         },
                         onInfoSubmit: (resource: Resource, kind: string, newValue: string) => {
-                            this.resourcePropertySubmit(resource, kind, newValue);
+                            this._resourcePropertySubmit(resource, kind, newValue);
                         },
                         onResourceChange: (resourceID?: string) => {
                             this._selectedResource = resourceID;
@@ -121,7 +121,7 @@ export default class UIManagerPure extends UIManager {
                             }
                         ],
                         selectedTool: this._selectedTool,
-                        onChange: this.setTool,
+                        onChange: this._setTool,
                     },
                 null)
             )
@@ -153,7 +153,7 @@ export default class UIManagerPure extends UIManager {
                                 components: this._entityData,
                                 onOptionUpdate: this.reportComponentOptionChange,
                                 onDelete: (component: ComponentInfo) => {
-                                    this.reportComponentDeletion(component.id);
+                                    this._reportComponentDeletion(component.id);
                                 }
                             },
                             React.createElement(
@@ -163,7 +163,7 @@ export default class UIManagerPure extends UIManager {
                                     image: "",
                                     name: "Apply...",
                                     onClick: () => {
-                                        this.applyScript();
+                                        this._applyScript();
                                     }
                                 },
                                 null
@@ -198,7 +198,7 @@ export default class UIManagerPure extends UIManager {
                             FileUploaderComponent,
                             {
                                 onFilesUpload: (resource) => {
-                                    this.reportFilesUpload(resource, this._uploadID);
+                                    this._reportFilesUpload(resource, this._uploadID);
                                 }
                             },
                             null
@@ -237,7 +237,7 @@ export default class UIManagerPure extends UIManager {
         const modifiedResources = Array.from(resources);
         for (const resource of modifiedResources) {
             for (const key of Object.keys(resource)) {
-                const val = this.getModified(resource.id, key);
+                const val = this._getModified(resource.id, key);
                 if (val !== undefined) {
                     (resource as any)[key] = val;
                 }
@@ -270,7 +270,7 @@ export default class UIManagerPure extends UIManager {
         this.closeFileUploadWindow();
     }
 
-    private setTool = (toolID: string) => {
+    private _setTool = (toolID: string) => {
         log(DebugLogType.UI, `Tool ID changed from ${this._selectedTool} to ${toolID}`);
         this._selectedTool = toolID;
         let type = ToolType.Erase;
@@ -289,57 +289,57 @@ export default class UIManagerPure extends UIManager {
         }
     }
 
-    private reportFilesUpload = (files: FileList, resourceID?: string) => {
+    private _reportFilesUpload = (files: FileList, resourceID?: string) => {
         this.onResourceUpload!(files, resourceID);
     }
 
-    private reportResourceDeletion = (resourceID: string) => {
+    private _reportResourceDeletion = (resourceID: string) => {
         this.onResourceDelete!(resourceID);
     }
-    private reportComponentDeletion = (componentID: string) => {
+    private _reportComponentDeletion = (componentID: string) => {
         this.onComponentDelete!(componentID);
     }
 
-    private reportScriptRun = (resourceID: string, args: string, entityID?: string) => {
+    private _reportScriptRun = (resourceID: string, args: string, entityID?: string) => {
         this.onScriptRun!(resourceID, args, entityID);
     }
 
-    private resourcePropertyChanged = (resource: Resource, kind: string, value: string) => {
+    private _resourcePropertyChanged = (resource: Resource, kind: string, value: string) => {
         (resource as any)[kind] = value;
-        this.setModified(resource.id, kind, value);
+        this._setModified(resource.id, kind, value);
     }
 
-    private resourcePropertySubmit = (resource: Resource, kind: string, value: string) => {
+    private _resourcePropertySubmit = (resource: Resource, kind: string, value: string) => {
         (resource as any)[kind] = value;
         this.onResourceInfoModify!(resource.id, kind, value);
-        this.unsetModified(resource.id, kind);
+        this._unsetModified(resource.id, kind);
     }
 
-    private getModified(resourceID: string, property: string) {
+    private _getModified(resourceID: string, property: string) {
         if (this._modifiedAttributes[resourceID] === undefined) {
             return undefined;
         }
         return this._modifiedAttributes[resourceID][property];
     }
 
-    private setModified(resourceID: string, property: string, value: string) {
+    private _setModified(resourceID: string, property: string, value: string) {
         if (this._modifiedAttributes[resourceID] === undefined) {
             this._modifiedAttributes[resourceID] = {};
         }
         this._modifiedAttributes[resourceID][property] = value;
     }
 
-    private unsetModified(resourceID: string, property: string) {
+    private _unsetModified(resourceID: string, property: string) {
         if (this._modifiedAttributes[resourceID] === undefined) {
             this._modifiedAttributes[resourceID] = {};
         }
         this._modifiedAttributes[resourceID][property] = undefined;
     }
 
-    private applyScript() {
+    private _applyScript() {
         const resource = this._resources.find((res) => res.id === this._selectedResource);
         if (this._selectedResource !== undefined && resource !== undefined && resource.type === ResourceType.Script) {
-            this.reportScriptRun(this._selectedResource, "", this._inspectedEntity);
+            this._reportScriptRun(this._selectedResource, "", this._inspectedEntity);
         }
     }
 }

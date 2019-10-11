@@ -30,7 +30,7 @@ export default class ComponentDisplayComponent extends React.Component<IComponen
                                         displayValue={option.baseValue}
                                         readOnly={option.readOnly}
                                         onChange={(newValue: string) => {
-                                            this.onChange(option, newValue);
+                                            this._onChange(option, newValue);
                                         }}
                                     />;
                                 }
@@ -40,7 +40,7 @@ export default class ComponentDisplayComponent extends React.Component<IComponen
                                         displayValue={option.baseValue}
                                         readOnly={option.readOnly}
                                         onChange={(newValue: string) => {
-                                            this.onChange(option, newValue);
+                                            this._onChange(option, newValue);
                                         }}
                                     />;
                                 }
@@ -50,7 +50,7 @@ export default class ComponentDisplayComponent extends React.Component<IComponen
                                         displayValue={option.baseValue}
                                         readOnly={option.readOnly}
                                         onChange={(newValue: string) => {
-                                            this.onChange(option, newValue);
+                                            this._onChange(option, newValue);
                                         }}
                                     />;
                                 }
@@ -60,7 +60,7 @@ export default class ComponentDisplayComponent extends React.Component<IComponen
                                         displayValue={option.baseValue}
                                         readOnly={option.readOnly}
                                         onChange={(newValue: string) => {
-                                            this.onChange(option, newValue);
+                                            this._onChange(option, newValue);
                                         }}
                                     />;
                                 }
@@ -70,14 +70,14 @@ export default class ComponentDisplayComponent extends React.Component<IComponen
                 })
             }</div>
             <div className="resource-options">
-                <button className="delete-button" onClick={this.handleDelete}>Delete</button>
+                <button className="delete-button" onClick={this._handleDelete}>Delete</button>
             </div>
         </div>;
     }
-    private onChange(option: ComponentOption, newValue: string) {
+    private _onChange(option: ComponentOption, newValue: string) {
         this.props.onOptionUpdate(option, newValue);
     }
-    private handleDelete = () => {
+    private _handleDelete = () => {
         this.props.onDelete();
     }
 }

@@ -10,7 +10,7 @@ interface INamedImageButtonProperties<T> {
 export default class NamedImageButtonComponent<T> extends React.Component<INamedImageButtonProperties<T>> {
     constructor(props: INamedImageButtonProperties<T>) {
         super(props);
-        this.onClick = this.onClick.bind(this);
+        this._onClick = this._onClick.bind(this);
     }
     public shouldComponentUpdate(nextProps: INamedImageButtonProperties<T>, nextState: Readonly<{}>, nextContext: any) {
         if (nextProps.id === this.props.id
@@ -22,14 +22,14 @@ export default class NamedImageButtonComponent<T> extends React.Component<INamed
         return false;
     }
     public render() {
-        return <button className="named-image-button" onClick={this.onClick}>
+        return <button className="named-image-button" onClick={this._onClick}>
             <div className="named-image-button-container">
                 <div className="named-image-button-name">{this.props.name}</div>
                 <img className="named-image-button-image" src={this.props.image} />
             </div>
         </button>;
     }
-    private onClick(ev: React.MouseEvent<HTMLButtonElement>) {
+    private _onClick(ev: React.MouseEvent<HTMLButtonElement>) {
         ev.stopPropagation();
         this.props.onClick();
     }

@@ -21,15 +21,15 @@ export default class DefaultResourceDisplayComponent extends React.Component<IDe
                 onInfoSubmit={this.props.onInfoSubmit}
             />
             <div className="resource-options">
-                <button className="reupload-button" onClick={this.handleReupload}>Reupload</button>
-                <button className="delete-button" onClick={this.handleDelete}>Delete</button>
+                <button className="reupload-button" onClick={this._handleReupload}>Reupload</button>
+                <button className="delete-button" onClick={this._handleDelete}>Delete</button>
             </div>
         </div>;
     }
-    private handleReupload = () => {
+    private _handleReupload = () => {
         this.props.onReupload(this.props.resource);
     }
-    private handleDelete = () => {
+    private _handleDelete = () => {
         this.props.onDelete(this.props.resource);
     }
 }

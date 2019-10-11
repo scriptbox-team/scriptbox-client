@@ -15,17 +15,17 @@ export default class FileUploaderComponent extends React.Component<IFileUploader
     }
     public render() {
         return <div className="file-uploader">
-            <input type="file" onChange={this.changeFile} multiple/>
-            <button className="upload-button" onClick={this.reportFileUpload}>Upload</button>
+            <input type="file" onChange={this._changeFile} multiple/>
+            <button className="upload-button" onClick={this._reportFileUpload}>Upload</button>
         </div>;
     }
-    private changeFile = (event: React.ChangeEvent) => {
+    private _changeFile = (event: React.ChangeEvent) => {
         const files = (event.target as any).files;
         if (files.length > 0) {
             this.setState({files});
         }
     }
-    private reportFileUpload = () => {
+    private _reportFileUpload = () => {
         const files = this.state.files;
         if (files !== undefined && files.length > 0) {
             this.props.onFilesUpload(files);

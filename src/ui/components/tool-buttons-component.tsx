@@ -16,7 +16,7 @@ interface IToolButtonsProperties {
 export default class ToolButtonsComponent extends React.Component<IToolButtonsProperties> {
     constructor(props: IToolButtonsProperties) {
         super(props);
-        this.reportToolChange = this.reportToolChange.bind(this);
+        this._reportToolChange = this._reportToolChange.bind(this);
     }
     public render() {
         return <div className="tool-buttons"> {
@@ -26,12 +26,12 @@ export default class ToolButtonsComponent extends React.Component<IToolButtonsPr
                     key={tool.id}
                     image={tool.icon}
                     name={tool.name}
-                    onClick={() => this.reportToolChange(tool.id)}
+                    onClick={() => this._reportToolChange(tool.id)}
                 />;
             })
         }</div>;
     }
-    private reportToolChange(id: string) {
+    private _reportToolChange(id: string) {
         this.props.onChange(id);
     }
 }

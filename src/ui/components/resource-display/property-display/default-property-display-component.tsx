@@ -15,11 +15,11 @@ export default class DefaultPropertyDisplayComponent extends React.Component<IDe
             placeholder={this.props.type}
             readOnly={this.props.readOnly}
             onChange={(event: React.ChangeEvent<HTMLElement>) => {
-                this.onChange((event.target as any).value + "");
+                this._onChange((event.target as any).value + "");
             }}
         />;
     }
-    private onChange(newValue: string) {
+    private _onChange(newValue: string) {
         this.props.onChange(newValue);
     }
 }

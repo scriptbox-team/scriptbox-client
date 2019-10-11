@@ -14,11 +14,11 @@ export default class BooleanDisplayComponent extends React.Component<IBooleanDis
             checked={this.props.displayValue === "true"}
             readOnly={this.props.readOnly}
             onChange={(event: React.ChangeEvent<HTMLElement>) => {
-                this.onChange((event.target as any).checked ? "true" : "false");
+                this._onChange((event.target as any).checked ? "true" : "false");
             }}
         />;
     }
-    private onChange(newValue: string) {
+    private _onChange(newValue: string) {
         this.props.onChange(newValue);
     }
 }

@@ -67,7 +67,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         sprite.x = renderObject.position.x;
         sprite.y = renderObject.position.y;
         sprite.zIndex = renderObject.depth;
-        sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+        sprite.texture.frame = this._makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
         const time = Date.now();
         const currTexData = this._currentTextures.get(renderObject.id);
         if (currTexData !== undefined && currTexData.texture !== renderObject.texture) {
@@ -81,7 +81,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
                     sprite.texture = new PIXI.Texture(
                         newBaseTex
                     );
-                    sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+                    sprite.texture.frame = this._makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
                     this._currentTextures.set(renderObject.id, {
                         time,
                         texture: renderObject.texture
@@ -119,17 +119,17 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._app.renderer.resize(window.innerWidth, window.innerHeight);
     }
 
-    private makeFrameRectangle(
+    private _makeFrameRectangle(
             tex: PIXI.Texture,
             rect: {x: number, y: number, width: number, height: number}): PIXI.Rectangle {
-        const x = this.clamp(rect.x, 0, tex.baseTexture.width);
-        const y = this.clamp(rect.y, 0, tex.baseTexture.height);
-        const width = this.clamp(rect.width, 0, tex.baseTexture.width - x);
-        const height = this.clamp(rect.height, 0, tex.baseTexture.height - y);
+        const x = this._clamp(rect.x, 0, tex.baseTexture.width);
+        const y = this._clamp(rect.y, 0, tex.baseTexture.height);
+        const width = this._clamp(rect.width, 0, tex.baseTexture.width - x);
+        const height = this._clamp(rect.height, 0, tex.baseTexture.height - y);
         return new PIXI.Rectangle(x, y, width, height);
     }
 
-    private clamp(val: number, min: number, max: number) {
+    private _clamp(val: number, min: number, max: number) {
         return Math.min(max, Math.max(val, min));
     }
 }

@@ -27,73 +27,73 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                     case ResourceType.Image: {
                         return <ImageDisplayComponent
                             resource={this.props.resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
-                            onInfoChange={this.onInfoChange}
-                            onInfoSubmit={this.onInfoSubmit}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                     case ResourceType.Sound: {
                         return <SoundDisplayComponent
                             resource={this.props.resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
-                            onPlay={this.onSoundPlay}
-                            onStop={this.onSoundStop}
-                            onInfoChange={this.onInfoChange}
-                            onInfoSubmit={this.onInfoSubmit}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onPlay={this._onSoundPlay}
+                            onStop={this._onSoundStop}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                     case ResourceType.Script: {
 
                         return <ScriptDisplayComponent
                             resource={this.props.resource}
-                            onEdit={this.onReupload}
-                            onDelete={this.onDelete}
-                            onRun={this.onScriptRun}
-                            onInfoChange={this.onInfoChange}
-                            onInfoSubmit={this.onInfoSubmit}
+                            onEdit={this._onReupload}
+                            onDelete={this._onDelete}
+                            onRun={this._onScriptRun}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                     default: {
 
                         return <DefaultResourceDisplayComponent
                             resource={this.props.resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
-                            onInfoChange={this.onInfoChange}
-                            onInfoSubmit={this.onInfoSubmit}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                 }
             })()
         }</div>;
     }
-    private onReupload = (resource: Resource) => {
+    private _onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
     }
 
-    private onSoundPlay = (resource: Resource) => {
+    private _onSoundPlay = (resource: Resource) => {
         this.props.onSoundPlay(resource);
     }
 
-    private onSoundStop = (resource: Resource) => {
+    private _onSoundStop = (resource: Resource) => {
         this.props.onSoundStop(resource);
     }
 
-    private onScriptRun = (resource: Resource, args: string) => {
+    private _onScriptRun = (resource: Resource, args: string) => {
         this.props.onScriptRun(resource, args);
     }
 
-    private onDelete = (resource: Resource) => {
+    private _onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
     }
 
-    private onInfoChange = (type: string, value: string) => {
+    private _onInfoChange = (type: string, value: string) => {
         this.props.onInfoChange(this.props.resource, type, value);
     }
 
-    private onInfoSubmit = (type: string, value: string) => {
+    private _onInfoSubmit = (type: string, value: string) => {
         this.props.onInfoChange(this.props.resource, type, value);
     }
 }

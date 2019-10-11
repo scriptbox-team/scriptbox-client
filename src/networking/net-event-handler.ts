@@ -96,7 +96,7 @@ export default class NetEventHandler {
             case ServerEventType.Connection: {
                 const data = ServerConnectionPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._connectionDelegates
                     );
@@ -106,7 +106,7 @@ export default class NetEventHandler {
             case ServerEventType.Disconnection: {
                 const data = ServerDisconnectionPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._disconnectionDelgates
                     );
@@ -116,7 +116,7 @@ export default class NetEventHandler {
             case ServerEventType.ChatMessage: {
                 const data = ServerChatMessagePacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._messageDelegates
                     );
@@ -126,7 +126,7 @@ export default class NetEventHandler {
             case ServerEventType.DisplayPackage: {
                 const data = ServerDisplayPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._displayDelegates
                     );
@@ -136,7 +136,7 @@ export default class NetEventHandler {
             case ServerEventType.Token: {
                 const data = ServerTokenPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._tokenDelegates
                     );
@@ -146,7 +146,7 @@ export default class NetEventHandler {
             case ServerEventType.ResourceListing: {
                 const data = ServerResourceListingPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._resourceListingDelegates
                     );
@@ -156,7 +156,7 @@ export default class NetEventHandler {
             case ServerEventType.EntityInspectListing: {
                 const data = ServerEntityInspectionListingPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._entityInspectListingDelegates
                     );
@@ -166,7 +166,7 @@ export default class NetEventHandler {
             case ServerEventType.SoundPlay: {
                 const data = ServerSoundPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._soundPlayDelegates
                     );
@@ -184,7 +184,7 @@ export default class NetEventHandler {
      * @param {Array<(packet: T) => void>} delegates
      * @memberof NetEventHandler
      */
-    private sendToDelegates<T extends Packet>(
+    private _sendToDelegates<T extends Packet>(
         packet: T | undefined,
         delegates: Array<(packet: T) => void>,
     ) {
