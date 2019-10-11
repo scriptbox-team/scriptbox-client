@@ -19,7 +19,7 @@ interface IResourceListProperties {
 export default class ResourceListComponent extends React.Component<IResourceListProperties> {
     constructor(props: IResourceListProperties) {
         super(props);
-        this.setResource = this.setResource.bind(this);
+        this._setResource = this._setResource.bind(this);
     }
     public render() {
         return <div className="resource-list">
@@ -27,21 +27,21 @@ export default class ResourceListComponent extends React.Component<IResourceList
                 class="resource-select"
                 direction="horizontal"
                 resources={this.props.resources}
-                onClick={this.setResource}
+                onClick={this._setResource}
             >
             {this.props.children}
             </GridListComponent>
             {(() => {
                 if (this.props.selectedResourceID !== undefined) {
-                    const resource = this.getResource(this.props.selectedResourceID);
+                    const resource = this._getResource(this.props.selectedResourceID);
                     if (resource !== undefined) {
                         return <ResourceDisplayComponent
                             resource={resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
-                            onSoundPlay={this.onSoundPlay}
-                            onSoundStop={this.onSoundStop}
-                            onScriptRun={this.onScriptRun}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onSoundPlay={this._onSoundPlay}
+                            onSoundStop={this._onSoundStop}
+                            onScriptRun={this._onScriptRun}
                             onInfoChange={this.props.onInfoChange}
                             onInfoSubmit={this.props.onInfoSubmit}
                         />;
@@ -51,29 +51,29 @@ export default class ResourceListComponent extends React.Component<IResourceList
             })()}
         </div>;
     }
-    private setResource(id?: string) {
+    private _setResource(id?: string) {
         this.props.onResourceChange(id);
     }
-    private getResource(id: string) {
+    private _getResource(id: string) {
         return this.props.resources.find((res) => res.id === id);
     }
-    private onReupload = (resource: Resource) => {
+    private _onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
     }
 
-    private onSoundPlay = (resource: Resource) => {
+    private _onSoundPlay = (resource: Resource) => {
         this.props.onSoundPlay(resource);
     }
 
-    private onSoundStop = (resource: Resource) => {
+    private _onSoundStop = (resource: Resource) => {
         this.props.onSoundStop(resource);
     }
 
-    private onScriptRun = (resource: Resource, args: string) => {
+    private _onScriptRun = (resource: Resource, args: string) => {
         this.props.onScriptRun(resource, args);
     }
 
-    private onDelete = (resource: Resource) => {
+    private _onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
     }
 }

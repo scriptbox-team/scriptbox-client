@@ -2,9 +2,9 @@ import _ from "lodash";
 import RenderObject from "resource-management/render-object";
 
 export default class ClickDetector {
-    public clickableObjects: Map<number, RenderObject>;
+    public clickableObjects: Map<string, RenderObject>;
     constructor() {
-        this.clickableObjects = new Map<number, RenderObject>();
+        this.clickableObjects = new Map<string, RenderObject>();
     }
     public clickObjects(x: number, y: number): RenderObject[] {
         const objs = Array.from(this.clickableObjects.values());

@@ -20,7 +20,7 @@ export default class TextEntryComponent extends React.Component<ITextEntryProper
             // TODO: Holding shift shouldn't trigger this
             // And instead put a line break
             if (event.keyCode === 13 && this.props.submitOnEnter) {
-                this.submit();
+                this._submit();
             }
         };
         if (!this.props.multiline) {
@@ -30,7 +30,7 @@ export default class TextEntryComponent extends React.Component<ITextEntryProper
                 onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
                 onBlur={(event: React.FocusEvent<HTMLElement>) => {
                     if (this.props.submitOnUnfocus) {
-                        this.submit();
+                        this._submit();
                     }
                 }}
                 value={this.props.value}
@@ -43,14 +43,14 @@ export default class TextEntryComponent extends React.Component<ITextEntryProper
                 onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
                 onBlur={(event: React.FocusEvent<HTMLElement>) => {
                     if (this.props.submitOnUnfocus) {
-                        this.submit();
+                        this._submit();
                     }
                 }}
                 value={this.props.value}
             />;
         }
     }
-    private submit() {
+    private _submit() {
         this.props.onSubmit(this.props.value);
     }
 }

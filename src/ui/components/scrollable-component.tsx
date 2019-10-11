@@ -20,17 +20,17 @@ export default class ScrollableComponent extends React.Component<IScrollableProp
         super(props);
         this.ref = React.createRef<HTMLDivElement>();
         this.state = {scrollTop: 0, innerHeight: 0, outerHeight: 0};
-        this.updateScrollState = this.updateScrollState.bind(this);
-        this.updateInnerHeightState = this.updateInnerHeightState.bind(this);
-        this.updateOuterHeightState = this.updateOuterHeightState.bind(this);
+        this._updateScrollState = this._updateScrollState.bind(this);
+        this._updateInnerHeightState = this._updateInnerHeightState.bind(this);
+        this._updateOuterHeightState = this._updateOuterHeightState.bind(this);
     }
     public render() {
-        return <div className={`scrollable ${this.props.class}`}  onScroll={this.updateScrollState} ref={this.ref}>
+        return <div className={`scrollable ${this.props.class}`}  onScroll={this._updateScrollState} ref={this.ref}>
             <div className="scrollable-contents">
                 {this.props.children}
-                <ReactResizeDetector handleHeight onResize={this.updateInnerHeightState} />
+                <ReactResizeDetector handleHeight onResize={this._updateInnerHeightState} />
             </div>
-            <ReactResizeDetector handleHeight onResize={this.updateOuterHeightState} />
+            <ReactResizeDetector handleHeight onResize={this._updateOuterHeightState} />
         </div>;
     }
     public componentDidUpdate() {
@@ -38,28 +38,28 @@ export default class ScrollableComponent extends React.Component<IScrollableProp
             this.ref.current.scrollTop = this.state.scrollTop;
         }
     }
-    private updateScrollState(ev: React.UIEvent<HTMLDivElement>) {
+    private _updateScrollState(ev: React.UIEvent<HTMLDivElement>) {
         this.setState({
             scrollTop: (ev.target as any).scrollTop,
         });
     }
-    private updateInnerHeightState(newWidth: number, newHeight: number) {
+    private _updateInnerHeightState(newWidth: number, newHeight: number) {
         if (this.props.autoscroll) {
             if (this.state.scrollTop + this.state.outerHeight + AS_LENIENCY >= this.state.innerHeight) {
-                this.scrollTo(newHeight - this.state.outerHeight);
+                this._scrollTo(newHeight - this.state.outerHeight);
             }
             this.setState({innerHeight: newHeight});
         }
     }
-    private updateOuterHeightState(newWidth: number, newHeight: number) {
+    private _updateOuterHeightState(newWidth: number, newHeight: number) {
         if (this.props.autoscroll) {
             if (this.state.scrollTop + this.state.outerHeight + AS_LENIENCY >= this.state.innerHeight) {
-                this.scrollTo(this.state.innerHeight - newHeight);
+                this._scrollTo(this.state.innerHeight - newHeight);
             }
             this.setState({outerHeight: newHeight});
         }
     }
-    private scrollTo(height: number) {
+    private _scrollTo(height: number) {
         this.setState({scrollTop: height});
     }
 }

@@ -70,7 +70,7 @@ const screenRendererPure = new ScreenRendererPure(1920, 1080);
 ipcRenderer.on(ipcMessages.RenderObjectUpdate, (event: any, renderObject: RenderObject) => {
     screenRendererPure.updateRenderObject(renderObject);
 });
-ipcRenderer.on(ipcMessages.RenderObjectDelete, (event: any, id: number) => {
+ipcRenderer.on(ipcMessages.RenderObjectDelete, (event: any, id: string) => {
     screenRendererPure.removeRenderObject(id);
 });
 ipcRenderer.on(ipcMessages.RenderUpdate, (event: any) => {
@@ -84,10 +84,10 @@ uiManagerPure.onPlayerMessageEntry = (message: string) => {
 uiManagerPure.onToolChange = (tool: ToolType) => {
     ipcRenderer.send(ipcMessages.ToolChange, tool);
 };
-uiManagerPure.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
+uiManagerPure.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
     ipcRenderer.send(ipcMessages.RunScript, resourceID, args, entityID);
 };
-uiManagerPure.onComponentDelete = (componentID: number) => {
+uiManagerPure.onComponentDelete = (componentID: string) => {
     ipcRenderer.send(ipcMessages.DeleteComponent, componentID);
 };
 
@@ -123,9 +123,9 @@ ipcRenderer.on(ipcMessages.ResourceAPIToken, (event: any, token: number, tokenTy
 ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => {
     uiManagerPure.setResourceList(resources);
 });
-ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: number | null) => {
-    uiManagerPure.inspect(undefinedIfNull<number>(entityID));
+ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: string | null) => {
+    uiManagerPure.inspect(undefinedIfNull<string>(entityID));
 });
-ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, components: ComponentInfo[], entityID: number) => {
+ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, components: ComponentInfo[], entityID: string) => {
     uiManagerPure.setEntityData(components, entityID);
 });

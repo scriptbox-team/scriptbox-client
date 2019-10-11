@@ -8,14 +8,14 @@ import WindowInput from "input/window-input";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
 import NetworkSystem from "networking/network-system";
 import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
+import ClientEntityCreationPacket from "networking/packets/client-entity-creation-packet";
+import ClientEntityDeletionPacket from "networking/packets/client-entity-deletion-packet";
+import ClientEntityInspectionPacket from "networking/packets/client-entity-inspection-packet";
 import ClientExecuteScriptPacket from "networking/packets/client-execute-script-packet";
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
 import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
-import ClientObjectCreationPacket from "networking/packets/client-object-creation-packet";
-import ClientObjectDeletionPacket from "networking/packets/client-object-deletion-packet";
 import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
-import ClientWatchEntityPacket from "networking/packets/client-watch-entity-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
@@ -61,7 +61,7 @@ export default class Game {
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
         this._resourceAPIURL = "http://localhost:7778";
-        this.hookupInputs();
+        this._hookupInputs();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
             console.log("Connected to server.");
         });
@@ -78,7 +78,7 @@ export default class Game {
                     renderObject
                 );
             }
-            this._inputHandler.updateClickableObjects(packet.displayPackage);
+            this._inputHandler.updateClickableEntities(packet.displayPackage);
         });
         this._networkSystem.netEventHandler.addTokenDelegate((packet: ServerTokenPacket) => {
             if (packet.tokenType === TokenType.FileUpload || packet.tokenType === TokenType.FileDelete) {
@@ -108,7 +108,7 @@ export default class Game {
         this._uiManager.onResourceDelete = (resourceID: string) => {
             this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
         };
-        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: number) => {
+        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
@@ -124,7 +124,7 @@ export default class Game {
                 )
             );
         };
-        this._uiManager.onComponentDelete = (componentID: number) => {
+        this._uiManager.onComponentDelete = (componentID: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.RemoveComponent,
@@ -138,7 +138,7 @@ export default class Game {
                 new ClientNetEvent(ClientEventType.TokenRequest, packet)
             );
         };
-        this._gameLoop = new GameLoop(this.tick.bind(this), 60);
+        this._gameLoop = new GameLoop(this._tick.bind(this), 60);
     }
 
     /**
@@ -158,7 +158,7 @@ export default class Game {
      * @private
      * @memberof Game
      */
-    private tick() {
+    private _tick() {
         this._screenRenderer.update();
         this._uiManager.render();
         if (this._networkSystem.connected) {
@@ -166,7 +166,7 @@ export default class Game {
         }
     }
 
-    private hookupInputs() {
+    private _hookupInputs() {
         this._windowInput.onKeyPressed = (event: KeyInputEvent) => {
             this._inputHandler.handleKeyPress(event);
         };
@@ -195,21 +195,21 @@ export default class Game {
             );
         };
         this._inputHandler.onPlace = (prefabID: string, x: number, y: number) => {
-            const packet = new ClientObjectCreationPacket(prefabID, x, y);
+            const packet = new ClientEntityCreationPacket(prefabID, x, y);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.ObjectCreation, packet)
+                new ClientNetEvent(ClientEventType.EntityCreation, packet)
             );
         };
-        this._inputHandler.onErase = (id: number) => {
-            const packet = new ClientObjectDeletionPacket(id);
+        this._inputHandler.onErase = (id: string) => {
+            const packet = new ClientEntityDeletionPacket(id);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.ObjectDeletion, packet)
+                new ClientNetEvent(ClientEventType.EntityDeletion, packet)
             );
         };
-        this._inputHandler.onEdit = (id: number | undefined) => {
-            const packet = new ClientWatchEntityPacket(id);
+        this._inputHandler.onEdit = (id: string | undefined) => {
+            const packet = new ClientEntityInspectionPacket(id);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.WatchEntity, packet)
+                new ClientNetEvent(ClientEventType.EntityInspection, packet)
             );
             this._uiManager.inspect(id);
         };

@@ -1,18 +1,18 @@
 import Packet from "./packet";
 
-export default class ClientWatchEntityPacket extends Packet {
+export default class ClientEntityInspectionPacket extends Packet {
     public static deserialize(obj: any) {
         if (typeof obj === "object" && obj !== null) {
             if (
-                typeof obj.entityID === "number" || obj.entityID === undefined
+                typeof obj.entityID === "string" || obj.entityID === undefined
             ) {
-                return new ClientWatchEntityPacket(obj.entityID);
+                return new ClientEntityInspectionPacket(obj.entityID);
             }
             return undefined;
         }
     }
-    public entityID?: number;
-    constructor(entityID?: number) {
+    public entityID?: string;
+    constructor(entityID?: string) {
         super();
         this.entityID = entityID;
     }

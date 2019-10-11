@@ -13,8 +13,8 @@ import ScreenRenderer from "./screen-renderer";
  */
 export default class ScreenRendererPure extends ScreenRenderer {
     private _textureFetcher: TextureFetcher;
-    private _sprites: Map<number, PIXI.Sprite>;
-    private _currentTextures: Map<number, {time: number, texture: string | undefined}>;
+    private _sprites: Map<string, PIXI.Sprite>;
+    private _currentTextures: Map<string, {time: number, texture: string | undefined}>;
     private _app: PIXI.Application;
     /**
      * Creates an instance of ScreenRendererPure.
@@ -34,8 +34,8 @@ export default class ScreenRendererPure extends ScreenRenderer {
         doc!.onselectstart = () => false;
         doc!.appendChild(this._app.view);
         window.addEventListener("resize", this.resize);
-        this._sprites = new Map<number, PIXI.Sprite>();
-        this._currentTextures = new Map<number, {time: number, texture: string | undefined}>();
+        this._sprites = new Map<string, PIXI.Sprite>();
+        this._currentTextures = new Map<string, {time: number, texture: string | undefined}>();
         this._app.renderer.autoResize = true;
         this._textureFetcher = new TextureFetcher(".");
         this.resize();
@@ -67,7 +67,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         sprite.x = renderObject.position.x;
         sprite.y = renderObject.position.y;
         sprite.zIndex = renderObject.depth;
-        sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+        sprite.texture.frame = this._makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
         const time = Date.now();
         const currTexData = this._currentTextures.get(renderObject.id);
         if (currTexData !== undefined && currTexData.texture !== renderObject.texture) {
@@ -81,7 +81,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
                     sprite.texture = new PIXI.Texture(
                         newBaseTex
                     );
-                    sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+                    sprite.texture.frame = this._makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
                     this._currentTextures.set(renderObject.id, {
                         time,
                         texture: renderObject.texture
@@ -97,7 +97,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
      * @param {number} id The ID of the render object to remove
      * @memberof ScreenRendererPure
      */
-    public removeRenderObject(id: number) {
+    public removeRenderObject(id: string) {
         const sprite = this._sprites.get(id);
         if (sprite !== undefined) {
             sprite.destroy();
@@ -119,17 +119,17 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._app.renderer.resize(window.innerWidth, window.innerHeight);
     }
 
-    private makeFrameRectangle(
+    private _makeFrameRectangle(
             tex: PIXI.Texture,
             rect: {x: number, y: number, width: number, height: number}): PIXI.Rectangle {
-        const x = this.clamp(rect.x, 0, tex.baseTexture.width);
-        const y = this.clamp(rect.y, 0, tex.baseTexture.height);
-        const width = this.clamp(rect.width, 0, tex.baseTexture.width - x);
-        const height = this.clamp(rect.height, 0, tex.baseTexture.height - y);
+        const x = this._clamp(rect.x, 0, tex.baseTexture.width);
+        const y = this._clamp(rect.y, 0, tex.baseTexture.height);
+        const width = this._clamp(rect.width, 0, tex.baseTexture.width - x);
+        const height = this._clamp(rect.height, 0, tex.baseTexture.height - y);
         return new PIXI.Rectangle(x, y, width, height);
     }
 
-    private clamp(val: number, min: number, max: number) {
+    private _clamp(val: number, min: number, max: number) {
         return Math.min(max, Math.max(val, min));
     }
 }
