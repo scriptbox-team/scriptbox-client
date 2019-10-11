@@ -23,7 +23,7 @@ export default class InputHandler {
     private _selectedObject: RenderObject | undefined;
     private _tool: ToolType = ToolType.Edit;
 
-    public updateClickableObjects(objects: RenderObject[]) {
+    public updateClickableEntities(objects: RenderObject[]) {
         this._clickDetector.updateClickableObjects(objects);
     }
     /**
