@@ -6,9 +6,9 @@ import NetworkSendingSubsystem from "./network-sending-subsystem";
 /**
  * The constructor options for the network system.
  *
- * @interface INetworkSystemConstructorOptions
+ * @interface NetworkSystemConstructorOptions
  */
-interface INetworkSystemConstructorOptions {
+interface NetworkSystemConstructorOptions {
     address: string;
 }
 
@@ -26,10 +26,10 @@ export default class NetworkSystem {
     /**
      * Creates an instance of NetworkSystem.
      * This does not connect to the server.
-     * @param {INetworkSystemConstructorOptions} options The constructor options.
+     * @param {NetworkSystemConstructorOptions} options The constructor options.
      * @memberof NetworkSystem
      */
-    constructor(options: INetworkSystemConstructorOptions) {
+    constructor(options: NetworkSystemConstructorOptions) {
         this._serverAddress = options.address;
         this._netConnection = new NetConnection({address: this._serverAddress});
         this._networkRecievingSubsystem = new NetworkReceivingSubsystem(this._netConnection);

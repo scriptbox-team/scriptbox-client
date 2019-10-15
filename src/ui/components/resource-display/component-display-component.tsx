@@ -5,7 +5,7 @@ import DefaultPropertyDisplayComponent from "./property-display/default-property
 import NumberDisplayComponent from "./property-display/number-display-component";
 import StringDisplayComponent from "./property-display/string-display-component";
 
-interface IComponentDisplayProperties {
+interface ComponentDisplayProperties {
     name: string;
     description: string;
     options: ComponentOption[];
@@ -13,7 +13,7 @@ interface IComponentDisplayProperties {
     onDelete: () => void;
 }
 
-export default class ComponentDisplayComponent extends React.Component<IComponentDisplayProperties> {
+export default class ComponentDisplayComponent extends React.Component<ComponentDisplayProperties> {
     public render() {
         return <div className="component-display-component">
             <div className="component-name">{this.props.name}</div>

@@ -2,7 +2,7 @@ import React from "react";
 import Resource from "resource-management/resource";
 import ResourceInfoComponent from "./resource-info-component";
 
-interface IImageDisplayProperties {
+interface ImageDisplayProperties {
     resource: Resource;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
@@ -10,7 +10,7 @@ interface IImageDisplayProperties {
     onInfoSubmit: (kind: string, value: string) => void;
 }
 
-export default class ImageDisplayComponent extends React.Component<IImageDisplayProperties> {
+export default class ImageDisplayComponent extends React.Component<ImageDisplayProperties> {
     public render() {
         return <div className="resource-display-component">
             <ResourceInfoComponent

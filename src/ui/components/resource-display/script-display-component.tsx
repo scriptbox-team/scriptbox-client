@@ -3,7 +3,7 @@ import Resource from "resource-management/resource";
 import TextEntryComponent from "../text-entry-component";
 import ResourceInfoComponent from "./resource-info-component";
 
-interface IScriptDisplayProperties {
+interface ScriptDisplayProperties {
     resource: Resource;
     onRun: (resource: Resource, args: string) => void;
     onEdit: (resource: Resource) => void;
@@ -12,12 +12,12 @@ interface IScriptDisplayProperties {
     onInfoSubmit: (kind: string, value: string) => void;
 }
 
-interface IScriptDisplayState {
+interface ScriptDisplayState {
     args: string;
 }
 
-export default class ScriptDisplayComponent extends React.Component<IScriptDisplayProperties, IScriptDisplayState> {
-    constructor(props: IScriptDisplayProperties) {
+export default class ScriptDisplayComponent extends React.Component<ScriptDisplayProperties, ScriptDisplayState> {
+    constructor(props: ScriptDisplayProperties) {
         super(props);
         this.state = {args: ""};
     }

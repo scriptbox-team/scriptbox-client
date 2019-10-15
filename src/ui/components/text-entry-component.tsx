@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface ITextEntryProperties {
+interface TextEntryProperties {
     class: string;
     value: string;
     onChange: (newValue: string) => void;
@@ -11,8 +11,8 @@ interface ITextEntryProperties {
     pretty?: boolean;
 }
 
-export default class TextEntryComponent extends React.Component<ITextEntryProperties> {
-    constructor(props: ITextEntryProperties) {
+export default class TextEntryComponent extends React.Component<TextEntryProperties> {
+    constructor(props: TextEntryProperties) {
         super(props);
     }
     public render() {

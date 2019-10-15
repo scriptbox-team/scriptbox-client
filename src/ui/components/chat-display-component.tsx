@@ -2,12 +2,12 @@ import * as React from "react";
 import ChatMessageComponent from "./chat-message-component";
 import ScrollableComponent from "./scrollable-component";
 
-interface IChatDisplayProperties {
+interface ChatDisplayProperties {
     messages: string[];
 }
 
-export default class ChatDisplayComponent extends React.Component<IChatDisplayProperties> {
-    constructor(props: IChatDisplayProperties) {
+export default class ChatDisplayComponent extends React.Component<ChatDisplayProperties> {
+    constructor(props: ChatDisplayProperties) {
         super(props);
     }
     public render() {

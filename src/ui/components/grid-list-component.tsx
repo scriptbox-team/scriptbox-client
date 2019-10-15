@@ -1,21 +1,21 @@
 import React from "react";
 import NamedImageButtonComponent from "./named-image-button-component";
 
-interface IGridListProperties<T, T2> {
+interface GridListProperties<T, T2> {
     class: string;
     direction: "horizontal" | "vertical";
     resources: T[];
     onClick: (id?: T2) => void;
 }
 
-interface IResource<T> {
+interface Resource<T> {
     id: T;
     icon: string;
     name: string;
 }
 
-export default class GridListComponent<T extends IResource<T2>, T2>
-        extends React.Component<IGridListProperties<T, T2>> {
+export default class GridListComponent<T extends Resource<T2>, T2>
+        extends React.Component<GridListProperties<T, T2>> {
     public render() {
         return <div
             className={`grid-list grid-list-${this.props.direction} ${this.props.class}`}

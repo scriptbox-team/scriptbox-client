@@ -2,14 +2,14 @@ import * as React from "react";
 import ChatDisplayComponent from "./chat-display-component";
 import TextEntryComponent from "./text-entry-component";
 
-interface IChatWindowProperties {
+interface ChatWindowProperties {
     messages: string[];
     chatEntryValue: string;
     onMessageEntryChange: (msg: string) => void;
     onMessageEntrySubmit: (msg: string) => void;
 }
 
-export default class ChatWindowComponent extends React.Component<IChatWindowProperties>{
+export default class ChatWindowComponent extends React.Component<ChatWindowProperties>{
     public render() {
         const className = "chat-window";
         return <div className={className}>

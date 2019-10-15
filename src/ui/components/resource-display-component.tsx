@@ -5,7 +5,7 @@ import ImageDisplayComponent from "./resource-display/image-display-component";
 import ScriptDisplayComponent from "./resource-display/script-display-component";
 import SoundDisplayComponent from "./resource-display/sound-display-component";
 
-interface IResourceDisplayProperties {
+interface ResourceDisplayProperties {
     resource: Resource;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
@@ -16,8 +16,8 @@ interface IResourceDisplayProperties {
     onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
 }
 
-export default class ResourceDisplayComponent extends React.Component<IResourceDisplayProperties> {
-    constructor(props: IResourceDisplayProperties) {
+export default class ResourceDisplayComponent extends React.Component<ResourceDisplayProperties> {
+    constructor(props: ResourceDisplayProperties) {
         super(props);
     }
     public render() {

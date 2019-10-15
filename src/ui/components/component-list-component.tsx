@@ -5,7 +5,7 @@ import ComponentOption from "resource-management/component-option";
 import GridListComponent from "./grid-list-component";
 import ComponentDisplayComponent from "./resource-display/component-display-component";
 
-interface IComponentListProperties {
+interface ComponentListProperties {
     components: ComponentInfo[];
     onOptionUpdate: (resource: ComponentInfo, option: ComponentOption, newVal: string) => void;
     onDelete: (resource: ComponentInfo) => void;
@@ -13,12 +13,12 @@ interface IComponentListProperties {
     // onInfoSubmit: (resource: ComponentInfo, kind: string, value: string) => void;
 }
 
-interface IComponentListState {
+interface ComponentListState {
     selectedComponentID?: string;
 }
 
-export default class ComponentListComponent extends React.Component<IComponentListProperties, IComponentListState> {
-    constructor(props: IComponentListProperties) {
+export default class ComponentListComponent extends React.Component<ComponentListProperties, ComponentListState> {
+    constructor(props: ComponentListProperties) {
         super(props);
         this.state = {selectedComponentID: undefined};
         this._setComponent = this._setComponent.bind(this);

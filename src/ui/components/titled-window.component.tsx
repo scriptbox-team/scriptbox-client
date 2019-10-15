@@ -1,12 +1,12 @@
 import React from "react";
 
-interface ITitledWindowProperties {
+interface TitledWindowProperties {
     title: string;
     closeable: boolean;
     onClose: () => void;
 }
 
-export default class TitledWindowComponent extends React.Component<ITitledWindowProperties> {
+export default class TitledWindowComponent extends React.Component<TitledWindowProperties> {
     public render() {
         return <div className="titled-window">
             <div className="window-titlebar">

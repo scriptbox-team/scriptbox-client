@@ -1,13 +1,13 @@
 import * as React from "react";
 
-interface IStringDisplayProperties {
+interface StringDisplayProperties {
     displayValue: string;
     type: string;
     readOnly: boolean;
     onChange: (newValue: string) => void;
 }
 
-export default class StringDisplayComponent extends React.Component<IStringDisplayProperties> {
+export default class StringDisplayComponent extends React.Component<StringDisplayProperties> {
     public render() {
         return <input
             type="text"
