@@ -3,12 +3,16 @@ import ComponentInfo from "resource-management/component-info";
 import ComponentOption from "resource-management/component-option";
 
 import GridListComponent from "./grid-list-component";
+import NamedImageButtonComponent from "./named-image-button-component";
 import ComponentDisplayComponent from "./resource-display/component-display-component";
 
 interface ComponentListProperties {
+    entityControlledByPlayer: boolean;
     components: ComponentInfo[];
     onOptionUpdate: (resource: ComponentInfo, option: ComponentOption, newVal: string) => void;
     onDelete: (resource: ComponentInfo) => void;
+    onEntityControlChange: (control: boolean) => void;
+    onComponentEnableStateChanged: (componentID: string, state: boolean) => void;
     // onInfoChange: (resource: ComponentInfo, kind: string, value: string) => void;
     // onInfoSubmit: (resource: ComponentInfo, kind: string, value: string) => void;
 }
@@ -23,6 +27,9 @@ export default class ComponentListComponent extends React.Component<ComponentLis
         this.state = {selectedComponentID: undefined};
         this._setComponent = this._setComponent.bind(this);
         this._reportOptionUpdate = this._reportOptionUpdate.bind(this);
+        this._onEntityControlChange = this._onEntityControlChange.bind(this);
+        this._onToggleEnableState = this._onToggleEnableState.bind(this);
+        this._onDelete = this._onDelete.bind(this);
     }
     public render() {
         return <div className="resource-list">
@@ -34,16 +41,25 @@ export default class ComponentListComponent extends React.Component<ComponentLis
             >
             {this.props.children}
             </GridListComponent>
+            <NamedImageButtonComponent
+                id="control"
+                name={this.props.entityControlledByPlayer ? "Release" : "Control"}
+                image=""
+                onClick={() => this._onEntityControlChange(!this.props.entityControlledByPlayer)}
+            />
             {(() => {
                 if (this.state.selectedComponentID !== undefined) {
                     const component = this._getComponent(this.state.selectedComponentID);
                     if (component !== undefined) {
                         return <ComponentDisplayComponent
+                            id={component.id}
                             name={component.name}
+                            enabled={component.enabled}
                             description={component.description}
                             options={component.options}
                             onOptionUpdate={this._reportOptionUpdate}
                             onDelete={() => this._onDelete(component)}
+                            onToggleEnableState={this._onToggleEnableState}
                         />;
                     }
                 }
@@ -60,7 +76,15 @@ export default class ComponentListComponent extends React.Component<ComponentLis
     private _reportOptionUpdate(option: ComponentOption, newVal: string) {
         this.props.onOptionUpdate(this._getComponent(this.state.selectedComponentID!)!, option, newVal);
     }
-    private _onDelete = (resource: ComponentInfo) => {
+    private _onDelete(resource: ComponentInfo) {
         this.props.onDelete(resource);
+    }
+    private _onEntityControlChange(control: boolean) {
+        this.props.onEntityControlChange(control);
+    }
+    private _onToggleEnableState(toggleTo: boolean) {
+        if (this.state.selectedComponentID !== undefined) {
+            this.props.onComponentEnableStateChanged(this.state.selectedComponentID, toggleTo);
+        }
     }
 }

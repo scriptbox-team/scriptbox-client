@@ -6,17 +6,27 @@ import NumberDisplayComponent from "./property-display/number-display-component"
 import StringDisplayComponent from "./property-display/string-display-component";
 
 interface ComponentDisplayProperties {
+    id: string;
     name: string;
     description: string;
+    enabled: boolean;
     options: ComponentOption[];
     onOptionUpdate: (option: ComponentOption, newValue: string) => void;
     onDelete: () => void;
+    onToggleEnableState: (state: boolean) => void;
 }
 
 export default class ComponentDisplayComponent extends React.Component<ComponentDisplayProperties> {
     public render() {
         return <div className="component-display-component">
-            <div className="component-name">{this.props.name}</div>
+            <input
+                type="checkbox"
+                checked={this.props.enabled}
+                onChange={(event: React.ChangeEvent<HTMLElement>) => {
+                    this._onToggleEnableState((event.target as any).checked);
+                }}
+            />;
+            <div className="component-name">{this.props.name} (ID: {this.props.id})</div>
             <div className="component-description">{this.props.description}</div>
             <div className="table component-options-table">{
                 this.props.options.map((option: ComponentOption) => {
@@ -76,6 +86,9 @@ export default class ComponentDisplayComponent extends React.Component<Component
     }
     private _onChange(option: ComponentOption, newValue: string) {
         this.props.onOptionUpdate(option, newValue);
+    }
+    private _onToggleEnableState(state: boolean) {
+        this.props.onToggleEnableState(state);
     }
     private _handleDelete = () => {
         this.props.onDelete();

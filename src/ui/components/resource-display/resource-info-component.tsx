@@ -2,6 +2,7 @@ import * as React from "react";
 import TextEntryComponent from "../text-entry-component";
 
 interface ResourceInfoProperties {
+    id: string;
     name: string;
     creator: string;
     description: string;
@@ -20,7 +21,7 @@ export default class ResourceInfoComponent extends React.Component<ResourceInfoP
                 submitOnUnfocus
                 submitOnEnter
                 pretty
-            />
+            /> ID: {this.props.id}
             <div className="resource-creator">Created by {this.props.creator}</div>
             <TextEntryComponent
                 class="resource-description"

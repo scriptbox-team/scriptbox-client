@@ -27,6 +27,7 @@ export default class UIManagerPure extends UIManager {
     private _resources: Resource[];
     private _entityData: ComponentInfo[];
     private _inspectedEntity?: string;
+    private _controllingInspectedEntity: boolean;
     private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
     private _uploadID?: string;
@@ -35,6 +36,9 @@ export default class UIManagerPure extends UIManager {
         this._resources = [];
         this._entityData = [];
         this._modifiedAttributes = {};
+        this._controllingInspectedEntity = false;
+        this._reportComponentEnableStateChange = this._reportComponentEnableStateChange.bind(this);
+        this._reportControlChange = this._reportControlChange.bind(this);
     }
     public render() {
         const elems = [
@@ -143,17 +147,22 @@ export default class UIManagerPure extends UIManager {
                     },
                     React.createElement(TitledWindowComponent,
                         {
-                            title: "Entity Inspection",
+                            title: `Entity Inspection (ID: ${this._inspectedEntity})`,
                             closeable: true,
                             onClose: () => this.inspect(undefined)
                         },
                         React.createElement(
                             ComponentListComponent,
                             {
+                                entityControlledByPlayer: this._controllingInspectedEntity,
                                 components: this._entityData,
                                 onOptionUpdate: this.reportComponentOptionChange,
                                 onDelete: (component: ComponentInfo) => {
                                     this._reportComponentDeletion(component.id);
+                                },
+                                onEntityControlChange: (control: boolean) => this._reportControlChange(control),
+                                onComponentEnableStateChanged: (componentID: string, state: boolean) => {
+                                    this._reportComponentEnableStateChange(componentID, state);
                                 }
                             },
                             React.createElement(
@@ -246,14 +255,16 @@ export default class UIManagerPure extends UIManager {
         this._resources = modifiedResources;
     }
 
-    public inspect(entityID?: string) {
+    public inspect(entityID: string | undefined) {
         this._inspectedEntity = entityID;
+        this._controllingInspectedEntity = false;
     }
 
-    public setEntityData(components: ComponentInfo[], entityID: string) {
+    public setEntityData(components: ComponentInfo[], entityID: string, controlled: boolean) {
         if (entityID === this._inspectedEntity) {
             this._entityData = components;
         }
+        this._controllingInspectedEntity = controlled;
     }
 
     public openFileUploadWindow = () => {
@@ -298,6 +309,19 @@ export default class UIManagerPure extends UIManager {
     }
     private _reportComponentDeletion = (componentID: string) => {
         this.onComponentDelete!(componentID);
+    }
+
+    private _reportControlChange(controlState: boolean) {
+        if (controlState) {
+            this.onEntityControl!(this._inspectedEntity);
+        }
+        else {
+            this.onEntityControl!(undefined);
+        }
+    }
+
+    private _reportComponentEnableStateChange(componentID: string, state: boolean) {
+        this.onComponentEnableState!(componentID, state);
     }
 
     private _reportScriptRun = (resourceID: string, args: string, entityID?: string) => {

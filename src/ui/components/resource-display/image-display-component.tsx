@@ -14,6 +14,7 @@ export default class ImageDisplayComponent extends React.Component<ImageDisplayP
     public render() {
         return <div className="resource-display-component">
             <ResourceInfoComponent
+                id={this.props.resource.id}
                 name={this.props.resource.name}
                 creator={this.props.resource.creator}
                 description={this.props.resource.description}

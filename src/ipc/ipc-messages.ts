@@ -28,6 +28,8 @@ enum ipcMessages {
     RunScript = "RunScript",
     UpdateEntityInspect = "UpdateEntityInspect",
     SetInspectEntity = "SetInspectEntity",
-    DeleteComponent = "DeleteComponent"
+    DeleteComponent = "DeleteComponent",
+    SetEntityControl = "SetEntityControl",
+    SetComponentEnableState = "SetComponentEnableState"
 }
 export default ipcMessages;
