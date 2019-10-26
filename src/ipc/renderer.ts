@@ -110,6 +110,12 @@ uiManagerPure.onResourceDelete = (resourceID: string) => {
 uiManagerPure.onResourceInfoModify = (resourceID: string, property: string, value: string) => {
     ipcRenderer.send(ipcMessages.ResourceInfoModify, resourceID, property, value);
 };
+uiManagerPure.onComponentEnableState = (componentID: string, state: boolean) => {
+    ipcRenderer.send(ipcMessages.SetComponentEnableState, componentID, state);
+};
+uiManagerPure.onEntityControl = (entity?: string) => {
+    ipcRenderer.send(ipcMessages.SetEntityControl, entity);
+};
 
 ipcRenderer.on(ipcMessages.UIRender, (event: any) => {
     uiManagerPure.render();
@@ -126,6 +132,10 @@ ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => 
 ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: string | null) => {
     uiManagerPure.inspect(undefinedIfNull<string>(entityID));
 });
-ipcRenderer.on(ipcMessages.UpdateEntityInspect, (event: any, components: ComponentInfo[], entityID: string) => {
-    uiManagerPure.setEntityData(components, entityID);
+ipcRenderer.on(ipcMessages.UpdateEntityInspect, (
+        event: any,
+        components: ComponentInfo[],
+        entityID: string,
+        controlling: boolean) => {
+    uiManagerPure.setEntityData(components, entityID, controlling);
 });

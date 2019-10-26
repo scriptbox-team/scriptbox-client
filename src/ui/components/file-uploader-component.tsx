@@ -1,15 +1,15 @@
 import React from "react";
 
-interface IFileUploaderProperties {
+interface FileUploaderProperties {
     onFilesUpload: (files: FileList) => void;
 }
 
-interface IFileUploaderState {
+interface FileUploaderState {
     files: FileList | undefined;
 }
 
-export default class FileUploaderComponent extends React.Component<IFileUploaderProperties, IFileUploaderState> {
-    constructor(props: IFileUploaderProperties) {
+export default class FileUploaderComponent extends React.Component<FileUploaderProperties, FileUploaderState> {
+    constructor(props: FileUploaderProperties) {
         super(props);
         this.state = {files: undefined};
     }

@@ -1,13 +1,13 @@
 import * as React from "react";
 
-interface INumberDisplayProperties {
+interface NumberDisplayProperties {
     displayValue: string;
     type: string;
     readOnly: boolean;
     onChange: (newValue: string) => void;
 }
 
-export default class NumberDisplayComponent extends React.Component<INumberDisplayProperties> {
+export default class NumberDisplayComponent extends React.Component<NumberDisplayProperties> {
     public render() {
         return <input
             type="number"

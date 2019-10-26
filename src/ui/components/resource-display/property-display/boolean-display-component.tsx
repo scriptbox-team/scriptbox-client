@@ -1,13 +1,13 @@
 import * as React from "react";
 
-interface IBooleanDisplayProperties {
+interface BooleanDisplayProperties {
     displayValue: string;
     type: string;
     readOnly: boolean;
     onChange: (newValue: string) => void;
 }
 
-export default class BooleanDisplayComponent extends React.Component<IBooleanDisplayProperties> {
+export default class BooleanDisplayComponent extends React.Component<BooleanDisplayProperties> {
     public render() {
         return <input
             type="checkbox"

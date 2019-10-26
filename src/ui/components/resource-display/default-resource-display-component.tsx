@@ -2,7 +2,7 @@ import React from "react";
 import Resource from "resource-management/resource";
 import ResourceInfoComponent from "./resource-info-component";
 
-interface IDefaultResourceDisplayProperties {
+interface DefaultResourceDisplayProperties {
     resource: Resource;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
@@ -10,10 +10,11 @@ interface IDefaultResourceDisplayProperties {
     onInfoSubmit: (kind: string, value: string) => void;
 }
 
-export default class DefaultResourceDisplayComponent extends React.Component<IDefaultResourceDisplayProperties> {
+export default class DefaultResourceDisplayComponent extends React.Component<DefaultResourceDisplayProperties> {
     public render() {
         return <div className="resource-display-component">
             <ResourceInfoComponent
+                id={this.props.resource.id}
                 name={this.props.resource.name}
                 creator={this.props.resource.creator}
                 description={this.props.resource.description}

@@ -3,7 +3,7 @@ import Resource from "resource-management/resource";
 import GridListComponent from "./grid-list-component";
 import ResourceDisplayComponent from "./resource-display-component";
 
-interface IResourceListProperties {
+interface ResourceListProperties {
     resources: Resource[];
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
@@ -16,8 +16,8 @@ interface IResourceListProperties {
     selectedResourceID?: string;
 }
 
-export default class ResourceListComponent extends React.Component<IResourceListProperties> {
-    constructor(props: IResourceListProperties) {
+export default class ResourceListComponent extends React.Component<ResourceListProperties> {
+    constructor(props: ResourceListProperties) {
         super(props);
         this._setResource = this._setResource.bind(this);
     }

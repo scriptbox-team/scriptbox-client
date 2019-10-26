@@ -5,9 +5,9 @@ import ServerNetEvent, { ServerEventType } from "./server-net-event";
 /**
  * An interface defining data from a websocket message
  *
- * @interface IWebSocketMessage
+ * @interface WebSocketMessage
  */
-interface IWebSocketMessage {
+interface WebSocketMessage {
     data: WebSocket.Data;
     type: string;
     target: WebSocket;
@@ -16,9 +16,9 @@ interface IWebSocketMessage {
 /**
  * an interface defining data from a websocket close event
  *
- * @interface IWebSocketClose
+ * @interface WebSocketClose
  */
-interface IWebSocketClose {
+interface WebSocketClose {
     wasClean: boolean;
     code: number;
     reason: string;
@@ -35,9 +35,9 @@ const enum CloseCodes {
 }
 
 /**
- * @interface INetSendConstructionOptions
+ * @interface NetSendConstructionOptions
  */
-interface INetConnectionConstructorOptions {
+interface NetConnectionConstructorOptions {
     address: string;
 }
 
@@ -63,10 +63,10 @@ export default class NetConnection {
      * Creates the NetSend object.
      * This configures the NetSend with the settings to connect to the server
      *
-     * @param {INetConnectionConstructorOptions} options
+     * @param {NetConnectionConstructorOptions} options
      * @memberof NetSend
      */
-    constructor(options: INetConnectionConstructorOptions) {
+    constructor(options: NetConnectionConstructorOptions) {
         this.address = options.address;
         this.connected = false;
     }
@@ -82,7 +82,7 @@ export default class NetConnection {
             try {
                 this.socket = new WebSocket(this.address);
                 this.socket.onopen = () => {
-                    const defaultResponse = (event: IWebSocketMessage) => {
+                    const defaultResponse = (event: WebSocketMessage) => {
                         const dataObj = ServerNetEvent.deserialize(event.data);
                         if (dataObj !== undefined) {
                             switch (dataObj.type) {
@@ -92,13 +92,13 @@ export default class NetConnection {
                                 }
                                 case ServerEventType.ConnectionAcknowledgement: {
                                     this.connected = true;
-                                    this.socket!.onmessage = (e: IWebSocketMessage) => {
+                                    this.socket!.onmessage = (e: WebSocketMessage) => {
                                         const dObj = ServerNetEvent.deserialize(e.data);
                                         if (dObj !== undefined) {
                                             this._onMessage!(dObj);
                                         }
                                     };
-                                    this.socket!.onclose = (e: IWebSocketClose) => {
+                                    this.socket!.onclose = (e: WebSocketClose) => {
                                         const ev = new ServerNetEvent(ServerEventType.Disconnection, {code: e.code});
                                         this._onDisconnect!(ev);
                                     };
@@ -123,7 +123,7 @@ export default class NetConnection {
     public async disconnect() {
         return new Promise((resolve, reject) => {
             try {
-                const defaultResponse = (event: IWebSocketMessage) => {
+                const defaultResponse = (event: WebSocketMessage) => {
                     const dataObj = ServerNetEvent.deserialize(event.data);
                     if (dataObj !== undefined) {
                         if (dataObj.type === ServerEventType.Disconnection) {

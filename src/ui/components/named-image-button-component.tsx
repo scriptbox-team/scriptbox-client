@@ -1,18 +1,18 @@
 import React from "react";
 
-interface INamedImageButtonProperties<T> {
+interface NamedImageButtonProperties<T> {
     id: T;
     image: string;
     name: string;
     onClick: () => void;
 }
 
-export default class NamedImageButtonComponent<T> extends React.Component<INamedImageButtonProperties<T>> {
-    constructor(props: INamedImageButtonProperties<T>) {
+export default class NamedImageButtonComponent<T> extends React.Component<NamedImageButtonProperties<T>> {
+    constructor(props: NamedImageButtonProperties<T>) {
         super(props);
         this._onClick = this._onClick.bind(this);
     }
-    public shouldComponentUpdate(nextProps: INamedImageButtonProperties<T>, nextState: Readonly<{}>, nextContext: any) {
+    public shouldComponentUpdate(nextProps: NamedImageButtonProperties<T>, nextState: Readonly<{}>, nextContext: any) {
         if (nextProps.id === this.props.id
         && (nextProps.image !== this.props.image
         || nextProps.name !== this.props.name

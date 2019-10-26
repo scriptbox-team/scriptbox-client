@@ -41,6 +41,21 @@ export default class UIManagerProxy extends UIManager {
                 this.onComponentDelete(componentID);
             }
         });
+        ipcMain.on(ipcMessages.DeleteComponent, (event: any, componentID: string) => {
+            if (this.onComponentDelete !== undefined) {
+                this.onComponentDelete(componentID);
+            }
+        });
+        ipcMain.on(ipcMessages.SetComponentEnableState, (event: any, componentID: string, state: boolean) => {
+            if (this.onComponentEnableState !== undefined) {
+                this.onComponentEnableState(componentID, state);
+            }
+        });
+        ipcMain.on(ipcMessages.SetEntityControl, (event: any, componentID: string | undefined) => {
+            if (this.onEntityControl !== undefined) {
+                this.onEntityControl(componentID !== null ? componentID : undefined);
+            }
+        });
     }
     public render() {
         if (!this._webContents.isDestroyed()) {
@@ -57,14 +72,14 @@ export default class UIManagerProxy extends UIManager {
             this._webContents.send(ipcMessages.ResourceList, resources);
         }
     }
-    public inspect(entityID?: string): void {
+    public inspect(entityID: string | undefined): void {
         if (!this._webContents.isDestroyed()) {
             this._webContents.send(ipcMessages.SetInspectEntity, entityID);
         }
     }
-    public setEntityData(components: ComponentInfo[], entityID: string): void {
+    public setEntityData(components: ComponentInfo[], entityID: string, controlled: boolean): void {
         if (!this._webContents.isDestroyed()) {
-            this._webContents.send(ipcMessages.UpdateEntityInspect, components, entityID);
+            this._webContents.send(ipcMessages.UpdateEntityInspect, components, entityID, controlled);
         }
     }
 }

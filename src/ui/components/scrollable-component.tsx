@@ -1,12 +1,12 @@
 import * as React from "react";
 import ReactResizeDetector from "react-resize-detector";
 
-interface IScrollableProperties {
+interface ScrollableProperties {
     autoscroll: boolean;
     class: string;
 }
 
-interface IScrollableState {
+interface ScrollableState {
     scrollTop: number;
     innerHeight: number;
     outerHeight: number;
@@ -14,9 +14,9 @@ interface IScrollableState {
 
 const AS_LENIENCY = 4;
 
-export default class ScrollableComponent extends React.Component<IScrollableProperties, IScrollableState>{
+export default class ScrollableComponent extends React.Component<ScrollableProperties, ScrollableState>{
     private ref: React.RefObject<HTMLDivElement>;
-    constructor(props: IScrollableProperties) {
+    constructor(props: ScrollableProperties) {
         super(props);
         this.ref = React.createRef<HTMLDivElement>();
         this.state = {scrollTop: 0, innerHeight: 0, outerHeight: 0};

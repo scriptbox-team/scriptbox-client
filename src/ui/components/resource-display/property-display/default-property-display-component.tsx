@@ -1,13 +1,13 @@
 import * as React from "react";
 
-interface IDefaultPropertyDisplayProperties {
+interface DefaultPropertyDisplayProperties {
     displayValue: string;
     type: string;
     readOnly: boolean;
     onChange: (newValue: string) => void;
 }
 
-export default class DefaultPropertyDisplayComponent extends React.Component<IDefaultPropertyDisplayProperties> {
+export default class DefaultPropertyDisplayComponent extends React.Component<DefaultPropertyDisplayProperties> {
     public render() {
         return <input
             type="text"

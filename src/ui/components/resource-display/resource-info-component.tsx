@@ -1,7 +1,8 @@
 import * as React from "react";
 import TextEntryComponent from "../text-entry-component";
 
-interface IResourceInfoProperties {
+interface ResourceInfoProperties {
+    id: string;
     name: string;
     creator: string;
     description: string;
@@ -9,7 +10,7 @@ interface IResourceInfoProperties {
     onInfoSubmit: (kind: string, newValue: string) => void;
 }
 
-export default class ResourceInfoComponent extends React.Component<IResourceInfoProperties> {
+export default class ResourceInfoComponent extends React.Component<ResourceInfoProperties> {
     public render() {
         return <div className="resource-info">
             <TextEntryComponent
@@ -20,7 +21,7 @@ export default class ResourceInfoComponent extends React.Component<IResourceInfo
                 submitOnUnfocus
                 submitOnEnter
                 pretty
-            />
+            /> ID: {this.props.id}
             <div className="resource-creator">Created by {this.props.creator}</div>
             <TextEntryComponent
                 class="resource-description"

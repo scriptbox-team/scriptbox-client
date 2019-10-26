@@ -15,6 +15,8 @@ import ClientExecuteScriptPacket from "networking/packets/client-execute-script-
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
 import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
 import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
+import ClientSetComponentEnableStatePacket from "networking/packets/client-set-component-enable-state-packet";
+import ClientSetControlPacket from "networking/packets/client-set-control-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
@@ -90,7 +92,7 @@ export default class Game {
         });
         this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
                 (packet: ServerEntityInspectionListingPacket) => {
-            this._uiManager.setEntityData(packet.components, packet.entityID);
+            this._uiManager.setEntityData(packet.components, packet.entityID, packet.controlledByPlayer);
         });
         this._uiManager.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
@@ -129,6 +131,22 @@ export default class Game {
                 new ClientNetEvent(
                     ClientEventType.RemoveComponent,
                     new ClientRemoveComponentPacket(componentID)
+                )
+            );
+        };
+        this._uiManager.onComponentEnableState = (componentID: string, state: boolean) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.SetComponentEnableState,
+                    new ClientSetComponentEnableStatePacket(componentID, state)
+                )
+            );
+        };
+        this._uiManager.onEntityControl = (entityID?: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.SetControl,
+                    new ClientSetControlPacket(entityID)
                 )
             );
         };

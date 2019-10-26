@@ -2,7 +2,7 @@ import React from "react";
 import Resource from "resource-management/resource";
 import ResourceInfoComponent from "./resource-info-component";
 
-interface ISoundDisplayProperties {
+interface SoundDisplayProperties {
     resource: Resource;
     onPlay: (resource: Resource) => void;
     onStop: (resource: Resource) => void;
@@ -12,10 +12,11 @@ interface ISoundDisplayProperties {
     onInfoSubmit: (kind: string, value: string) => void;
 }
 
-export default class SoundDisplayComponent extends React.Component<ISoundDisplayProperties> {
+export default class SoundDisplayComponent extends React.Component<SoundDisplayProperties> {
     public render() {
         return <div className="resource-display-component">
             <ResourceInfoComponent
+                id={this.props.resource.id}
                 name={this.props.resource.name}
                 creator={this.props.resource.creator}
                 description={this.props.resource.description}
