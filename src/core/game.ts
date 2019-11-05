@@ -44,6 +44,7 @@ export default class Game {
     private _gameLoop: GameLoop;
     private _resourceAPIInterface: ResourceAPIInterface;
     private _resourceAPIURL: string;
+    private _loginToken?: string;
     /**
      * Creates an instance of Game.
      * This will take in different parameters depending on whether it's running through electron or browser.
@@ -56,15 +57,19 @@ export default class Game {
             uiManager: UIManager,
             fileSender: ResourceAPIInterface) {
         setDebugLogTypes([]);
+
+        this._connect = this._connect.bind(this);
+
         this._windowInput = windowInput;
         this._screenRenderer = screenRenderer;
         this._inputHandler = new InputHandler();
-        this._networkSystem = new NetworkSystem({address: "ws://localhost:7777"});
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
         this._resourceAPIURL = "http://localhost:7778";
         this._hookupInputs();
+        this._networkSystem = new NetworkSystem();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
+            this._uiManager.setUI("game");
             console.log("Connected to server.");
         });
         this._networkSystem.netEventHandler.addDisconnectionDelegate((packet: ServerDisconnectionPacket) => {
@@ -72,7 +77,7 @@ export default class Game {
         });
         this._networkSystem.netEventHandler.addChatMessageDelegate((packet: ServerChatMessagePacket) => {
             console.log("Received message: " + packet.message);
-            this._uiManager.addChatMessage(packet.message);
+            this._uiManager.gameUI.addChatMessage(packet.message);
         });
         this._networkSystem.netEventHandler.addDisplayDelegate((packet: ServerDisplayPacket) => {
             for (const renderObject of packet.displayPackage) {
@@ -88,29 +93,29 @@ export default class Game {
             }
         });
         this._networkSystem.netEventHandler.addResourceListingDelegate((packet: ServerResourceListingPacket) => {
-            this._uiManager.setResourceList(packet.resources);
+            this._uiManager.gameUI.setResourceList(packet.resources);
         });
         this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
                 (packet: ServerEntityInspectionListingPacket) => {
-            this._uiManager.setEntityData(packet.components, packet.entityID, packet.controlledByPlayer);
+            this._uiManager.gameUI.setEntityData(packet.components, packet.entityID, packet.controlledByPlayer);
         });
-        this._uiManager.onPlayerMessageEntry = (message: string) => {
+        this._uiManager.gameUI.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
             const packet = new ClientChatMessagePacket(message);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.ChatMessage, packet)
             );
         };
-        this._uiManager.onToolChange = (tool: ToolType) => {
+        this._uiManager.gameUI.onToolChange = (tool: ToolType) => {
             this._inputHandler.setTool(tool);
         };
-        this._uiManager.onResourceUpload = (files: FileList, resourceID?: string) => {
+        this._uiManager.gameUI.onResourceUpload = (files: FileList, resourceID?: string) => {
             this._resourceAPIInterface.send(files, this._resourceAPIURL, resourceID);
         };
-        this._uiManager.onResourceDelete = (resourceID: string) => {
+        this._uiManager.gameUI.onResourceDelete = (resourceID: string) => {
             this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
         };
-        this._uiManager.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
+        this._uiManager.gameUI.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
@@ -118,7 +123,7 @@ export default class Game {
                 )
             );
         };
-        this._uiManager.onResourceInfoModify = (resourceID: string, attribute: string, value: string) => {
+        this._uiManager.gameUI.onResourceInfoModify = (resourceID: string, attribute: string, value: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ModifyMetadata,
@@ -126,7 +131,7 @@ export default class Game {
                 )
             );
         };
-        this._uiManager.onComponentDelete = (componentID: string) => {
+        this._uiManager.gameUI.onComponentDelete = (componentID: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.RemoveComponent,
@@ -134,7 +139,7 @@ export default class Game {
                 )
             );
         };
-        this._uiManager.onComponentEnableState = (componentID: string, state: boolean) => {
+        this._uiManager.gameUI.onComponentEnableState = (componentID: string, state: boolean) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.SetComponentEnableState,
@@ -142,7 +147,7 @@ export default class Game {
                 )
             );
         };
-        this._uiManager.onEntityControl = (entityID?: string) => {
+        this._uiManager.gameUI.onEntityControl = (entityID?: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.SetControl,
@@ -150,6 +155,14 @@ export default class Game {
                 )
             );
         };
+        this._uiManager.loginUI.onLogin = (username: string, password: string) => {
+            // We'll just use the login token like a username for now
+            // Eventually this will retrieve the login token from the login server
+            this._loginToken = username;
+            this._uiManager.loginUI.setMenu("connect");
+        };
+        this._uiManager.loginUI.onConnect = this._connect;
+
         this._resourceAPIInterface.onTokenRequest = (tokenType: TokenType) => {
             const packet = new ClientTokenRequestPacket(tokenType);
             this._networkSystem.queue(
@@ -165,9 +178,11 @@ export default class Game {
      * @memberof Game
      */
     public start() {
-        // Connecting on startup is temporary until there are menus.
-        this._networkSystem.connect();
         this._gameLoop.start();
+    }
+
+    private _connect(address: string) {
+        this._networkSystem.connect(address, this._loginToken!);
     }
 
     /**
@@ -229,7 +244,7 @@ export default class Game {
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.EntityInspection, packet)
             );
-            this._uiManager.inspect(id);
+            this._uiManager.gameUI.inspect(id);
         };
     }
 }

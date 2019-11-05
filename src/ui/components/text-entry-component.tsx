@@ -4,11 +4,12 @@ interface TextEntryProperties {
     class: string;
     value: string;
     onChange: (newValue: string) => void;
-    onSubmit: (msg: string) => void;
+    onSubmit?: (msg: string) => void;
     submitOnUnfocus?: boolean;
     submitOnEnter?: boolean;
     multiline?: boolean;
     pretty?: boolean;
+    hide?: boolean;
 }
 
 export default class TextEntryComponent extends React.Component<TextEntryProperties> {
@@ -24,7 +25,7 @@ export default class TextEntryComponent extends React.Component<TextEntryPropert
             }
         };
         if (!this.props.multiline) {
-            return <input type="text"
+            return <input type={this.props.hide ? "password" : "text"}
                 className={`text-entry ${this.props.class} ${this.props.pretty ? "pretty-text-entry" : ""}`}
                 onKeyDown={callback}
                 onChange={(event: React.ChangeEvent<HTMLElement>) => this.props.onChange((event.target as any).value)}
@@ -51,6 +52,8 @@ export default class TextEntryComponent extends React.Component<TextEntryPropert
         }
     }
     private _submit() {
-        this.props.onSubmit(this.props.value);
+        if (this.props.onSubmit !== undefined) {
+            this.props.onSubmit(this.props.value);
+        }
     }
 }

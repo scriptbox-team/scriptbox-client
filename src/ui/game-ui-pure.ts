@@ -14,12 +14,12 @@ import ResourceListComponent from "./components/resource-list-component";
 import TitledWindowComponent from "./components/titled-window.component";
 import ToolButtonsComponent from "./components/tool-buttons-component";
 import UIElementComponent from "./components/ui-element-component";
-import UIManager from "./ui-manager";
+import GameUI from "./game-ui";
 
 // TODO: Replace arrow function properties [public blah = () => {}] with binds
 // It turns out that this makes mocking more difficult, among other things
 
-export default class UIManagerPure extends UIManager {
+export default class GameUIPure extends GameUI {
     private _messages: string[] = [];
     private _chatEntryVal: string = "";
     private _selectedTool: string = "edit";

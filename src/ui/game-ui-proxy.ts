@@ -4,9 +4,9 @@ import ipcMessages from "ipc/ipc-messages";
 import ComponentInfo from "resource-management/component-info";
 import Resource from "resource-management/resource";
 
-import UIManager from "./ui-manager";
+import GameUI from "./game-ui";
 
-export default class UIManagerProxy extends UIManager {
+export default class GameUIProxy extends GameUI {
     private _webContents: WebContents;
     constructor(webContents: WebContents) {
         super();
@@ -59,7 +59,7 @@ export default class UIManagerProxy extends UIManager {
     }
     public render() {
         if (!this._webContents.isDestroyed()) {
-            this._webContents.send(ipcMessages.UIRender);
+            this._webContents.send(ipcMessages.GameUIRender);
         }
     }
     public addChatMessage(message: string) {

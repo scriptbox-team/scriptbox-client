@@ -12,7 +12,7 @@ enum ipcMessages {
     RenderObjectUpdate = "RenderObjectUpdate",
     RenderObjectDelete = "RenderObjectDelete",
     RenderUpdate = "RenderUpdate",
-    UIRender = "UIRender",
+    GameUIRender = "GameUIRender",
     ChatMessage = "ChatMessage",
     PlayerMessageEntry = "PlayerMessageEntry",
     ToolChange = "ToolChange",
@@ -30,6 +30,12 @@ enum ipcMessages {
     SetInspectEntity = "SetInspectEntity",
     DeleteComponent = "DeleteComponent",
     SetEntityControl = "SetEntityControl",
-    SetComponentEnableState = "SetComponentEnableState"
+    SetComponentEnableState = "SetComponentEnableState",
+
+    LoginUIRender = "LoginUIRender",
+    LoginUIChangeMenu = "LoginUIChangeMenu",
+    Login = "Login",
+    Signup = "Signup",
+    Connect = "Connect"
 }
 export default ipcMessages;

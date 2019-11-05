@@ -26,11 +26,12 @@ import WindowInput from "input/window-input-pure";
 import RenderObject from "resource-management/render-object";
 import ScreenRendererPure from "rendering/screen-renderer-pure";
 import ipcMessages from "./ipc-messages";
-import UIManagerPure from "ui/ui-manager-pure";
+import GameUIPure from "ui/game-ui-pure";
 import ResourceAPIInterfacePure from "networking/resource-api-interface-pure";
 import Resource from "resource-management/resource";
 import { TokenType } from "networking/packets/server-token-packet";
 import ComponentInfo from "resource-management/component-info";
+import LoginUIPure from "ui/login-ui-pure";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
@@ -77,17 +78,17 @@ ipcRenderer.on(ipcMessages.RenderUpdate, (event: any) => {
     screenRendererPure.update();
 });
 
-const uiManagerPure = new UIManagerPure();
-uiManagerPure.onPlayerMessageEntry = (message: string) => {
+const gameUIPure = new GameUIPure();
+gameUIPure.onPlayerMessageEntry = (message: string) => {
     ipcRenderer.send(ipcMessages.PlayerMessageEntry, message);
 };
-uiManagerPure.onToolChange = (tool: ToolType) => {
+gameUIPure.onToolChange = (tool: ToolType) => {
     ipcRenderer.send(ipcMessages.ToolChange, tool);
 };
-uiManagerPure.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
+gameUIPure.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
     ipcRenderer.send(ipcMessages.RunScript, resourceID, args, entityID);
 };
-uiManagerPure.onComponentDelete = (componentID: string) => {
+gameUIPure.onComponentDelete = (componentID: string) => {
     ipcRenderer.send(ipcMessages.DeleteComponent, componentID);
 };
 
@@ -97,45 +98,62 @@ fileSenderPure.onTokenRequest = (tokenType: TokenType) => {
 };
 // Manually hook up the UI manager to the file sender so we don't have to go through the process
 // This avoids copying + reviving the file information which would be a massive pain
-uiManagerPure.onResourceUpload = (files: FileList, resourceID?: string) => {
-    uiManagerPure.beginFileUpload();
+gameUIPure.onResourceUpload = (files: FileList, resourceID?: string) => {
+    gameUIPure.beginFileUpload();
     fileSenderPure.send(files, url, resourceID)
         .then(() => {
-            uiManagerPure.endFileUpload();
+            gameUIPure.endFileUpload();
         });
 };
-uiManagerPure.onResourceDelete = (resourceID: string) => {
+gameUIPure.onResourceDelete = (resourceID: string) => {
     fileSenderPure.delete(resourceID, url);
 };
-uiManagerPure.onResourceInfoModify = (resourceID: string, property: string, value: string) => {
+gameUIPure.onResourceInfoModify = (resourceID: string, property: string, value: string) => {
     ipcRenderer.send(ipcMessages.ResourceInfoModify, resourceID, property, value);
 };
-uiManagerPure.onComponentEnableState = (componentID: string, state: boolean) => {
+gameUIPure.onComponentEnableState = (componentID: string, state: boolean) => {
     ipcRenderer.send(ipcMessages.SetComponentEnableState, componentID, state);
 };
-uiManagerPure.onEntityControl = (entity?: string) => {
+gameUIPure.onEntityControl = (entity?: string) => {
     ipcRenderer.send(ipcMessages.SetEntityControl, entity);
 };
 
-ipcRenderer.on(ipcMessages.UIRender, (event: any) => {
-    uiManagerPure.render();
+ipcRenderer.on(ipcMessages.GameUIRender, (event: any) => {
+    gameUIPure.render();
 });
 ipcRenderer.on(ipcMessages.ChatMessage, (event: any, message: string) => {
-    uiManagerPure.addChatMessage(message);
+    gameUIPure.addChatMessage(message);
 });
 ipcRenderer.on(ipcMessages.ResourceAPIToken, (event: any, token: number, tokenType: TokenType) => {
     fileSenderPure.supplyToken(token, tokenType);
 });
 ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => {
-    uiManagerPure.setResourceList(resources);
+    gameUIPure.setResourceList(resources);
 });
 ipcRenderer.on(ipcMessages.SetInspectEntity, (event: any, entityID: string | null) => {
-    uiManagerPure.inspect(undefinedIfNull<string>(entityID));
+    gameUIPure.inspect(undefinedIfNull<string>(entityID));
 });
 ipcRenderer.on(ipcMessages.UpdateEntityInspect, (
         event: any,
         components: ComponentInfo[],
         entityID: string,
         controlling: boolean) => {
-    uiManagerPure.setEntityData(components, entityID, controlling);
+    gameUIPure.setEntityData(components, entityID, controlling);
 });
+
+const loginUIPure = new LoginUIPure();
+ipcRenderer.on(ipcMessages.LoginUIRender, (event: any) => {
+    loginUIPure.render();
+});
+ipcRenderer.on(ipcMessages.LoginUIChangeMenu, (event: any, menu: string) => {
+    loginUIPure.setMenu(menu);
+});
+loginUIPure.onConnect = (server: string) => {
+    ipcRenderer.send(ipcMessages.Connect, server);
+};
+loginUIPure.onLogin = (username: string, password: string) => {
+    ipcRenderer.send(ipcMessages.Login, username, password);
+};
+loginUIPure.onSignup = (username: string, email: string, password: string) => {
+    ipcRenderer.send(ipcMessages.Signup, username, email, password);
+};

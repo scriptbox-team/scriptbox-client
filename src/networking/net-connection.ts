@@ -1,5 +1,7 @@
 import WebSocket from "isomorphic-ws";
+
 import ClientNetEvent, { ClientEventType } from "./client-net-event";
+import ClientConnectionInfoPacket from "./packets/client-connection-info-packet";
 import ServerNetEvent, { ServerEventType } from "./server-net-event";
 
 /**
@@ -67,7 +69,7 @@ export default class NetConnection {
      * @memberof NetSend
      */
     constructor(options: NetConnectionConstructorOptions) {
-        this.address = options.address;
+        this.address = `ws://${options.address}`;
         this.connected = false;
     }
 
@@ -77,7 +79,7 @@ export default class NetConnection {
      * @param {string} address The address to connect to
      * @memberof NetConnection
      */
-    public async connect() {
+    public async connect(userToken: string) {
         return new Promise((resolve, reject) => {
             try {
                 this.socket = new WebSocket(this.address);
@@ -87,7 +89,10 @@ export default class NetConnection {
                         if (dataObj !== undefined) {
                             switch (dataObj.type) {
                                 case ServerEventType.ConnectionInfoRequest: {
-                                    const ev = new ClientNetEvent(ClientEventType.ConnectionInfo, {});
+                                    const ev = new ClientNetEvent(
+                                        ClientEventType.ConnectionInfo,
+                                        new ClientConnectionInfoPacket(userToken)
+                                    );
                                     this.socket!.send(ev.serialize());
                                 }
                                 case ServerEventType.ConnectionAcknowledgement: {
