@@ -35,7 +35,6 @@ import LoginUIPure from "ui/login-ui-pure";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
-const url = "http://localhost:7778";
 
 // We need to set up the debug log types again because this is (possibly) a different context
 // Could just make all the debug stuff go to the console or something
@@ -68,8 +67,8 @@ windowInputPure.onMouseMoved = (event) => {
 
 const screenRendererPure = new ScreenRendererPure(1920, 1080);
 
-ipcRenderer.on(ipcMessages.RenderObjectUpdate, (event: any, renderObject: RenderObject) => {
-    screenRendererPure.updateRenderObject(renderObject);
+ipcRenderer.on(ipcMessages.RenderObjectUpdate, (event: any, resourceIP: string, renderObject: RenderObject) => {
+    screenRendererPure.updateRenderObject(resourceIP, renderObject);
 });
 ipcRenderer.on(ipcMessages.RenderObjectDelete, (event: any, id: string) => {
     screenRendererPure.removeRenderObject(id);
@@ -92,21 +91,25 @@ gameUIPure.onComponentDelete = (componentID: string) => {
     ipcRenderer.send(ipcMessages.DeleteComponent, componentID);
 };
 
-const fileSenderPure = new ResourceAPIInterfacePure();
-fileSenderPure.onTokenRequest = (tokenType: TokenType) => {
+ipcRenderer.on(ipcMessages.SetupResourceIP, (event: any, ip: string) => {
+    resourceAPIInterfacePure.setIP(ip);
+});
+
+const resourceAPIInterfacePure = new ResourceAPIInterfacePure();
+resourceAPIInterfacePure.onTokenRequest = (tokenType: TokenType) => {
     ipcRenderer.send(ipcMessages.ResourceAPITokenRequest, tokenType);
 };
 // Manually hook up the UI manager to the file sender so we don't have to go through the process
 // This avoids copying + reviving the file information which would be a massive pain
 gameUIPure.onResourceUpload = (files: FileList, resourceID?: string) => {
     gameUIPure.beginFileUpload();
-    fileSenderPure.send(files, url, resourceID)
+    resourceAPIInterfacePure.send(files, resourceID)
         .then(() => {
             gameUIPure.endFileUpload();
         });
 };
 gameUIPure.onResourceDelete = (resourceID: string) => {
-    fileSenderPure.delete(resourceID, url);
+    resourceAPIInterfacePure.delete(resourceID);
 };
 gameUIPure.onResourceInfoModify = (resourceID: string, property: string, value: string) => {
     ipcRenderer.send(ipcMessages.ResourceInfoModify, resourceID, property, value);
@@ -125,7 +128,7 @@ ipcRenderer.on(ipcMessages.ChatMessage, (event: any, message: string) => {
     gameUIPure.addChatMessage(message);
 });
 ipcRenderer.on(ipcMessages.ResourceAPIToken, (event: any, token: number, tokenType: TokenType) => {
-    fileSenderPure.supplyToken(token, tokenType);
+    resourceAPIInterfacePure.supplyToken(token, tokenType);
 });
 ipcRenderer.on(ipcMessages.ResourceList, (event: any, resources: Resource[]) => {
     gameUIPure.setResourceList(resources);

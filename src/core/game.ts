@@ -43,7 +43,7 @@ export default class Game {
     private _networkSystem: NetworkSystem;
     private _gameLoop: GameLoop;
     private _resourceAPIInterface: ResourceAPIInterface;
-    private _resourceAPIURL: string;
+    private _resourceAPIURL?: string;
     private _loginToken?: string;
     /**
      * Creates an instance of Game.
@@ -65,10 +65,11 @@ export default class Game {
         this._inputHandler = new InputHandler();
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
-        this._resourceAPIURL = "http://localhost:7778";
         this._hookupInputs();
         this._networkSystem = new NetworkSystem();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
+            this._resourceAPIURL = packet.resourceServerIP;
+            this._resourceAPIInterface.setIP(this._resourceAPIURL);
             this._uiManager.setUI("game");
             console.log("Connected to server.");
         });
@@ -81,9 +82,12 @@ export default class Game {
         });
         this._networkSystem.netEventHandler.addDisplayDelegate((packet: ServerDisplayPacket) => {
             for (const renderObject of packet.displayPackage) {
-                this._screenRenderer.updateRenderObject(
-                    renderObject
-                );
+                if (this._resourceAPIURL !== undefined) {
+                    this._screenRenderer.updateRenderObject(
+                        this._resourceAPIURL,
+                        renderObject
+                    );
+                }
             }
             this._inputHandler.updateClickableEntities(packet.displayPackage);
         });
@@ -110,10 +114,14 @@ export default class Game {
             this._inputHandler.setTool(tool);
         };
         this._uiManager.gameUI.onResourceUpload = (files: FileList, resourceID?: string) => {
-            this._resourceAPIInterface.send(files, this._resourceAPIURL, resourceID);
+            if (this._resourceAPIURL !== undefined) {
+                this._resourceAPIInterface.send(files, resourceID);
+            }
         };
         this._uiManager.gameUI.onResourceDelete = (resourceID: string) => {
-            this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
+            if (this._resourceAPIURL !== undefined) {
+                this._resourceAPIInterface.delete(resourceID);
+            }
         };
         this._uiManager.gameUI.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
             this._networkSystem.queue(

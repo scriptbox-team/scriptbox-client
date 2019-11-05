@@ -1,4 +1,5 @@
-import Path from "path";
+import IPConverter from "core/ip-converter";
+import path from "path";
 import * as PIXI from "pixi.js";
 
 /**
@@ -10,7 +11,6 @@ import * as PIXI from "pixi.js";
  * @class TextureFetcher
  */
 export default class TextureFetcher {
-    private _baseURL: string;
     private _freeLoaders: PIXI.Loader[];
     private _resources: Map<string, Promise<PIXI.BaseTexture>>;
 
@@ -19,8 +19,7 @@ export default class TextureFetcher {
      * @param {string} baseURL The base URL to fetch resources from
      * @memberof TextureFetcher
      */
-    constructor(baseURL: string) {
-        this._baseURL = baseURL;
+    constructor() {
         this._freeLoaders = [];
         this._resources = new Map<string, Promise<PIXI.BaseTexture>>();
     }
@@ -34,12 +33,13 @@ export default class TextureFetcher {
      * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public async get(id: string): Promise<PIXI.BaseTexture> {
-        const url = Path.join(this._baseURL, "img", id);
-        let resourcePromise = this._resources.get(url);
+    public async get(htmlIP: string, id: string): Promise<PIXI.BaseTexture> {
+        let resourcePromise = this._resources.get(id);
         // Auto load the image if it doesn't exist
         if (resourcePromise === undefined) {
-            resourcePromise = this.loadResource(url);
+            const url = IPConverter.toHTTP(htmlIP);
+            const imagePath = path.join(url, "image", id);
+            resourcePromise = this.loadResource(imagePath, id);
         }
         return await resourcePromise;
     }
@@ -52,27 +52,31 @@ export default class TextureFetcher {
      * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public async loadResource(url: string): Promise<PIXI.BaseTexture> {
+    public async loadResource(url: string, id: string): Promise<PIXI.BaseTexture> {
         let loader = this._freeLoaders.pop()!;
         // If there was no free loader, make a new one
         if (loader === undefined) {
             loader = new PIXI.Loader();
         }
         const promise = new Promise<PIXI.BaseTexture>((resolve, reject) => {
-            loader.add(url);
+            loader.add(id, url, {
+                loadType: PIXI.LoaderResource.LOAD_TYPE.IMAGE,
+                xhrType: PIXI.LoaderResource.XHR_RESPONSE_TYPE.BLOB
+            });
             loader.load((retunedloader: any, resources: any) => {
-                const error = resources[url].error;
+                const error = resources[id].error;
                 if (error) {
                     reject(error);
                     return;
                 }
-                const res = resources[url].texture.baseTexture;
+                console.log(resources);
+                const res = resources[id].texture.baseTexture;
                 loader.reset();
                 this._freeLoaders.push(loader);
                 resolve(res);
             });
         });
-        this._resources.set(url, promise);
+        this._resources.set(id, promise);
         return promise;
     }
 }

@@ -3,6 +3,11 @@ import RenderObject from "resource-management/render-object";
 import TextureFetcher from "resource-management/texture-fetcher";
 import ScreenRenderer from "./screen-renderer";
 
+interface TextureData {
+    origin: string;
+    time: number;
+    texture?: string;
+}
 /**
  * The implementation of the screen renderer.
  * This handles making calls to the pixi.js API to update the screen.
@@ -14,7 +19,7 @@ import ScreenRenderer from "./screen-renderer";
 export default class ScreenRendererPure extends ScreenRenderer {
     private _textureFetcher: TextureFetcher;
     private _sprites: Map<string, PIXI.Sprite>;
-    private _currentTextures: Map<string, {time: number, texture: string | undefined}>;
+    private _currentTextures: Map<string, TextureData>;
     private _app: PIXI.Application;
     /**
      * Creates an instance of ScreenRendererPure.
@@ -23,6 +28,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
     constructor(width: number, height: number) {
         super();
         this.resize = this.resize.bind(this);
+        this._textureFetcher = new TextureFetcher();
         this._app = new PIXI.Application({
             width,
             height,
@@ -35,9 +41,8 @@ export default class ScreenRendererPure extends ScreenRenderer {
         doc!.appendChild(this._app.view);
         window.addEventListener("resize", this.resize);
         this._sprites = new Map<string, PIXI.Sprite>();
-        this._currentTextures = new Map<string, {time: number, texture: string | undefined}>();
+        this._currentTextures = new Map<string, TextureData>();
         this._app.renderer.autoResize = true;
-        this._textureFetcher = new TextureFetcher(".");
         this.resize();
     }
     /**
@@ -46,7 +51,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
      * @param {RenderObject} renderObject The RenderObject to add
      * @memberof ScreenRendererPure
      */
-    public updateRenderObject(renderObject: RenderObject) {
+    public updateRenderObject(resourceIP: string, renderObject: RenderObject) {
         // TODO: Allow players to delete render objects
         if (renderObject.deleted) {
             const spriteToDelete = this._sprites.get(renderObject.id);
@@ -61,7 +66,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
             sprite = new PIXI.Sprite();
             this._sprites.set(renderObject.id, sprite);
             this._app.stage.addChild(sprite);
-            this._currentTextures.set(renderObject.id, {time: 0, texture: undefined});
+            this._currentTextures.set(renderObject.id, {origin: resourceIP, time: 0, texture: undefined});
         }
 
         sprite.x = renderObject.position.x;
@@ -70,8 +75,10 @@ export default class ScreenRendererPure extends ScreenRenderer {
         sprite.texture.frame = this._makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
         const time = Date.now();
         const currTexData = this._currentTextures.get(renderObject.id);
-        if (currTexData !== undefined && currTexData.texture !== renderObject.texture) {
-            this._textureFetcher.get(renderObject.texture)
+        if (currTexData !== undefined
+                && currTexData.texture !== renderObject.texture
+                && this._textureFetcher !== undefined) {
+            this._textureFetcher.get(resourceIP, renderObject.texture)
             .then((newBaseTex) => {
                 // We need to get the texture data again to check against what it is when the texture loads
                 // This is so we can make sure by the time the texture loads it's still relevant
@@ -83,6 +90,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
                     );
                     sprite.texture.frame = this._makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
                     this._currentTextures.set(renderObject.id, {
+                        origin: resourceIP,
                         time,
                         texture: renderObject.texture
                     });

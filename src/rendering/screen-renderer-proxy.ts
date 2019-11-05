@@ -9,9 +9,9 @@ export default class ScreenRendererProxy extends ScreenRenderer {
         super();
         this._webContents = webContents;
     }
-    public updateRenderObject(renderObject: RenderObject) {
+    public updateRenderObject(resourceIP: string, renderObject: RenderObject) {
         if (!this._webContents.isDestroyed()) {
-            this._webContents.send(ipcMessages.RenderObjectUpdate, renderObject);
+            this._webContents.send(ipcMessages.RenderObjectUpdate, resourceIP, renderObject);
         }
     }
     public removeRenderObject(id: string) {

@@ -72,8 +72,8 @@ export default class InputHandler {
                     this._selectedObject = ids[0];
                 }
                 log(DebugLogType.Input,
-                    `Selected ${this._selectedObject === undefined ? "nothing" : this._selectedObject.id}`);
-                this.onEdit!(this._selectedObject !== undefined ? this._selectedObject.id : undefined);
+                    `Selected ${this._selectedObject === undefined ? "nothing" : this._selectedObject.ownerID}`);
+                this.onEdit!(this._selectedObject !== undefined ? this._selectedObject.ownerID : undefined);
                 break;
             }
             case ToolType.Place: {
@@ -83,8 +83,10 @@ export default class InputHandler {
             case ToolType.Erase: {
                 const ids = this._clickDetector.clickObjects(event.x, event.y);
                 if (ids.length > 0) {
-                    log(DebugLogType.Input, `Deleting ID ${ids[0].id}`);
-                    this.onErase!(ids[0].id);
+                    log(DebugLogType.Input, `Deleting ID ${ids[0].ownerID}`);
+                    if (ids[0].ownerID !== undefined) {
+                        this.onErase!(ids[0].ownerID);
+                    }
                 }
                 break;
             }

@@ -31,6 +31,7 @@ enum ipcMessages {
     DeleteComponent = "DeleteComponent",
     SetEntityControl = "SetEntityControl",
     SetComponentEnableState = "SetComponentEnableState",
+    SetupResourceIP = "SetupResourceIP",
 
     LoginUIRender = "LoginUIRender",
     LoginUIChangeMenu = "LoginUIChangeMenu",

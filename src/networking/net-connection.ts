@@ -1,7 +1,9 @@
+import IPConverter from "core/ip-converter";
 import WebSocket from "isomorphic-ws";
 
 import ClientNetEvent, { ClientEventType } from "./client-net-event";
 import ClientConnectionInfoPacket from "./packets/client-connection-info-packet";
+import ServerConnectionPacket from "./packets/server-connection-packet";
 import ServerNetEvent, { ServerEventType } from "./server-net-event";
 
 /**
@@ -69,7 +71,7 @@ export default class NetConnection {
      * @memberof NetSend
      */
     constructor(options: NetConnectionConstructorOptions) {
-        this.address = `ws://${options.address}`;
+        this.address = IPConverter.toWS(options.address);
         this.connected = false;
     }
 
@@ -94,6 +96,7 @@ export default class NetConnection {
                                         new ClientConnectionInfoPacket(userToken)
                                     );
                                     this.socket!.send(ev.serialize());
+                                    break;
                                 }
                                 case ServerEventType.ConnectionAcknowledgement: {
                                     this.connected = true;
@@ -107,8 +110,12 @@ export default class NetConnection {
                                         const ev = new ServerNetEvent(ServerEventType.Disconnection, {code: e.code});
                                         this._onDisconnect!(ev);
                                     };
-                                    this._onConnect!(new ServerNetEvent(ServerEventType.Connection, event.data));
+                                    this._onConnect!(new ServerNetEvent(
+                                        ServerEventType.Connection,
+                                        new ServerConnectionPacket(dataObj.data.resourceServerIP))
+                                    );
                                     resolve();
+                                    break;
                                 }
                             }
                         }
