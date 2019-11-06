@@ -9,7 +9,7 @@ import NetworkSendingSubsystem from "./network-sending-subsystem";
  * @interface NetworkSystemConstructorOptions
  */
 interface NetworkSystemConstructorOptions {
-    address: string;
+    temp?: string;
 }
 
 /**
@@ -20,7 +20,7 @@ interface NetworkSystemConstructorOptions {
  */
 export default class NetworkSystem {
     private _serverAddress: string;
-    private _netConnection: NetConnection;
+    private _netConnection?: NetConnection;
     private _networkSendingSubsystem: NetworkSendingSubsystem;
     private _networkRecievingSubsystem: NetworkReceivingSubsystem;
     /**
@@ -29,19 +29,22 @@ export default class NetworkSystem {
      * @param {NetworkSystemConstructorOptions} options The constructor options.
      * @memberof NetworkSystem
      */
-    constructor(options: NetworkSystemConstructorOptions) {
-        this._serverAddress = options.address;
-        this._netConnection = new NetConnection({address: this._serverAddress});
-        this._networkRecievingSubsystem = new NetworkReceivingSubsystem(this._netConnection);
-        this._networkSendingSubsystem = new NetworkSendingSubsystem(this._netConnection);
+    constructor(options: NetworkSystemConstructorOptions = {}) {
+        this._serverAddress = "";
+        this._networkRecievingSubsystem = new NetworkReceivingSubsystem();
+        this._networkSendingSubsystem = new NetworkSendingSubsystem();
     }
     /**
      * Connect to the server.
      *
      * @memberof NetworkSystem
      */
-    public connect() {
-        this._netConnection.connect();
+    public connect(address: string, userToken: string) {
+        this._serverAddress = address;
+        this._netConnection = new NetConnection({address: this._serverAddress});
+        this._networkRecievingSubsystem.setNetConnection(this._netConnection);
+        this._networkSendingSubsystem.setNetConnection(this._netConnection);
+        this._netConnection.connect(userToken);
     }
 
     /**
@@ -81,6 +84,6 @@ export default class NetworkSystem {
      * @memberof NetworkSystem
      */
     get connected() {
-        return this._netConnection.connected;
+        return this._netConnection !== undefined && this._netConnection.connected;
     }
 }

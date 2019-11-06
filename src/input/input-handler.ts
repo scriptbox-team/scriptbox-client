@@ -1,5 +1,7 @@
-import {DebugLogType, log} from "core/debug-logger";
+import { DebugLogType, log } from "core/debug-logger";
+import Camera from "rendering/camera";
 import RenderObject from "resource-management/render-object";
+
 import ClickDetector from "./click-detector";
 import KeyInputEvent from "./key-input-event";
 import MouseInputEvent from "./mouse-input-event";
@@ -22,6 +24,11 @@ export default class InputHandler {
     private _clickDetector: ClickDetector = new ClickDetector();
     private _selectedObject: RenderObject | undefined;
     private _tool: ToolType = ToolType.Edit;
+    private _camera: Camera = new Camera();
+
+    public updateCamera(camera: Camera) {
+        this._camera = camera;
+    }
 
     public updateClickableEntities(objects: RenderObject[]) {
         this._clickDetector.updateClickableObjects(objects);
@@ -51,7 +58,7 @@ export default class InputHandler {
         log(DebugLogType.Input, `Mouse press: ${event.button} at [${event.x}, ${event.y}]`);
         switch (this._tool) {
             case ToolType.Edit: {
-                const ids = this._clickDetector.clickObjects(event.x, event.y);
+                const ids = this._clickDetector.clickObjects(this._camera, event.x, event.y);
                 log(DebugLogType.Input, ids);
                 if (ids.length <= 0) {
                     // If nothing was clicked, do nothing
@@ -72,19 +79,22 @@ export default class InputHandler {
                     this._selectedObject = ids[0];
                 }
                 log(DebugLogType.Input,
-                    `Selected ${this._selectedObject === undefined ? "nothing" : this._selectedObject.id}`);
-                this.onEdit!(this._selectedObject !== undefined ? this._selectedObject.id : undefined);
+                    `Selected ${this._selectedObject === undefined ? "nothing" : this._selectedObject.ownerID}`);
+                this.onEdit!(this._selectedObject !== undefined ? this._selectedObject.ownerID : undefined);
                 break;
             }
             case ToolType.Place: {
-                this.onPlace!("", event.x, event.y);
+                const clickPos = this._camera.invTransform(event.x, event.y);
+                this.onPlace!("", clickPos.x, clickPos.y);
                 break;
             }
             case ToolType.Erase: {
-                const ids = this._clickDetector.clickObjects(event.x, event.y);
+                const ids = this._clickDetector.clickObjects(this._camera, event.x, event.y);
                 if (ids.length > 0) {
-                    log(DebugLogType.Input, `Deleting ID ${ids[0].id}`);
-                    this.onErase!(ids[0].id);
+                    log(DebugLogType.Input, `Deleting ID ${ids[0].ownerID}`);
+                    if (ids[0].ownerID !== undefined) {
+                        this.onErase!(ids[0].ownerID);
+                    }
                 }
                 break;
             }

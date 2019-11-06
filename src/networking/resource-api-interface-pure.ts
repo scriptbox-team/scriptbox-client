@@ -1,15 +1,19 @@
+import IPConverter from "core/ip-converter";
+import isIp from "is-ip";
+
 import { TokenType } from "./packets/client-token-request-packet";
 import ResourceAPIInterface from "./resource-api-interface";
 
 export default class ResourceAPIInterfacePure extends ResourceAPIInterface {
     private _sendResolutionQueue: Array<(value?: number | PromiseLike<number> | undefined) => void>;
     private _deleteResolutionQueue: Array<(value?: number | PromiseLike<number> | undefined) => void>;
+    private _ip!: string;
     constructor() {
         super();
         this._sendResolutionQueue = new Array<(value?: number | PromiseLike<number> | undefined) => void>();
         this._deleteResolutionQueue = new Array<(value?: number | PromiseLike<number> | undefined) => void>();
     }
-    public send(fileList: FileList, url: string, resourceID?: string) {
+    public send(fileList: FileList, resourceID?: string) {
         return new Promise<number>((resolve, reject) => {
             this._sendResolutionQueue.push(resolve);
             this.onTokenRequest!(TokenType.FileUpload);
@@ -27,7 +31,7 @@ export default class ResourceAPIInterfacePure extends ResourceAPIInterface {
             }
 
             const request = new XMLHttpRequest();
-            request.open("POST", url);
+            request.open("POST", IPConverter.toHTTP(this._ip));
             request.onprogress = (ev: ProgressEvent) => {
                 // Some sort of progress thing here?
             };
@@ -44,7 +48,7 @@ export default class ResourceAPIInterfacePure extends ResourceAPIInterface {
             });
         });
     }
-    public delete(resourceID: string, url: string) {
+    public delete(resourceID: string) {
         return new Promise<number>((resolve, reject) => {
             this._deleteResolutionQueue.push(resolve);
             this.onTokenRequest!(TokenType.FileDelete);
@@ -57,7 +61,7 @@ export default class ResourceAPIInterfacePure extends ResourceAPIInterface {
             formData.append("resourceID", resourceID);
 
             const request = new XMLHttpRequest();
-            request.open("DELETE", url);
+            request.open("DELETE", IPConverter.toHTTP(this._ip));
             request.onprogress = (ev: ProgressEvent) => {
                 // Some sort of progress thing here?
             };
@@ -85,5 +89,8 @@ export default class ResourceAPIInterfacePure extends ResourceAPIInterface {
         if (resolve !== undefined) {
             resolve!(token);
         }
+    }
+    public setIP(ip: string) {
+        this._ip = ip;
     }
 }

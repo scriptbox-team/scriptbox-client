@@ -1,4 +1,5 @@
 import Packet from "./packets/packet";
+import ServerCameraUpdatePacket from "./packets/server-camera-update-packet";
 import ServerChatMessagePacket from "./packets/server-chat-message-packet";
 import ServerConnectionPacket from "./packets/server-connection-packet";
 import ServerDisconnectionPacket from "./packets/server-disconnection-packet";
@@ -24,6 +25,7 @@ export default class NetEventHandler {
     private _resourceListingDelegates: Array<(packet: ServerResourceListingPacket) => void>;
     private _entityInspectListingDelegates: Array<(packet: ServerEntityInspectionListingPacket) => void>;
     private _soundPlayDelegates: Array<(packet: ServerSoundPacket) => void>;
+    private _cameraUpdateDelegates: Array<(packet: ServerCameraUpdatePacket) => void>;
     /**
      * Creates an instance of NetEventHandler.
      * @memberof NetEventHandler
@@ -37,6 +39,7 @@ export default class NetEventHandler {
         this._resourceListingDelegates = new Array<(packet: ServerResourceListingPacket) => void>();
         this._entityInspectListingDelegates = new Array<(packet: ServerEntityInspectionListingPacket) => void>();
         this._soundPlayDelegates = new Array<(packet: ServerSoundPacket) => void>();
+        this._cameraUpdateDelegates = new Array<(packet: ServerCameraUpdatePacket) => void>();
     }
     /**
      * Add a delegate to respond to a connection packet
@@ -84,6 +87,10 @@ export default class NetEventHandler {
 
     public addSoundPlayDelegate(func: (packet: ServerSoundPacket) => void) {
         this._soundPlayDelegates.push(func);
+    }
+
+    public addCameraUpdateDelegate(func: (packet: ServerCameraUpdatePacket) => void) {
+        this._cameraUpdateDelegates.push(func);
     }
     /**
      * Handle a ServerNetEvent, deserializing it and passing it to the necessary delegates.
@@ -169,6 +176,16 @@ export default class NetEventHandler {
                     this._sendToDelegates(
                         data,
                         this._soundPlayDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.CameraInfo: {
+                const data = ServerCameraUpdatePacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this._sendToDelegates(
+                        data,
+                        this._cameraUpdateDelegates
                     );
                 }
                 break;

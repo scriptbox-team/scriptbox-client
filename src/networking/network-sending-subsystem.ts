@@ -10,20 +10,22 @@ import NetConnection from "./net-connection";
  */
 export default class NetworkSendingSubsystem {
     private _messageHandler: MessageHandler;
-    private _netConnection: NetConnection;
+    private _netConnection?: NetConnection;
     /**
      * Creates an instance of NetworkSendingSubsystem.
      * @param {NetConnection} netConnection
      * @memberof NetworkSendingSubsystem
      */
-    constructor(netConnection: NetConnection) {
-        this._netConnection = netConnection;
+    constructor() {
         this._messageHandler = new MessageHandler();
         this._messageHandler.onSend((event: ClientNetEvent) => {
-            if (this._netConnection.connected) {
+            if (this._netConnection !== undefined && this._netConnection.connected) {
                 this._netConnection.send(event);
             }
         });
+    }
+    public setNetConnection(netConnection: NetConnection) {
+        this._netConnection = netConnection;
     }
     /**
      * Queue an event to send to the server.
