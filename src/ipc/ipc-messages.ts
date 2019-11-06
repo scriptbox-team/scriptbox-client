@@ -32,6 +32,8 @@ enum ipcMessages {
     SetEntityControl = "SetEntityControl",
     SetComponentEnableState = "SetComponentEnableState",
     SetupResourceIP = "SetupResourceIP",
+    CameraUpdate = "CameraUpdate",
+    CameraChange = "RenderedObject",
 
     LoginUIRender = "LoginUIRender",
     LoginUIChangeMenu = "LoginUIChangeMenu",

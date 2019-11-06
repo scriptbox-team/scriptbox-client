@@ -69,10 +69,10 @@ export default class TextureFetcher {
                     reject(error);
                     return;
                 }
-                console.log(resources);
                 const res = resources[id].texture.baseTexture;
                 loader.reset();
                 this._freeLoaders.push(loader);
+                res.scaleMode = PIXI.SCALE_MODES.NEAREST;
                 resolve(res);
             });
         });

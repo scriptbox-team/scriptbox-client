@@ -18,6 +18,7 @@ import ClientRemoveComponentPacket from "networking/packets/client-remove-compon
 import ClientSetComponentEnableStatePacket from "networking/packets/client-set-component-enable-state-packet";
 import ClientSetControlPacket from "networking/packets/client-set-control-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
+import ServerCameraUpdatePacket from "networking/packets/server-camera-update-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
@@ -26,6 +27,7 @@ import ServerEntityInspectionListingPacket from "networking/packets/server-entit
 import ServerResourceListingPacket from "networking/packets/server-resource-listing-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
+import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import UIManager from "ui/ui-manager";
 
@@ -103,6 +105,10 @@ export default class Game {
                 (packet: ServerEntityInspectionListingPacket) => {
             this._uiManager.gameUI.setEntityData(packet.components, packet.entityID, packet.controlledByPlayer);
         });
+        this._networkSystem.netEventHandler.addCameraUpdateDelegate(
+                (packet: ServerCameraUpdatePacket) => {
+            this._screenRenderer.updateCamera(packet.x, packet.y, packet.scale, packet.scale);
+        });
         this._uiManager.gameUI.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
             const packet = new ClientChatMessagePacket(message);
@@ -170,6 +176,10 @@ export default class Game {
             this._uiManager.loginUI.setMenu("connect");
         };
         this._uiManager.loginUI.onConnect = this._connect;
+
+        this._screenRenderer.reportCameraChange = (camera: Camera) => {
+            this._inputHandler.updateCamera(camera);
+        };
 
         this._resourceAPIInterface.onTokenRequest = (tokenType: TokenType) => {
             const packet = new ClientTokenRequestPacket(tokenType);

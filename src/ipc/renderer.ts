@@ -32,6 +32,7 @@ import Resource from "resource-management/resource";
 import { TokenType } from "networking/packets/server-token-packet";
 import ComponentInfo from "resource-management/component-info";
 import LoginUIPure from "ui/login-ui-pure";
+import Camera from "rendering/camera";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
@@ -76,6 +77,12 @@ ipcRenderer.on(ipcMessages.RenderObjectDelete, (event: any, id: string) => {
 ipcRenderer.on(ipcMessages.RenderUpdate, (event: any) => {
     screenRendererPure.update();
 });
+ipcRenderer.on(ipcMessages.CameraUpdate, (event: any, x: number, y: number, xScale: number, yScale: number) => {
+    screenRendererPure.updateCamera(x, y, xScale, yScale);
+});
+screenRendererPure.reportCameraChange = (camera: Camera) => {
+    ipcRenderer.send(ipcMessages.CameraChange, camera);
+};
 
 const gameUIPure = new GameUIPure();
 gameUIPure.onPlayerMessageEntry = (message: string) => {

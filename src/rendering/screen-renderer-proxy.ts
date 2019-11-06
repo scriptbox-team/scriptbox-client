@@ -1,6 +1,8 @@
-import {WebContents} from "electron";
+import { ipcMain, WebContents } from "electron";
 import ipcMessages from "ipc/ipc-messages";
 import RenderObject from "resource-management/render-object";
+
+import Camera from "./camera";
 import ScreenRenderer from "./screen-renderer";
 
 export default class ScreenRendererProxy extends ScreenRenderer {
@@ -8,6 +10,12 @@ export default class ScreenRendererProxy extends ScreenRenderer {
     constructor(webContents: WebContents) {
         super();
         this._webContents = webContents;
+        ipcMain.on(ipcMessages.CameraChange, (event: any, cameraObject: object) => {
+            if (this.reportCameraChange !== undefined) {
+                const camera = Object.assign(new Camera(), cameraObject);
+                this.reportCameraChange(camera);
+            }
+        });
     }
     public updateRenderObject(resourceIP: string, renderObject: RenderObject) {
         if (!this._webContents.isDestroyed()) {
@@ -22,6 +30,11 @@ export default class ScreenRendererProxy extends ScreenRenderer {
     public update() {
         if (!this._webContents.isDestroyed()) {
             this._webContents.send(ipcMessages.RenderUpdate);
+        }
+    }
+    public updateCamera(x: number, y: number, xScale: number, yScale: number) {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.CameraUpdate, x, y, xScale, yScale);
         }
     }
 }
