@@ -53,6 +53,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._spriteData = new Map<string, SpriteData>();
         this._currentTextures = new Map<string, TextureData>();
         this._app.renderer.autoResize = true;
+        this._app.stage.sortableChildren = true;
         this._camera = new Camera();
         this._camera.viewWidth = this._app.renderer.width;
         this._camera.viewHeight = this._app.renderer.height;
@@ -91,6 +92,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         const localVals = this._camera.transform(spriteData.globalX, spriteData.globalY);
         spriteData.sprite.x = localVals.x;
         spriteData.sprite.y = localVals.y;
+        spriteData.sprite.zIndex = renderObject.depth;
         spriteData.sprite.scale = new PIXI.Point(this._camera.xScale, this._camera.yScale);
         spriteData.sprite.texture.frame = this._makeFrameRectangle(
             spriteData.sprite.texture,
