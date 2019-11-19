@@ -59,7 +59,7 @@
     "isomorphic-ws": "^4.0.1",
     "lodash": "^4.17.15",
     "module-alias": "^2.2.0",
-    "pixi-sound": "^3.0.3",
+    "pixi-sound": "^3.0.4",
     "pixi.js": "^5.1.0",
     "pngjs": "^3.4.0",
     "react": "^16.8.6",
