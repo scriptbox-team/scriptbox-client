@@ -18,8 +18,10 @@ import Game from "core/game";
 import { app, BrowserWindow } from "electron";
 import WindowInputProxy from "input/window-input-proxy";
 import ScreenRendererProxy from "rendering/screen-renderer-proxy";
-import UIManagerProxy from "ui/ui-manager-proxy";
+import GameUIProxy from "ui/game-ui-proxy";
 import ResourceAPIInterfaceProxy from "networking/resource-api-interface-proxy";
+import UIManager from "ui/ui-manager";
+import LoginUIProxy from "ui/login-ui-proxy";
 /* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
@@ -37,7 +39,7 @@ function createWindow() {
   game = new Game(
     new WindowInputProxy(),
     new ScreenRendererProxy(mainWindow.webContents),
-    new UIManagerProxy(mainWindow.webContents),
+    new UIManager(new LoginUIProxy(mainWindow.webContents), new GameUIProxy(mainWindow.webContents)),
     new ResourceAPIInterfaceProxy(mainWindow.webContents)
   );
 

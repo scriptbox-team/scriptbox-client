@@ -11,15 +11,18 @@ export enum ClientEventType {
     Disconnect = 3,
     ChatMessage = 4,
     Input = 5,
-    ObjectCreation = 6,
-    ObjectDeletion = 7,
+    EntityCreation = 6,
+    EntityDeletion = 7,
     TokenRequest = 8,
     ModifyMetadata = 9,
     AddComponent = 10,
     RemoveComponent = 11,
     EditComponent = 12,
     ExecuteScript = 13,
-    Keybinds = 14
+    Keybinds = 14,
+    EntityInspection = 15,
+    SetControl = 16,
+    SetComponentEnableState = 17
 }
 
 /**

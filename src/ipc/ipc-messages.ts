@@ -12,7 +12,7 @@ enum ipcMessages {
     RenderObjectUpdate = "RenderObjectUpdate",
     RenderObjectDelete = "RenderObjectDelete",
     RenderUpdate = "RenderUpdate",
-    UIRender = "UIRender",
+    GameUIRender = "GameUIRender",
     ChatMessage = "ChatMessage",
     PlayerMessageEntry = "PlayerMessageEntry",
     ToolChange = "ToolChange",
@@ -22,11 +22,26 @@ enum ipcMessages {
     ResourceList = "ResourceList",
     ResourceDelete = "ResourceDelete",
     ResourceReupload = "ResourceReupload",
+    ResourceInfoModify = "ResourceInfoModify",
     PlaySound = "PlaySound",
     StopSound = "StopSound",
     PauseSound = "PauseSound",
     ResumeSound = "ResumeSound",
     SetVolume = "SetVolume",
-    RunScript = "RunScript"
+    RunScript = "RunScript",
+    UpdateEntityInspect = "UpdateEntityInspect",
+    SetInspectEntity = "SetInspectEntity",
+    DeleteComponent = "DeleteComponent",
+    SetEntityControl = "SetEntityControl",
+    SetComponentEnableState = "SetComponentEnableState",
+    SetupResourceIP = "SetupResourceIP",
+    CameraUpdate = "CameraUpdate",
+    CameraChange = "RenderedObject",
+
+    LoginUIRender = "LoginUIRender",
+    LoginUIChangeMenu = "LoginUIChangeMenu",
+    Login = "Login",
+    Signup = "Signup",
+    Connect = "Connect"
 }
 export default ipcMessages;

@@ -1,7 +1,21 @@
 import * as PIXI from "pixi.js";
 import RenderObject from "resource-management/render-object";
 import ResourceFetcher from "resource-management/resource-fetcher";
+
+import Camera from "./camera";
 import ScreenRenderer from "./screen-renderer";
+
+interface TextureData {
+    origin: string;
+    time: number;
+    texture?: string;
+}
+
+interface SpriteData {
+    globalX: number;
+    globalY: number;
+    sprite: PIXI.Sprite;
+}
 
 /**
  * The implementation of the screen renderer.
@@ -13,9 +27,10 @@ import ScreenRenderer from "./screen-renderer";
  */
 export default class ScreenRendererPure extends ScreenRenderer {
     private _textureFetcher: ResourceFetcher<PIXI.BaseTexture>;
-    private _sprites: Map<number, PIXI.Sprite>;
-    private _currentTextures: Map<number, {time: number, texture: string | undefined}>;
+    private _spriteData: Map<string, SpriteData>;
+    private _currentTextures: Map<string, TextureData>;
     private _app: PIXI.Application;
+    private _camera: Camera;
     /**
      * Creates an instance of ScreenRendererPure.
      * @memberof ScreenRendererPure
@@ -31,12 +46,17 @@ export default class ScreenRendererPure extends ScreenRenderer {
             resolution: 1
         });
         const doc = document.getElementById("screen");
+        doc!.onselectstart = () => false;
         doc!.appendChild(this._app.view);
         window.addEventListener("resize", this.resize);
-        this._sprites = new Map<number, PIXI.Sprite>();
-        this._currentTextures = new Map<number, {time: number, texture: string | undefined}>();
+        this._spriteData = new Map<string, SpriteData>();
+        this._currentTextures = new Map<string, TextureData>();
         this._app.renderer.autoResize = true;
-        this._textureFetcher = new ResourceFetcher(".");
+        this._textureFetcher = new ResourceFetcher();
+        this._app.stage.sortableChildren = true;
+        this._camera = new Camera();
+        this._camera.viewWidth = this._app.renderer.width;
+        this._camera.viewHeight = this._app.renderer.height;
         this.resize();
     }
     /**
@@ -45,43 +65,58 @@ export default class ScreenRendererPure extends ScreenRenderer {
      * @param {RenderObject} renderObject The RenderObject to add
      * @memberof ScreenRendererPure
      */
-    public updateRenderObject(renderObject: RenderObject) {
+    public updateRenderObject(resourceIP: string, renderObject: RenderObject) {
         // TODO: Allow players to delete render objects
         if (renderObject.deleted) {
-            const spriteToDelete = this._sprites.get(renderObject.id);
+            const spriteToDelete = this._spriteData.get(renderObject.id);
             if (spriteToDelete !== undefined) {
-                spriteToDelete.destroy();
+                spriteToDelete.sprite.destroy();
             }
-            this._sprites.delete(renderObject.id);
+            this._spriteData.delete(renderObject.id);
             return;
         }
-        let sprite = this._sprites.get(renderObject.id);
-        if (sprite === undefined) {
-            sprite = new PIXI.Sprite();
-            this._sprites.set(renderObject.id, sprite);
-            this._app.stage.addChild(sprite);
-            this._currentTextures.set(renderObject.id, {time: 0, texture: undefined});
+        let spriteData = this._spriteData.get(renderObject.id);
+        if (spriteData === undefined) {
+            spriteData = {
+                globalX: 0,
+                globalY: 0,
+                sprite: new PIXI.Sprite()
+            };
+            this._spriteData.set(renderObject.id, spriteData);
+            this._app.stage.addChild(spriteData.sprite);
+            this._currentTextures.set(renderObject.id, {origin: resourceIP, time: 0, texture: undefined});
         }
 
-        sprite.x = renderObject.position.x;
-        sprite.y = renderObject.position.y;
-        sprite.zIndex = renderObject.depth;
-        sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+        spriteData.globalX = Math.round(renderObject.position.x);
+        spriteData.globalY = Math.round(renderObject.position.y);
+        const localVals = this._camera.transform(spriteData.globalX, spriteData.globalY);
+        spriteData.sprite.x = localVals.x;
+        spriteData.sprite.y = localVals.y;
+        spriteData.sprite.zIndex = renderObject.depth;
+        spriteData.sprite.scale = new PIXI.Point(this._camera.xScale, this._camera.yScale);
+        spriteData.sprite.texture.frame = this._makeFrameRectangle(
+            spriteData.sprite.texture,
+            renderObject.textureSubregion
+        );
         const time = Date.now();
         const currTexData = this._currentTextures.get(renderObject.id);
-        if (currTexData !== undefined && currTexData.texture !== renderObject.texture) {
-            this._textureFetcher.get(renderObject.texture)
+        if (currTexData !== undefined
+                && currTexData.texture !== renderObject.texture
+                && this._textureFetcher !== undefined) {
+            this._textureFetcher.get(resourceIP, renderObject.texture)
             .then((newBaseTex) => {
                 // We need to get the texture data again to check against what it is when the texture loads
                 // This is so we can make sure by the time the texture loads it's still relevant
                 const nextTexData = this._currentTextures.get(renderObject.id);
-                if (sprite !== undefined && time > nextTexData!.time) {
-                    sprite.texture.destroy();
-                    sprite.texture = new PIXI.Texture(
+                if (spriteData !== undefined && time > nextTexData!.time) {
+                    spriteData.sprite.texture.destroy();
+                    spriteData.sprite.texture = new PIXI.Texture(
                         newBaseTex
                     );
-                    sprite.texture.frame = this.makeFrameRectangle(sprite.texture, renderObject.textureSubregion);
+                    spriteData.sprite.texture.frame
+                        = this._makeFrameRectangle(spriteData.sprite.texture, renderObject.textureSubregion);
                     this._currentTextures.set(renderObject.id, {
+                        origin: resourceIP,
                         time,
                         texture: renderObject.texture
                     });
@@ -96,12 +131,12 @@ export default class ScreenRendererPure extends ScreenRenderer {
      * @param {number} id The ID of the render object to remove
      * @memberof ScreenRendererPure
      */
-    public removeRenderObject(id: number) {
-        const sprite = this._sprites.get(id);
-        if (sprite !== undefined) {
-            sprite.destroy();
+    public removeRenderObject(id: string) {
+        const spriteData = this._spriteData.get(id);
+        if (spriteData !== undefined) {
+            spriteData.sprite.destroy();
         }
-        this._sprites.delete(id);
+        this._spriteData.delete(id);
     }
 
     /**
@@ -114,21 +149,42 @@ export default class ScreenRendererPure extends ScreenRenderer {
         // Eventually will handle interpolation
     }
 
-    public resize() {
-        this._app.renderer.resize(window.innerWidth, window.innerHeight);
+    public updateCamera(x: number, y: number, xScale: number, yScale: number) {
+        this._camera.x = Math.round(x);
+        this._camera.y = Math.round(y);
+        this._camera.xScale = xScale;
+        this._camera.yScale = yScale;
+        for (const [spriteID, spriteData] of this._spriteData) {
+            const localVals = this._camera.transform(spriteData.globalX, spriteData.globalY);
+            spriteData.sprite.x = localVals.x;
+            spriteData.sprite.y = localVals.y;
+            spriteData.sprite.scale = new PIXI.Point(this._camera.xScale, this._camera.yScale);
+        }
+        if (this.reportCameraChange !== undefined) {
+            this.reportCameraChange(this._camera);
+        }
     }
 
-    private makeFrameRectangle(
+    public resize() {
+        this._app.renderer.resize(window.innerWidth, window.innerHeight);
+        this._camera.viewWidth = this._app.renderer.width;
+        this._camera.viewHeight = this._app.renderer.height;
+        if (this.reportCameraChange !== undefined) {
+            this.reportCameraChange(this._camera);
+        }
+    }
+
+    private _makeFrameRectangle(
             tex: PIXI.Texture,
             rect: {x: number, y: number, width: number, height: number}): PIXI.Rectangle {
-        const x = this.clamp(rect.x, 0, tex.baseTexture.width);
-        const y = this.clamp(rect.y, 0, tex.baseTexture.height);
-        const width = this.clamp(rect.width, 0, tex.baseTexture.width - x);
-        const height = this.clamp(rect.height, 0, tex.baseTexture.height - y);
+        const x = this._clamp(rect.x, 0, tex.baseTexture.width);
+        const y = this._clamp(rect.y, 0, tex.baseTexture.height);
+        const width = this._clamp(rect.width, 0, tex.baseTexture.width - x);
+        const height = this._clamp(rect.height, 0, tex.baseTexture.height - y);
         return new PIXI.Rectangle(x, y, width, height);
     }
 
-    private clamp(val: number, min: number, max: number) {
+    private _clamp(val: number, min: number, max: number) {
         return Math.min(max, Math.max(val, min));
     }
 }

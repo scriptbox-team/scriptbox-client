@@ -1,4 +1,5 @@
 import Packet from "./packets/packet";
+import ServerCameraUpdatePacket from "./packets/server-camera-update-packet";
 import ServerChatMessagePacket from "./packets/server-chat-message-packet";
 import ServerConnectionPacket from "./packets/server-connection-packet";
 import ServerDisconnectionPacket from "./packets/server-disconnection-packet";
@@ -24,6 +25,7 @@ export default class NetEventHandler {
     private _resourceListingDelegates: Array<(packet: ServerResourceListingPacket) => void>;
     private _entityInspectListingDelegates: Array<(packet: ServerEntityInspectionListingPacket) => void>;
     private _soundPlayDelegates: Array<(packet: ServerSoundPacket) => void>;
+    private _cameraUpdateDelegates: Array<(packet: ServerCameraUpdatePacket) => void>;
     /**
      * Creates an instance of NetEventHandler.
      * @memberof NetEventHandler
@@ -37,6 +39,7 @@ export default class NetEventHandler {
         this._resourceListingDelegates = new Array<(packet: ServerResourceListingPacket) => void>();
         this._entityInspectListingDelegates = new Array<(packet: ServerEntityInspectionListingPacket) => void>();
         this._soundPlayDelegates = new Array<(packet: ServerSoundPacket) => void>();
+        this._cameraUpdateDelegates = new Array<(packet: ServerCameraUpdatePacket) => void>();
     }
     /**
      * Add a delegate to respond to a connection packet
@@ -85,6 +88,10 @@ export default class NetEventHandler {
     public addSoundPlayDelegate(func: (packet: ServerSoundPacket) => void) {
         this._soundPlayDelegates.push(func);
     }
+
+    public addCameraUpdateDelegate(func: (packet: ServerCameraUpdatePacket) => void) {
+        this._cameraUpdateDelegates.push(func);
+    }
     /**
      * Handle a ServerNetEvent, deserializing it and passing it to the necessary delegates.
      *
@@ -96,7 +103,7 @@ export default class NetEventHandler {
             case ServerEventType.Connection: {
                 const data = ServerConnectionPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._connectionDelegates
                     );
@@ -106,7 +113,7 @@ export default class NetEventHandler {
             case ServerEventType.Disconnection: {
                 const data = ServerDisconnectionPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._disconnectionDelgates
                     );
@@ -116,7 +123,7 @@ export default class NetEventHandler {
             case ServerEventType.ChatMessage: {
                 const data = ServerChatMessagePacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._messageDelegates
                     );
@@ -126,7 +133,7 @@ export default class NetEventHandler {
             case ServerEventType.DisplayPackage: {
                 const data = ServerDisplayPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._displayDelegates
                     );
@@ -136,7 +143,7 @@ export default class NetEventHandler {
             case ServerEventType.Token: {
                 const data = ServerTokenPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._tokenDelegates
                     );
@@ -146,7 +153,7 @@ export default class NetEventHandler {
             case ServerEventType.ResourceListing: {
                 const data = ServerResourceListingPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._resourceListingDelegates
                     );
@@ -156,7 +163,7 @@ export default class NetEventHandler {
             case ServerEventType.EntityInspectListing: {
                 const data = ServerEntityInspectionListingPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._entityInspectListingDelegates
                     );
@@ -166,9 +173,19 @@ export default class NetEventHandler {
             case ServerEventType.SoundPlay: {
                 const data = ServerSoundPacket.deserialize(event.data);
                 if (data !== undefined) {
-                    this.sendToDelegates(
+                    this._sendToDelegates(
                         data,
                         this._soundPlayDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.CameraInfo: {
+                const data = ServerCameraUpdatePacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this._sendToDelegates(
+                        data,
+                        this._cameraUpdateDelegates
                     );
                 }
                 break;
@@ -184,7 +201,7 @@ export default class NetEventHandler {
      * @param {Array<(packet: T) => void>} delegates
      * @memberof NetEventHandler
      */
-    private sendToDelegates<T extends Packet>(
+    private _sendToDelegates<T extends Packet>(
         packet: T | undefined,
         delegates: Array<(packet: T) => void>,
     ) {

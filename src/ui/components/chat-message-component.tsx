@@ -1,11 +1,11 @@
 import * as React from "react";
 
-interface IChatMessageProperties {
+interface ChatMessageProperties {
     message: string;
 }
 
-export default class ChatMessageComponent extends React.Component<IChatMessageProperties>{
-    public shouldComponentUpdate(nextProps: IChatMessageProperties, nextState: Readonly<{}>, nextContext: any) {
+export default class ChatMessageComponent extends React.Component<ChatMessageProperties>{
+    public shouldComponentUpdate(nextProps: ChatMessageProperties, nextState: Readonly<{}>, nextContext: any) {
         if (nextProps.message !== this.props.message) {
             return true;
         }

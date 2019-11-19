@@ -14,11 +14,12 @@ export default class ServerResourceListingPacket extends Packet {
                         elem.id,
                         elem.type,
                         elem.name,
+                        elem.filename,
                         elem.creator,
+                        elem.owner,
                         elem.description,
                         elem.time,
-                        elem.icon,
-                        elem.options
+                        elem.icon
                     );
                     if (res !== undefined) {
                         resourceArray.push(res);

@@ -10,11 +10,12 @@ import ServerNetEvent, { ServerEventType } from "./server-net-event";
  */
 export default class NetworkReceivingSubsystem {
     public netEventHandler: NetEventHandler;
-    private _netConnection: NetConnection;
-    constructor(netConnection: NetConnection) {
-        this._netConnection = netConnection;
+    private _netConnection?: NetConnection;
+    constructor() {
         this.netEventHandler = new NetEventHandler();
-
+    }
+    public setNetConnection(netConnection: NetConnection) {
+        this._netConnection = netConnection;
         this._netConnection.onConnect((e: ServerNetEvent) => {
             this.netEventHandler.handle(e);
         });

@@ -9,9 +9,9 @@ export class AudioPlayerProxy extends AudioPlayer {
         super();
         this._webContents = webContents;
     }
-    public play(sound: AudioObject) {
+    public play(resourceIP: string, sound: AudioObject) {
         if (!this._webContents.isDestroyed()) {
-            this._webContents.send(ipcMessages.PlaySound, sound);
+            this._webContents.send(ipcMessages.PlaySound, resourceIP, sound);
         }
     }
     public stop(soundID?: string) {

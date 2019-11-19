@@ -1,4 +1,4 @@
-import {DebugLogType, log, setDebugLogTypes} from "core/debug-logger";
+import { DebugLogType, log, setDebugLogTypes } from "core/debug-logger";
 import GameLoop from "core/game-loop";
 import InputHandler from "input/input-handler";
 import KeyInputEvent from "input/key-input-event";
@@ -8,18 +8,26 @@ import WindowInput from "input/window-input";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
 import NetworkSystem from "networking/network-system";
 import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
+import ClientEntityCreationPacket from "networking/packets/client-entity-creation-packet";
+import ClientEntityDeletionPacket from "networking/packets/client-entity-deletion-packet";
+import ClientEntityInspectionPacket from "networking/packets/client-entity-inspection-packet";
 import ClientExecuteScriptPacket from "networking/packets/client-execute-script-packet";
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
-import ClientObjectCreationPacket from "networking/packets/client-object-creation-packet";
-import ClientObjectDeletionPacket from "networking/packets/client-object-deletion-packet";
+import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
+import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
+import ClientSetComponentEnableStatePacket from "networking/packets/client-set-component-enable-state-packet";
+import ClientSetControlPacket from "networking/packets/client-set-control-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
+import ServerCameraUpdatePacket from "networking/packets/server-camera-update-packet";
 import ServerChatMessagePacket from "networking/packets/server-chat-message-packet";
 import ServerConnectionPacket from "networking/packets/server-connection-packet";
 import ServerDisconnectionPacket from "networking/packets/server-disconnection-packet";
 import ServerDisplayPacket from "networking/packets/server-display-packet";
+import ServerEntityInspectionListingPacket from "networking/packets/server-entity-inspection-listing-packet";
 import ServerResourceListingPacket from "networking/packets/server-resource-listing-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
+import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import UIManager from "ui/ui-manager";
 
@@ -37,7 +45,8 @@ export default class Game {
     private _networkSystem: NetworkSystem;
     private _gameLoop: GameLoop;
     private _resourceAPIInterface: ResourceAPIInterface;
-    private _resourceAPIURL: string;
+    private _resourceAPIURL?: string;
+    private _loginToken?: string;
     /**
      * Creates an instance of Game.
      * This will take in different parameters depending on whether it's running through electron or browser.
@@ -50,15 +59,20 @@ export default class Game {
             uiManager: UIManager,
             fileSender: ResourceAPIInterface) {
         setDebugLogTypes([]);
+
+        this._connect = this._connect.bind(this);
+
         this._windowInput = windowInput;
         this._screenRenderer = screenRenderer;
         this._inputHandler = new InputHandler();
-        this._networkSystem = new NetworkSystem({address: "ws://localhost:7777"});
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
-        this._resourceAPIURL = "http://localhost:7778";
-        this.hookupInputs();
+        this._hookupInputs();
+        this._networkSystem = new NetworkSystem();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
+            this._resourceAPIURL = packet.resourceServerIP;
+            this._resourceAPIInterface.setIP(this._resourceAPIURL);
+            this._uiManager.setUI("game");
             console.log("Connected to server.");
         });
         this._networkSystem.netEventHandler.addDisconnectionDelegate((packet: ServerDisconnectionPacket) => {
@@ -66,15 +80,18 @@ export default class Game {
         });
         this._networkSystem.netEventHandler.addChatMessageDelegate((packet: ServerChatMessagePacket) => {
             console.log("Received message: " + packet.message);
-            this._uiManager.addChatMessage(packet.message);
+            this._uiManager.gameUI.addChatMessage(packet.message);
         });
         this._networkSystem.netEventHandler.addDisplayDelegate((packet: ServerDisplayPacket) => {
             for (const renderObject of packet.displayPackage) {
-                this._screenRenderer.updateRenderObject(
-                    renderObject
-                );
+                if (this._resourceAPIURL !== undefined) {
+                    this._screenRenderer.updateRenderObject(
+                        this._resourceAPIURL,
+                        renderObject
+                    );
+                }
             }
-            this._inputHandler.updateClickableObjects(packet.displayPackage);
+            this._inputHandler.updateClickableEntities(packet.displayPackage);
         });
         this._networkSystem.netEventHandler.addTokenDelegate((packet: ServerTokenPacket) => {
             if (packet.tokenType === TokenType.FileUpload || packet.tokenType === TokenType.FileDelete) {
@@ -82,39 +99,95 @@ export default class Game {
             }
         });
         this._networkSystem.netEventHandler.addResourceListingDelegate((packet: ServerResourceListingPacket) => {
-            this._uiManager.setResourceList(packet.resources);
+            this._uiManager.gameUI.setResourceList(packet.resources);
         });
-        this._uiManager.onPlayerMessageEntry = (message: string) => {
+        this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
+                (packet: ServerEntityInspectionListingPacket) => {
+            this._uiManager.gameUI.setEntityData(packet.components, packet.entityID, packet.controlledByPlayer);
+        });
+        this._networkSystem.netEventHandler.addCameraUpdateDelegate(
+                (packet: ServerCameraUpdatePacket) => {
+            this._screenRenderer.updateCamera(packet.x, packet.y, packet.scale, packet.scale);
+        });
+        this._uiManager.gameUI.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
             const packet = new ClientChatMessagePacket(message);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.ChatMessage, packet)
             );
         };
-        this._uiManager.onToolChange = (tool: ToolType) => {
+        this._uiManager.gameUI.onToolChange = (tool: ToolType) => {
             this._inputHandler.setTool(tool);
         };
-        this._uiManager.onResourceUpload = (files: FileList, resourceID?: string) => {
-            this._resourceAPIInterface.send(files, this._resourceAPIURL, resourceID);
+        this._uiManager.gameUI.onResourceUpload = (files: FileList, resourceID?: string) => {
+            if (this._resourceAPIURL !== undefined) {
+                this._resourceAPIInterface.send(files, resourceID);
+            }
         };
-        this._uiManager.onResourceDelete = (resourceID: string) => {
-            this._resourceAPIInterface.delete(resourceID, this._resourceAPIURL);
+        this._uiManager.gameUI.onResourceDelete = (resourceID: string) => {
+            if (this._resourceAPIURL !== undefined) {
+                this._resourceAPIInterface.delete(resourceID);
+            }
         };
-        this._uiManager.onScriptRun = (resourceID: string, args: string) => {
+        this._uiManager.gameUI.onScriptRun = (resourceID: string, args: string, entityID?: string) => {
             this._networkSystem.queue(
                 new ClientNetEvent(
                     ClientEventType.ExecuteScript,
-                    new ClientExecuteScriptPacket(resourceID, args)
+                    new ClientExecuteScriptPacket(resourceID, args, entityID)
                 )
             );
         };
+        this._uiManager.gameUI.onResourceInfoModify = (resourceID: string, attribute: string, value: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.ModifyMetadata,
+                    new ClientModifyMetadataPacket(resourceID, attribute, value)
+                )
+            );
+        };
+        this._uiManager.gameUI.onComponentDelete = (componentID: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.RemoveComponent,
+                    new ClientRemoveComponentPacket(componentID)
+                )
+            );
+        };
+        this._uiManager.gameUI.onComponentEnableState = (componentID: string, state: boolean) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.SetComponentEnableState,
+                    new ClientSetComponentEnableStatePacket(componentID, state)
+                )
+            );
+        };
+        this._uiManager.gameUI.onEntityControl = (entityID?: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.SetControl,
+                    new ClientSetControlPacket(entityID)
+                )
+            );
+        };
+        this._uiManager.loginUI.onLogin = (username: string, password: string) => {
+            // We'll just use the login token like a username for now
+            // Eventually this will retrieve the login token from the login server
+            this._loginToken = username;
+            this._uiManager.loginUI.setMenu("connect");
+        };
+        this._uiManager.loginUI.onConnect = this._connect;
+
+        this._screenRenderer.reportCameraChange = (camera: Camera) => {
+            this._inputHandler.updateCamera(camera);
+        };
+
         this._resourceAPIInterface.onTokenRequest = (tokenType: TokenType) => {
             const packet = new ClientTokenRequestPacket(tokenType);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.TokenRequest, packet)
             );
         };
-        this._gameLoop = new GameLoop(this.tick.bind(this), 60);
+        this._gameLoop = new GameLoop(this._tick.bind(this), 60);
     }
 
     /**
@@ -123,9 +196,11 @@ export default class Game {
      * @memberof Game
      */
     public start() {
-        // Connecting on startup is temporary until there are menus.
-        this._networkSystem.connect();
         this._gameLoop.start();
+    }
+
+    private _connect(address: string) {
+        this._networkSystem.connect(address, this._loginToken!);
     }
 
     /**
@@ -134,7 +209,7 @@ export default class Game {
      * @private
      * @memberof Game
      */
-    private tick() {
+    private _tick() {
         this._screenRenderer.update();
         this._uiManager.render();
         if (this._networkSystem.connected) {
@@ -142,7 +217,7 @@ export default class Game {
         }
     }
 
-    private hookupInputs() {
+    private _hookupInputs() {
         this._windowInput.onKeyPressed = (event: KeyInputEvent) => {
             this._inputHandler.handleKeyPress(event);
         };
@@ -171,16 +246,23 @@ export default class Game {
             );
         };
         this._inputHandler.onPlace = (prefabID: string, x: number, y: number) => {
-            const packet = new ClientObjectCreationPacket(prefabID, x, y);
+            const packet = new ClientEntityCreationPacket(prefabID, x, y);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.ObjectCreation, packet)
+                new ClientNetEvent(ClientEventType.EntityCreation, packet)
             );
         };
-        this._inputHandler.onErase = (id: number) => {
-            const packet = new ClientObjectDeletionPacket(id);
+        this._inputHandler.onErase = (id: string) => {
+            const packet = new ClientEntityDeletionPacket(id);
             this._networkSystem.queue(
-                new ClientNetEvent(ClientEventType.ObjectDeletion, packet)
+                new ClientNetEvent(ClientEventType.EntityDeletion, packet)
             );
+        };
+        this._inputHandler.onEdit = (id: string | undefined) => {
+            const packet = new ClientEntityInspectionPacket(id);
+            this._networkSystem.queue(
+                new ClientNetEvent(ClientEventType.EntityInspection, packet)
+            );
+            this._uiManager.gameUI.inspect(id);
         };
     }
 }

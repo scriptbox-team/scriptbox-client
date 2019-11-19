@@ -1,23 +1,23 @@
 import React from "react";
 import Resource, { ResourceType } from "resource-management/resource";
-import ResourceOption from "resource-management/resource-option";
-import DefaultDisplayComponent from "./resource-display/default-display-component";
+import DefaultResourceDisplayComponent from "./resource-display/default-resource-display-component";
 import ImageDisplayComponent from "./resource-display/image-display-component";
 import ScriptDisplayComponent from "./resource-display/script-display-component";
 import SoundDisplayComponent from "./resource-display/sound-display-component";
 
-interface IResourceDisplayProperties {
+interface ResourceDisplayProperties {
     resource: Resource;
-    onOptionUpdate: (option: ResourceOption, newValue: string) => void;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
     onSoundPlay: (resource: Resource) => void;
     onSoundStop: (resource: Resource) => void;
     onScriptRun: (resource: Resource, args: string) => void;
+    onInfoChange: (resource: Resource, kind: string, value: string) => void;
+    onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
 }
 
-export default class ResourceDisplayComponent extends React.Component<IResourceDisplayProperties> {
-    constructor(props: IResourceDisplayProperties) {
+export default class ResourceDisplayComponent extends React.Component<ResourceDisplayProperties> {
+    constructor(props: ResourceDisplayProperties) {
         super(props);
     }
     public render() {
@@ -27,61 +27,73 @@ export default class ResourceDisplayComponent extends React.Component<IResourceD
                     case ResourceType.Image: {
                         return <ImageDisplayComponent
                             resource={this.props.resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                     case ResourceType.Sound: {
                         return <SoundDisplayComponent
                             resource={this.props.resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
-                            onPlay={this.onSoundPlay}
-                            onStop={this.onSoundStop}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onPlay={this._onSoundPlay}
+                            onStop={this._onSoundStop}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                     case ResourceType.Script: {
 
                         return <ScriptDisplayComponent
                             resource={this.props.resource}
-                            onEdit={this.onReupload}
-                            onDelete={this.onDelete}
-                            onRun={this.onScriptRun}
+                            onEdit={this._onReupload}
+                            onDelete={this._onDelete}
+                            onRun={this._onScriptRun}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                     default: {
 
-                        return <DefaultDisplayComponent
+                        return <DefaultResourceDisplayComponent
                             resource={this.props.resource}
-                            onReupload={this.onReupload}
-                            onDelete={this.onDelete}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onInfoChange={this._onInfoChange}
+                            onInfoSubmit={this._onInfoSubmit}
                         />;
                     }
                 }
             })()
         }</div>;
     }
-    private onChange = (option: ResourceOption, newValue: string) => {
-        this.props.onOptionUpdate(option, newValue);
-    }
-
-    private onReupload = (resource: Resource) => {
+    private _onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
     }
 
-    private onSoundPlay = (resource: Resource) => {
+    private _onSoundPlay = (resource: Resource) => {
         this.props.onSoundPlay(resource);
     }
 
-    private onSoundStop = (resource: Resource) => {
+    private _onSoundStop = (resource: Resource) => {
         this.props.onSoundStop(resource);
     }
 
-    private onScriptRun = (resource: Resource, args: string) => {
+    private _onScriptRun = (resource: Resource, args: string) => {
         this.props.onScriptRun(resource, args);
     }
 
-    private onDelete = (resource: Resource) => {
+    private _onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
+    }
+
+    private _onInfoChange = (type: string, value: string) => {
+        this.props.onInfoChange(this.props.resource, type, value);
+    }
+
+    private _onInfoSubmit = (type: string, value: string) => {
+        this.props.onInfoChange(this.props.resource, type, value);
     }
 }

@@ -9,11 +9,11 @@ export class AudioPlayerPure extends AudioPlayer {
     private _activeSounds: {[id: string]: PIXI.sound.IMediaInstance};
     constructor() {
         super();
-        this._soundFetcher = new ResourceFetcher<PIXI.sound.Sound>(".");
+        this._soundFetcher = new ResourceFetcher<PIXI.sound.Sound>();
         this._activeSounds = {};
     }
-    public async play(sound: AudioObject) {
-        const soundResource = await this._soundFetcher.get(sound.resource);
+    public async play(resourceIP: string, sound: AudioObject) {
+        const soundResource = await this._soundFetcher.get(resourceIP, sound.resource);
         soundResource.volume = sound.volume;
         soundResource.loop = sound.loop;
         if (this._activeSounds[sound.id] !== undefined) {

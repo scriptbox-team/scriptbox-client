@@ -1,13 +1,29 @@
-import { ToolType } from "input/tool-type";
-import Resource from "resource-management/resource";
+import GameUI from "./game-ui";
+import LoginUI from "./login-ui";
+import UIScreen from "./ui-screen";
 
-export default abstract class UIManager {
-    public onPlayerMessageEntry?: (message: string) => void;
-    public onToolChange?: (tool: ToolType) => void;
-    public onResourceUpload?: (files: FileList, resourceID?: string) => void;
-    public onResourceDelete?: (resourceID: string) => void;
-    public onScriptRun?: (resourceID: string, args: string) => void;
-    public abstract render(): void;
-    public abstract addChatMessage(message: string): void;
-    public abstract setResourceList(resources: Resource[]): void;
+export default class UIManager {
+    public loginUI: LoginUI;
+    public gameUI: GameUI;
+    public selectedUI: UIScreen;
+    constructor(loginUI: LoginUI, gameUI: GameUI) {
+        this.loginUI = loginUI;
+        this.gameUI = gameUI;
+        this.selectedUI = this.loginUI;
+    }
+    public render() {
+        this.selectedUI.render();
+    }
+    public setUI(ui: string) {
+        switch (ui) {
+            case "login": {
+                this.selectedUI = this.loginUI;
+                break;
+            }
+            case "game": {
+                this.selectedUI = this.gameUI;
+                break;
+            }
+        }
+    }
 }

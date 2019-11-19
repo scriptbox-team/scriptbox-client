@@ -1,29 +1,25 @@
 import React from "react";
 import Resource from "resource-management/resource";
-import ResourceOption from "resource-management/resource-option";
 import GridListComponent from "./grid-list-component";
 import ResourceDisplayComponent from "./resource-display-component";
 
-interface IResourceListProperties {
+interface ResourceListProperties {
     resources: Resource[];
-    onOptionUpdate: (resource: Resource, option: ResourceOption, newVal: string) => void;
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
     onSoundPlay: (resource: Resource) => void;
     onSoundStop: (resource: Resource) => void;
     onScriptRun: (resource: Resource, args: string) => void;
+    onInfoChange: (resource: Resource, kind: string, value: string) => void;
+    onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
+    onResourceChange: (resourceID?: string) => void;
+    selectedResourceID?: string;
 }
 
-interface IResourceListState {
-    selectedResource?: Resource;
-}
-
-export default class ResourceListComponent extends React.Component<IResourceListProperties, IResourceListState> {
-    constructor(props: IResourceListProperties) {
+export default class ResourceListComponent extends React.Component<ResourceListProperties> {
+    constructor(props: ResourceListProperties) {
         super(props);
-        this.state = {selectedResource: undefined};
-        this.setResource = this.setResource.bind(this);
-        this.reportOptionUpdate = this.reportOptionUpdate.bind(this);
+        this._setResource = this._setResource.bind(this);
     }
     public render() {
         return <div className="resource-list">
@@ -31,49 +27,53 @@ export default class ResourceListComponent extends React.Component<IResourceList
                 class="resource-select"
                 direction="horizontal"
                 resources={this.props.resources}
-                onClick={this.setResource}
+                onClick={this._setResource}
             >
             {this.props.children}
             </GridListComponent>
             {(() => {
-                if (this.state.selectedResource !== undefined) {
-                    return <ResourceDisplayComponent
-                        resource={this.state.selectedResource}
-                        onOptionUpdate={this.reportOptionUpdate}
-                        onReupload={this.onReupload}
-                        onDelete={this.onDelete}
-                        onSoundPlay={this.onSoundPlay}
-                        onSoundStop={this.onSoundStop}
-                        onScriptRun={this.onScriptRun}
-                    />;
+                if (this.props.selectedResourceID !== undefined) {
+                    const resource = this._getResource(this.props.selectedResourceID);
+                    if (resource !== undefined) {
+                        return <ResourceDisplayComponent
+                            resource={resource}
+                            onReupload={this._onReupload}
+                            onDelete={this._onDelete}
+                            onSoundPlay={this._onSoundPlay}
+                            onSoundStop={this._onSoundStop}
+                            onScriptRun={this._onScriptRun}
+                            onInfoChange={this.props.onInfoChange}
+                            onInfoSubmit={this.props.onInfoSubmit}
+                        />;
+                    }
                 }
                 return <div className="resource-display">Choose a resource to inspect.</div>;
             })()}
         </div>;
     }
-    private setResource(id: string) {
-        this.setState({selectedResource: this.props.resources.find((res) => res.id === id)});
+    private _setResource(id?: string) {
+        this.props.onResourceChange(id);
     }
-    private reportOptionUpdate(option: ResourceOption, newVal: string) {
-        this.props.onOptionUpdate(this.state.selectedResource!, option, newVal);
+    private _getResource(id: string) {
+        return this.props.resources.find((res) => res.id === id);
     }
-    private onReupload = (resource: Resource) => {
+    private _onReupload = (resource: Resource) => {
         this.props.onReupload(resource);
     }
 
-    private onSoundPlay = (resource: Resource) => {
+    private _onSoundPlay = (resource: Resource) => {
         this.props.onSoundPlay(resource);
     }
 
-    private onSoundStop = (resource: Resource) => {
+    private _onSoundStop = (resource: Resource) => {
         this.props.onSoundStop(resource);
     }
 
-    private onScriptRun = (resource: Resource, args: string) => {
+    private _onScriptRun = (resource: Resource, args: string) => {
         this.props.onScriptRun(resource, args);
     }
 
-    private onDelete = (resource: Resource) => {
+    private _onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
     }
 }
