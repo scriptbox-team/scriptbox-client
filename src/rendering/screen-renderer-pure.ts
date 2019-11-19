@@ -52,7 +52,11 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._spriteData = new Map<string, SpriteData>();
         this._currentTextures = new Map<string, TextureData>();
         this._app.renderer.autoResize = true;
-        this._textureFetcher = new ResourceFetcher();
+        this._textureFetcher = new ResourceFetcher("image", (res) => {
+            const result = res.texture.baseTexture;
+            result.scaleMode = PIXI.SCALE_MODES.NEAREST;
+            return result;
+        });
         this._app.stage.sortableChildren = true;
         this._camera = new Camera();
         this._camera.viewWidth = this._app.renderer.width;

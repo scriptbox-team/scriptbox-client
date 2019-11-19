@@ -1,6 +1,9 @@
 import IPConverter from "core/ip-converter";
 import path from "path";
 import * as PIXI from "pixi.js";
+// tslint:disable-next-line: ordered-imports
+import SOUND from "pixi-sound";
+(PIXI as any).sound = SOUND;
 
 /**
  * A class which handles fetching textures from a URL
@@ -13,15 +16,19 @@ import * as PIXI from "pixi.js";
 export default class ResourceFetcher<T> {
     private _freeLoaders: PIXI.Loader[];
     private _resources: Map<string, Promise<T>>;
+    private _kind: string;
+    private _getFromResource: (res: PIXI.LoaderResource) => T;
 
     /**
      * Creates an instance of TextureFetcher.
      * @param {string} baseURL The base URL to fetch resources from
      * @memberof TextureFetcher
      */
-    constructor() {
+    constructor(kind: string, getFromResource: (res: PIXI.LoaderResource) => T) {
+        this._getFromResource = getFromResource;
         this._freeLoaders = [];
         this._resources = new Map<string, Promise<T>>();
+        this._kind = kind;
     }
 
     /**
@@ -38,7 +45,7 @@ export default class ResourceFetcher<T> {
         // Auto load the image if it doesn't exist
         if (resourcePromise === undefined) {
             const url = IPConverter.toHTTP(htmlIP);
-            const imagePath = path.join(url, "image", id);
+            const imagePath = path.join(url, this._kind, id);
             resourcePromise = this.loadResource(imagePath, id);
         }
         return await resourcePromise;
@@ -59,20 +66,22 @@ export default class ResourceFetcher<T> {
             loader = new PIXI.Loader();
         }
         const promise = new Promise<T>((resolve, reject) => {
-            loader.add(id, url, {
-                loadType: PIXI.LoaderResource.LOAD_TYPE.IMAGE,
-                xhrType: PIXI.LoaderResource.XHR_RESPONSE_TYPE.BLOB
-            });
+            let loadType = PIXI.LoaderResource.LOAD_TYPE.XHR;
+            let xhrType = PIXI.LoaderResource.XHR_RESPONSE_TYPE.BLOB;
+            if (this._kind === "image") {
+                loadType = PIXI.LoaderResource.LOAD_TYPE.IMAGE;
+                xhrType = PIXI.LoaderResource.XHR_RESPONSE_TYPE.BLOB;
+            }
+            loader.add(id, url, {loadType, xhrType});
             loader.load((retunedloader: any, resources: any) => {
                 const error = resources[id].error;
                 if (error) {
                     reject(error);
                     return;
                 }
-                const res = resources[id].texture.baseTexture;
+                const res = this._getFromResource(resources[id]);
                 loader.reset();
                 this._freeLoaders.push(loader);
-                res.scaleMode = PIXI.SCALE_MODES.NEAREST;
                 resolve(res);
             });
         });

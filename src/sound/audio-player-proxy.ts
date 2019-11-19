@@ -3,7 +3,7 @@ import ipcMessages from "ipc/ipc-messages";
 import AudioObject from "resource-management/audio-object";
 import AudioPlayer from "./audio-player";
 
-export class AudioPlayerProxy extends AudioPlayer {
+export default class AudioPlayerProxy extends AudioPlayer {
     private _webContents: WebContents;
     constructor(webContents: WebContents) {
         super();

@@ -14,6 +14,7 @@ ModuleAlias.addAliases({
     networking: path.join(__dirname, "..", "networking"),
     rendering: path.join(__dirname, "..", "rendering"),
     ui: path.join(__dirname, "..", "ui"),
+    sound: path.join(__dirname, "..", "sound"),
     "resource-management": path.join(__dirname, "..", "resource-management")
   });
 
@@ -33,6 +34,8 @@ import { TokenType } from "networking/packets/server-token-packet";
 import ComponentInfo from "resource-management/component-info";
 import LoginUIPure from "ui/login-ui-pure";
 import Camera from "rendering/camera";
+import AudioPlayerPure from "sound/audio-player-pure";
+import AudioObject from "resource-management/audio-object";
 /* tslint:enable */
 
 const windowInputPure = new WindowInput();
@@ -83,6 +86,21 @@ ipcRenderer.on(ipcMessages.CameraUpdate, (event: any, x: number, y: number, xSca
 screenRendererPure.reportCameraChange = (camera: Camera) => {
     ipcRenderer.send(ipcMessages.CameraChange, camera);
 };
+
+const audioPlayerPure = new AudioPlayerPure();
+
+ipcRenderer.on(ipcMessages.PlaySound, (event: any, resourceIP: string, sound: AudioObject) => {
+    audioPlayerPure.play(resourceIP, sound);
+});
+ipcRenderer.on(ipcMessages.StopSound, (event: any, soundID?: string) => {
+    audioPlayerPure.stop(soundID);
+});
+ipcRenderer.on(ipcMessages.ResumeSound, (event: any, soundID: string) => {
+    audioPlayerPure.resume(soundID);
+});
+ipcRenderer.on(ipcMessages.PauseSound, (event: any, soundID: string) => {
+    audioPlayerPure.pause(soundID);
+});
 
 const gameUIPure = new GameUIPure();
 gameUIPure.onPlayerMessageEntry = (message: string) => {

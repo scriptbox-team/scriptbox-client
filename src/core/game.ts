@@ -25,10 +25,12 @@ import ServerDisconnectionPacket from "networking/packets/server-disconnection-p
 import ServerDisplayPacket from "networking/packets/server-display-packet";
 import ServerEntityInspectionListingPacket from "networking/packets/server-entity-inspection-listing-packet";
 import ServerResourceListingPacket from "networking/packets/server-resource-listing-packet";
+import ServerSoundPacket from "networking/packets/server-sound-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
 import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
+import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
 
 /**
@@ -40,6 +42,7 @@ import UIManager from "ui/ui-manager";
 export default class Game {
     private _windowInput: WindowInput;
     private _screenRenderer: ScreenRenderer;
+    private _audioPlayer: AudioPlayer;
     private _inputHandler: InputHandler;
     private _uiManager: UIManager;
     private _networkSystem: NetworkSystem;
@@ -56,6 +59,7 @@ export default class Game {
     constructor(
             windowInput: WindowInput,
             screenRenderer: ScreenRenderer,
+            audioPlayer: AudioPlayer,
             uiManager: UIManager,
             fileSender: ResourceAPIInterface) {
         setDebugLogTypes([]);
@@ -64,6 +68,7 @@ export default class Game {
 
         this._windowInput = windowInput;
         this._screenRenderer = screenRenderer;
+        this._audioPlayer = audioPlayer;
         this._inputHandler = new InputHandler();
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
@@ -92,6 +97,17 @@ export default class Game {
                 }
             }
             this._inputHandler.updateClickableEntities(packet.displayPackage);
+        });
+        this._networkSystem.netEventHandler.addSoundPlayDelegate((packet: ServerSoundPacket) => {
+            console.log(packet);
+            for (const audioObject of packet.audioPackage) {
+                if (this._resourceAPIURL !== undefined) {
+                    this._audioPlayer.play(
+                        this._resourceAPIURL,
+                        audioObject
+                    );
+                }
+            }
         });
         this._networkSystem.netEventHandler.addTokenDelegate((packet: ServerTokenPacket) => {
             if (packet.tokenType === TokenType.FileUpload || packet.tokenType === TokenType.FileDelete) {
