@@ -10,6 +10,7 @@ ModuleAlias.addAliases({
   networking: path.join(__dirname, "networking"),
   rendering: path.join(__dirname, "rendering"),
   ui: path.join(__dirname, "ui"),
+  sound: path.join(__dirname, "sound"),
   "resource-management": path.join(__dirname, "resource-management")
 });
 
@@ -22,6 +23,7 @@ import GameUIProxy from "ui/game-ui-proxy";
 import ResourceAPIInterfaceProxy from "networking/resource-api-interface-proxy";
 import UIManager from "ui/ui-manager";
 import LoginUIProxy from "ui/login-ui-proxy";
+import AudioPlayerProxy from "sound/audio-player-proxy";
 /* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
@@ -39,6 +41,7 @@ function createWindow() {
   game = new Game(
     new WindowInputProxy(),
     new ScreenRendererProxy(mainWindow.webContents),
+    new AudioPlayerProxy(mainWindow.webContents),
     new UIManager(new LoginUIProxy(mainWindow.webContents), new GameUIProxy(mainWindow.webContents)),
     new ResourceAPIInterfaceProxy(mainWindow.webContents)
   );

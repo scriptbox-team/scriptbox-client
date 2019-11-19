@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import RenderObject from "resource-management/render-object";
-import TextureFetcher from "resource-management/texture-fetcher";
+import ResourceFetcher from "resource-management/resource-fetcher";
 
 import Camera from "./camera";
 import ScreenRenderer from "./screen-renderer";
@@ -26,7 +26,7 @@ interface SpriteData {
  * @extends {ScreenRenderer}
  */
 export default class ScreenRendererPure extends ScreenRenderer {
-    private _textureFetcher: TextureFetcher;
+    private _textureFetcher: ResourceFetcher<PIXI.BaseTexture>;
     private _spriteData: Map<string, SpriteData>;
     private _currentTextures: Map<string, TextureData>;
     private _app: PIXI.Application;
@@ -38,7 +38,6 @@ export default class ScreenRendererPure extends ScreenRenderer {
     constructor(width: number, height: number) {
         super();
         this.resize = this.resize.bind(this);
-        this._textureFetcher = new TextureFetcher();
         this._app = new PIXI.Application({
             width,
             height,
@@ -53,6 +52,11 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._spriteData = new Map<string, SpriteData>();
         this._currentTextures = new Map<string, TextureData>();
         this._app.renderer.autoResize = true;
+        this._textureFetcher = new ResourceFetcher("image", (res) => {
+            const result = res.texture.baseTexture;
+            result.scaleMode = PIXI.SCALE_MODES.NEAREST;
+            return result;
+        });
         this._app.stage.sortableChildren = true;
         this._camera = new Camera();
         this._camera.viewWidth = this._app.renderer.width;

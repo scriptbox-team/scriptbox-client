@@ -64,6 +64,9 @@
       "rendering/*": [
           "./rendering/*"
       ],
+      "sound/*": [
+          "./sound/*"
+      ],
       "ui/*": [
           "./ui/*"
       ],
