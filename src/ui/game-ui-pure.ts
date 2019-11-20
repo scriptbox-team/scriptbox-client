@@ -11,6 +11,8 @@ import ComponentListComponent from "./components/component-list-component";
 import FileUploaderComponent from "./components/file-uploader-component";
 import NamedImageButtonComponent from "./components/named-image-button-component";
 import ResourceListComponent from "./components/resource-list-component";
+import ResourceRepositoryComponent from "./components/resource-repository-component";
+import ScriptEditComponent from "./components/script-edit-component";
 import TitledWindowComponent from "./components/titled-window.component";
 import ToolButtonsComponent from "./components/tool-buttons-component";
 import UIElementComponent from "./components/ui-element-component";
@@ -25,18 +27,26 @@ export default class GameUIPure extends GameUI {
     private _selectedTool: string = "edit";
     private _selectedResource?: string;
     private _resources: Resource[];
+    private _repoResources: Resource[];
     private _entityData: ComponentInfo[];
     private _inspectedEntity?: string;
     private _controllingInspectedEntity: boolean;
     private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
     private _uploadID?: string;
+    private _editingScript?: string;
+    private _editingScriptText?: string;
+    private _repoWindowVisible: boolean;
+    private _repoSearchTerm: string | undefined;
+    private _setChatMessageValue?: (value: string) => void;
     constructor() {
         super();
         this._resources = [];
+        this._repoResources = [];
         this._entityData = [];
         this._modifiedAttributes = {};
         this._controllingInspectedEntity = false;
+        this._repoWindowVisible = false;
         this._reportComponentEnableStateChange = this._reportComponentEnableStateChange.bind(this);
         this._reportControlChange = this._reportControlChange.bind(this);
     }
@@ -49,7 +59,10 @@ export default class GameUIPure extends GameUI {
                         chatEntryValue: this._chatEntryVal,
                         messages: this._messages,
                         onMessageEntryChange: (newChatEntryVal: string) => this._chatEntryVal = newChatEntryVal,
-                        onMessageEntrySubmit: this.sendEnteredChatMessage
+                        onMessageEntrySubmit: this.sendEnteredChatMessage,
+                        setMessageEntryValue: (func: (value: string) => void) => {
+                            this._setChatMessageValue = func;
+                        }
                     },
                     null
                 ),
@@ -75,15 +88,19 @@ export default class GameUIPure extends GameUI {
                         onScriptRun: (resource: Resource, args: string) => {
                             this._reportScriptRun(resource.id, args);
                         },
+                        onScriptEdit: (resource: Resource) => {
+                            this._beginEditingScript(resource.id);
+                        },
                         onInfoChange: (resource: Resource, kind: string, newValue: string) => {
+                            console.log("info change.");
                             this._resourcePropertyChanged(resource, kind, newValue);
                         },
                         onInfoSubmit: (resource: Resource, kind: string, newValue: string) => {
+                            console.log("info submit.");
                             this._resourcePropertySubmit(resource, kind, newValue);
                         },
                         onResourceChange: (resourceID?: string) => {
                             this._selectedResource = resourceID;
-                            console.log(`resource changed to ${this._selectedResource}`);
                         },
                         selectedResourceID: this._selectedResource
                         // TODO: Change functions like "report xxx" to better names
@@ -97,6 +114,18 @@ export default class GameUIPure extends GameUI {
                             onClick: () => {
                                 this._uploadID = undefined;
                                 this.openFileUploadWindow();
+                            }
+                        },
+                        null
+                    ),
+                    React.createElement(
+                        NamedImageButtonComponent,
+                        {
+                            id: "-2",
+                            image: "",
+                            name: "Find Resources!",
+                            onClick: () => {
+                                this._repoWindowVisible = true;
                             }
                         },
                         null
@@ -130,6 +159,45 @@ export default class GameUIPure extends GameUI {
                 null)
             )
         ];
+
+        if (this._repoWindowVisible) {
+            elems.push(
+                React.createElement(UIElementComponent,
+                    {
+                        key: "shared-repository",
+                        class: "shared-repository",
+                        style: {
+                            top: "30vmin",
+                            left: "30vmin",
+                            width: "60vmin",
+                            height: "60vmin",
+                            position: "absolute"
+                        }
+                    },
+                    React.createElement(TitledWindowComponent,
+                        {
+                            title: `Shared Scripts`,
+                            closeable: true,
+                            onClose: () => {this._repoWindowVisible = false; }
+                        },
+                        React.createElement(
+                            ResourceRepositoryComponent,
+                            {
+                                resources: this._repoResources,
+                                onSearch: (search) => {
+                                    console.log("searching...");
+                                    this._repoSearchTerm = search;
+                                    this._submitSearch(search);
+                                },
+                                onClone: (resource) => {
+                                    this._cloneResource(resource);
+                                }
+                            }
+                        )
+                    )
+                )
+            );
+        }
 
         if (this._inspectedEntity !== undefined) {
             elems.push(
@@ -177,6 +245,46 @@ export default class GameUIPure extends GameUI {
                                 },
                                 null
                             )
+                        )
+                    )
+                )
+            );
+        }
+
+        if (this._editingScript !== undefined && this._editingScriptText !== undefined) {
+            elems.push(
+                React.createElement(UIElementComponent,
+                    {
+                        key: "script-edit",
+                        class: "script-edit",
+                        style: {
+                            top: "30vmin",
+                            left: "30vmin",
+                            width: "60vmin",
+                            height: "60vmin",
+                            position: "absolute"
+                        }
+                    },
+                    React.createElement(TitledWindowComponent,
+                        {
+                            title: `Editing Script`,
+                            closeable: true,
+                            onClose: () => this._cancelScriptEdit()
+                        },
+                        React.createElement(
+                            ScriptEditComponent,
+                            {
+                                script: this._editingScriptText,
+                                onSave: (script: string, build: boolean) => {
+                                    this._saveScript(this._editingScript!, script, build);
+                                    this._editingScript = undefined;
+                                },
+                                onCancel: () => this._cancelScriptEdit(),
+                                onChange: (val: string) => {
+                                    this._editingScriptText = val;
+                                }
+                            },
+                            null
                         )
                     )
                 )
@@ -233,6 +341,9 @@ export default class GameUIPure extends GameUI {
         if (this.onPlayerMessageEntry !== undefined && this._chatEntryVal.length > 0) {
             this.onPlayerMessageEntry(message);
             this._chatEntryVal = "";
+            if (this._setChatMessageValue !== undefined) {
+                this._setChatMessageValue("");
+            }
         }
     }
     public reportComponentOptionChange =
@@ -279,6 +390,28 @@ export default class GameUIPure extends GameUI {
 
     public endFileUpload() {
         this.closeFileUploadWindow();
+    }
+
+    public setResourceRepoList(resources: Resource[], search: string): void {
+        if (search !== this._repoSearchTerm) {
+            return;
+        }
+        const modifiedResources = Array.from(resources);
+        for (const resource of modifiedResources) {
+            for (const key of Object.keys(resource)) {
+                const val = this._getModified(resource.id, key);
+                if (val !== undefined) {
+                    (resource as any)[key] = val;
+                }
+            }
+        }
+        this._repoResources = modifiedResources;
+    }
+
+    public setEditingScriptText(scriptID: string, script: string): void {
+        if (this._editingScript === scriptID) {
+            this._editingScriptText = script;
+        }
     }
 
     private _setTool = (toolID: string) => {
@@ -364,6 +497,36 @@ export default class GameUIPure extends GameUI {
         const resource = this._resources.find((res) => res.id === this._selectedResource);
         if (this._selectedResource !== undefined && resource !== undefined && resource.type === ResourceType.Script) {
             this._reportScriptRun(this._selectedResource, "", this._inspectedEntity);
+        }
+    }
+
+    private _saveScript(scriptID: string, script: string, build: boolean) {
+        if (this.onEditScript !== undefined) {
+            this.onEditScript(scriptID, script);
+        }
+    }
+
+    private _cancelScriptEdit() {
+        this._editingScript = undefined;
+        this._editingScriptText = undefined;
+    }
+
+    private _beginEditingScript(id: string) {
+        this._editingScript = id;
+        if (this.onRequestEditScript !== undefined) {
+            this.onRequestEditScript(id);
+        }
+    }
+
+    private _submitSearch(search: string) {
+        if (this.onSearchResourceRepo !== undefined) {
+            this.onSearchResourceRepo(search);
+        }
+    }
+
+    private _cloneResource(resource: Resource) {
+        if (this.onCloneResource !== undefined) {
+            this.onCloneResource(resource.id);
         }
     }
 }

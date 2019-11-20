@@ -8,6 +8,7 @@ interface ResourceInfoProperties {
     description: string;
     onInfoChange: (kind: string, newValue: string) => void;
     onInfoSubmit: (kind: string, newValue: string) => void;
+    locked?: boolean;
 }
 
 export default class ResourceInfoComponent extends React.Component<ResourceInfoProperties> {
@@ -21,6 +22,7 @@ export default class ResourceInfoComponent extends React.Component<ResourceInfoP
                 submitOnUnfocus
                 submitOnEnter
                 pretty
+                readonly={this.props.locked}
             /> ID: {this.props.id}
             <div className="resource-creator">Created by {this.props.creator}</div>
             <TextEntryComponent
@@ -31,6 +33,7 @@ export default class ResourceInfoComponent extends React.Component<ResourceInfoP
                 submitOnUnfocus
                 multiline
                 pretty
+                readonly={this.props.locked}
             />
         </div>;
     }

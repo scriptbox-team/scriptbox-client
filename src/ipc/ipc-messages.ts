@@ -37,6 +37,12 @@ enum ipcMessages {
     SetupResourceIP = "SetupResourceIP",
     CameraUpdate = "CameraUpdate",
     CameraChange = "RenderedObject",
+    ResourceRepoList = "ResourceRepoList",
+    ScriptText = "ScriptText",
+    CloneResource = "CloneResource",
+    EditScript = "EditScript",
+    RequestEditScript = "RequestEditScript",
+    SearchResourceRepo = "SearchResourceRepo",
 
     LoginUIRender = "LoginUIRender",
     LoginUIChangeMenu = "LoginUIChangeMenu",

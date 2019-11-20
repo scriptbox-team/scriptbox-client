@@ -3,7 +3,7 @@ import Resource from "resource-management/resource";
 import GridListComponent from "./grid-list-component";
 import ResourceDisplayComponent from "./resource-display-component";
 
-interface ResourceListProperties {
+interface SharedResourceListProperties {
     resources: Resource[];
     onReupload: (resource: Resource) => void;
     onDelete: (resource: Resource) => void;
@@ -14,11 +14,12 @@ interface ResourceListProperties {
     onInfoChange: (resource: Resource, kind: string, value: string) => void;
     onInfoSubmit: (resource: Resource, kind: string, value: string) => void;
     onResourceChange: (resourceID?: string) => void;
+    onClone: (resource: Resource) => void;
     selectedResourceID?: string;
 }
 
-export default class ResourceListComponent extends React.Component<ResourceListProperties> {
-    constructor(props: ResourceListProperties) {
+export default class SharedResourceListComponent extends React.Component<SharedResourceListProperties> {
+    constructor(props: SharedResourceListProperties) {
         super(props);
         this._setResource = this._setResource.bind(this);
     }
@@ -46,6 +47,8 @@ export default class ResourceListComponent extends React.Component<ResourceListP
                             onScriptEdit={this._onScriptEdit}
                             onInfoChange={this.props.onInfoChange}
                             onInfoSubmit={this.props.onInfoSubmit}
+                            onClone={this._onClone}
+                            shared
                         />;
                     }
                 }
@@ -81,5 +84,9 @@ export default class ResourceListComponent extends React.Component<ResourceListP
 
     private _onDelete = (resource: Resource) => {
         this.props.onDelete(resource);
+    }
+
+    private _onClone = (resource: Resource) => {
+        this.props.onClone(resource);
     }
 }

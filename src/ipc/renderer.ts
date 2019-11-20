@@ -115,6 +115,18 @@ gameUIPure.onScriptRun = (resourceID: string, args: string, entityID?: string) =
 gameUIPure.onComponentDelete = (componentID: string) => {
     ipcRenderer.send(ipcMessages.DeleteComponent, componentID);
 };
+gameUIPure.onCloneResource = (resourceID: string) => {
+    ipcRenderer.send(ipcMessages.CloneResource, resourceID);
+};
+gameUIPure.onSearchResourceRepo = (search: string) => {
+    ipcRenderer.send(ipcMessages.SearchResourceRepo, search);
+};
+gameUIPure.onRequestEditScript = (scriptID: string) => {
+    ipcRenderer.send(ipcMessages.RequestEditScript, scriptID);
+};
+gameUIPure.onEditScript = (scriptID: string, script: string) => {
+    ipcRenderer.send(ipcMessages.EditScript, scriptID, script);
+};
 
 ipcRenderer.on(ipcMessages.SetupResourceIP, (event: any, ip: string) => {
     resourceAPIInterfacePure.setIP(ip);
@@ -167,6 +179,12 @@ ipcRenderer.on(ipcMessages.UpdateEntityInspect, (
         entityID: string,
         controlling: boolean) => {
     gameUIPure.setEntityData(components, entityID, controlling);
+});
+ipcRenderer.on(ipcMessages.ResourceRepoList, (event: any, list: Resource[], search: string) => {
+    gameUIPure.setResourceRepoList(list, search);
+});
+ipcRenderer.on(ipcMessages.ScriptText, (event: any, scriptID: string, script: string) => {
+    gameUIPure.setEditingScriptText(scriptID, script);
 });
 
 const loginUIPure = new LoginUIPure();

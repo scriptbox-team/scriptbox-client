@@ -46,7 +46,6 @@ export default class ResourceFetcher<T> {
         if (resourcePromise === undefined) {
             const url = IPConverter.toHTTP(htmlIP);
             const imagePath = path.join(this._kind, id);
-            console.log(imagePath);
             resourcePromise = this.loadResource(url, imagePath, id);
         }
         return await resourcePromise;

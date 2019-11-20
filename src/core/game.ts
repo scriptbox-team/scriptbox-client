@@ -8,6 +8,8 @@ import WindowInput from "input/window-input";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
 import NetworkSystem from "networking/network-system";
 import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
+import ClientCloneResourcePacket from "networking/packets/client-clone-resource-packet";
+import ClientEditScriptPacket from "networking/packets/client-edit-script-packet";
 import ClientEntityCreationPacket from "networking/packets/client-entity-creation-packet";
 import ClientEntityDeletionPacket from "networking/packets/client-entity-deletion-packet";
 import ClientEntityInspectionPacket from "networking/packets/client-entity-inspection-packet";
@@ -15,6 +17,8 @@ import ClientExecuteScriptPacket from "networking/packets/client-execute-script-
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
 import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
 import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
+import ClientRequestEditScriptPacket from "networking/packets/client-request-edit-script-packet";
+import ClientSearchResourceRepoPacket from "networking/packets/client-search-resource-repo-packet";
 import ClientSetComponentEnableStatePacket from "networking/packets/client-set-component-enable-state-packet";
 import ClientSetControlPacket from "networking/packets/client-set-control-packet";
 import ClientTokenRequestPacket from "networking/packets/client-token-request-packet";
@@ -32,6 +36,8 @@ import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
+import ServerResourceRepoListPacket from "networking/packets/server-resource-repo-list-packet";
+import ServerScriptTextPacket from "networking/packets/server-script-text-packet";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
@@ -99,7 +105,6 @@ export default class Game {
             this._inputHandler.updateClickableEntities(packet.displayPackage);
         });
         this._networkSystem.netEventHandler.addSoundPlayDelegate((packet: ServerSoundPacket) => {
-            console.log(packet);
             for (const audioObject of packet.audioPackage) {
                 if (this._resourceAPIURL !== undefined) {
                     this._audioPlayer.play(
@@ -120,6 +125,14 @@ export default class Game {
         this._networkSystem.netEventHandler.addEntityInspectListingDelegate(
                 (packet: ServerEntityInspectionListingPacket) => {
             this._uiManager.gameUI.setEntityData(packet.components, packet.entityID, packet.controlledByPlayer);
+        });
+        this._networkSystem.netEventHandler.addResourceRepoListDelegate(
+                (packet: ServerResourceRepoListPacket) => {
+            this._uiManager.gameUI.setResourceRepoList(packet.resources, packet.search);
+        });
+        this._networkSystem.netEventHandler.addScriptTextDelegate(
+                (packet: ServerScriptTextPacket) => {
+            this._uiManager.gameUI.setEditingScriptText(packet.scriptID, packet.script);
         });
         this._networkSystem.netEventHandler.addCameraUpdateDelegate(
                 (packet: ServerCameraUpdatePacket) => {
@@ -182,6 +195,38 @@ export default class Game {
                 new ClientNetEvent(
                     ClientEventType.SetControl,
                     new ClientSetControlPacket(entityID)
+                )
+            );
+        };
+        this._uiManager.gameUI.onCloneResource = (resourceID: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.CloneResource,
+                    new ClientCloneResourcePacket(resourceID)
+                )
+            );
+        };
+        this._uiManager.gameUI.onSearchResourceRepo = (search: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.SearchResourceRepo,
+                    new ClientSearchResourceRepoPacket(search)
+                )
+            );
+        };
+        this._uiManager.gameUI.onRequestEditScript = (scriptID: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.RequestEditScript,
+                    new ClientRequestEditScriptPacket(scriptID)
+                )
+            );
+        };
+        this._uiManager.gameUI.onEditScript = (scriptID: string, script: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.EditScript,
+                    new ClientEditScriptPacket(scriptID, script)
                 )
             );
         };
