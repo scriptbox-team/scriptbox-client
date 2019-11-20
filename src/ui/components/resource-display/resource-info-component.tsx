@@ -4,10 +4,12 @@ import TextEntryComponent from "../text-entry-component";
 interface ResourceInfoProperties {
     id: string;
     name: string;
+    filename: string;
     creator: string;
     description: string;
     onInfoChange: (kind: string, newValue: string) => void;
     onInfoSubmit: (kind: string, newValue: string) => void;
+    locked?: boolean;
 }
 
 export default class ResourceInfoComponent extends React.Component<ResourceInfoProperties> {
@@ -21,7 +23,18 @@ export default class ResourceInfoComponent extends React.Component<ResourceInfoP
                 submitOnUnfocus
                 submitOnEnter
                 pretty
+                readonly={this.props.locked}
             /> ID: {this.props.id}
+            <TextEntryComponent
+                class="resource-filename"
+                value={this.props.filename}
+                onChange={(newVal) => this.props.onInfoChange("filename", newVal)}
+                onSubmit={(newVal) => this.props.onInfoSubmit("filename", newVal)}
+                submitOnUnfocus
+                submitOnEnter
+                pretty
+                readonly={this.props.locked}
+            />
             <div className="resource-creator">Created by {this.props.creator}</div>
             <TextEntryComponent
                 class="resource-description"
@@ -31,6 +44,7 @@ export default class ResourceInfoComponent extends React.Component<ResourceInfoP
                 submitOnUnfocus
                 multiline
                 pretty
+                readonly={this.props.locked}
             />
         </div>;
     }

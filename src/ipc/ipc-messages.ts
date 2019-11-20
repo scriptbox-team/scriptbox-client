@@ -37,11 +37,18 @@ enum ipcMessages {
     SetupResourceIP = "SetupResourceIP",
     CameraUpdate = "CameraUpdate",
     CameraChange = "RenderedObject",
+    ResourceRepoList = "ResourceRepoList",
+    ScriptText = "ScriptText",
+    CloneResource = "CloneResource",
+    EditScript = "EditScript",
+    RequestEditScript = "RequestEditScript",
+    SearchResourceRepo = "SearchResourceRepo",
 
     LoginUIRender = "LoginUIRender",
     LoginUIChangeMenu = "LoginUIChangeMenu",
     Login = "Login",
     Signup = "Signup",
-    Connect = "Connect"
+    Connect = "Connect",
+    ModifyComponentMeta = "ModifyComponentMeta"
 }
 export default ipcMessages;

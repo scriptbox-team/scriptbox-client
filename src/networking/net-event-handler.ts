@@ -6,6 +6,8 @@ import ServerDisconnectionPacket from "./packets/server-disconnection-packet";
 import ServerDisplayPacket from "./packets/server-display-packet";
 import ServerEntityInspectionListingPacket from "./packets/server-entity-inspection-listing-packet";
 import ServerResourceListingPacket from "./packets/server-resource-listing-packet";
+import ServerResourceRepoListPacket from "./packets/server-resource-repo-list-packet";
+import ServerScriptTextPacket from "./packets/server-script-text-packet";
 import ServerSoundPacket from "./packets/server-sound-packet";
 import ServerTokenPacket from "./packets/server-token-packet";
 import ServerNetEvent, { ServerEventType } from "./server-net-event";
@@ -26,6 +28,8 @@ export default class NetEventHandler {
     private _entityInspectListingDelegates: Array<(packet: ServerEntityInspectionListingPacket) => void>;
     private _soundPlayDelegates: Array<(packet: ServerSoundPacket) => void>;
     private _cameraUpdateDelegates: Array<(packet: ServerCameraUpdatePacket) => void>;
+    private _resourceRepoListDelegates: Array<(packet: ServerResourceRepoListPacket) => void>;
+    private _scriptTextDelegates: Array<(packet: ServerScriptTextPacket) => void>;
     /**
      * Creates an instance of NetEventHandler.
      * @memberof NetEventHandler
@@ -40,6 +44,9 @@ export default class NetEventHandler {
         this._entityInspectListingDelegates = new Array<(packet: ServerEntityInspectionListingPacket) => void>();
         this._soundPlayDelegates = new Array<(packet: ServerSoundPacket) => void>();
         this._cameraUpdateDelegates = new Array<(packet: ServerCameraUpdatePacket) => void>();
+        this._resourceRepoListDelegates = new Array<(packet: ServerResourceRepoListPacket) => void>();
+        this._scriptTextDelegates = new Array<(packet: ServerScriptTextPacket) => void>();
+
     }
     /**
      * Add a delegate to respond to a connection packet
@@ -91,6 +98,14 @@ export default class NetEventHandler {
 
     public addCameraUpdateDelegate(func: (packet: ServerCameraUpdatePacket) => void) {
         this._cameraUpdateDelegates.push(func);
+    }
+
+    public addResourceRepoListDelegate(func: (packet: ServerResourceRepoListPacket) => void) {
+        this._resourceRepoListDelegates.push(func);
+    }
+
+    public addScriptTextDelegate(func: (packet: ServerScriptTextPacket) => void) {
+        this._scriptTextDelegates.push(func);
     }
     /**
      * Handle a ServerNetEvent, deserializing it and passing it to the necessary delegates.
@@ -186,6 +201,26 @@ export default class NetEventHandler {
                     this._sendToDelegates(
                         data,
                         this._cameraUpdateDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.ResourceRepoList: {
+                const data = ServerResourceRepoListPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this._sendToDelegates(
+                        data,
+                        this._resourceRepoListDelegates
+                    );
+                }
+                break;
+            }
+            case ServerEventType.ScriptText: {
+                const data = ServerScriptTextPacket.deserialize(event.data);
+                if (data !== undefined) {
+                    this._sendToDelegates(
+                        data,
+                        this._scriptTextDelegates
                     );
                 }
                 break;

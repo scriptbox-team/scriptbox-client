@@ -14,7 +14,7 @@ import SOUND from "pixi-sound";
  * @class TextureFetcher
  */
 export default class ResourceFetcher<T> {
-    private _freeLoaders: PIXI.Loader[];
+    private _freeLoaders: {[id: string]: PIXI.Loader[]};
     private _resources: Map<string, Promise<T>>;
     private _kind: string;
     private _getFromResource: (res: PIXI.LoaderResource) => T;
@@ -26,7 +26,7 @@ export default class ResourceFetcher<T> {
      */
     constructor(kind: string, getFromResource: (res: PIXI.LoaderResource) => T) {
         this._getFromResource = getFromResource;
-        this._freeLoaders = [];
+        this._freeLoaders = {};
         this._resources = new Map<string, Promise<T>>();
         this._kind = kind;
     }
@@ -45,8 +45,8 @@ export default class ResourceFetcher<T> {
         // Auto load the image if it doesn't exist
         if (resourcePromise === undefined) {
             const url = IPConverter.toHTTP(htmlIP);
-            const imagePath = path.join(url, this._kind, id);
-            resourcePromise = this.loadResource(imagePath, id);
+            const imagePath = path.join(this._kind, id);
+            resourcePromise = this.loadResource(url, imagePath, id);
         }
         return await resourcePromise;
     }
@@ -59,20 +59,24 @@ export default class ResourceFetcher<T> {
      * This rejects with an error if texture loading failed for whatever reason.
      * @memberof TextureFetcher
      */
-    public async loadResource(url: string, id: string): Promise<T> {
-        let loader = this._freeLoaders.pop()!;
+    public async loadResource(baseURL: string, resPath: string, id: string): Promise<T> {
+        if (this._freeLoaders[baseURL] === undefined) {
+            this._freeLoaders[baseURL] = [];
+        }
+        const loaderSet = this._freeLoaders[baseURL];
+        let loader = loaderSet.pop()!;
         // If there was no free loader, make a new one
         if (loader === undefined) {
-            loader = new PIXI.Loader();
+            loader = new PIXI.Loader(baseURL);
         }
         const promise = new Promise<T>((resolve, reject) => {
             let loadType = PIXI.LoaderResource.LOAD_TYPE.XHR;
-            let xhrType = PIXI.LoaderResource.XHR_RESPONSE_TYPE.BLOB;
+            let xhrType = PIXI.LoaderResource.XHR_RESPONSE_TYPE.BUFFER;
             if (this._kind === "image") {
                 loadType = PIXI.LoaderResource.LOAD_TYPE.IMAGE;
                 xhrType = PIXI.LoaderResource.XHR_RESPONSE_TYPE.BLOB;
             }
-            loader.add(id, url, {loadType, xhrType});
+            loader.add(id, resPath, {loadType, xhrType});
             loader.load((retunedloader: any, resources: any) => {
                 const error = resources[id].error;
                 if (error) {
@@ -81,7 +85,7 @@ export default class ResourceFetcher<T> {
                 }
                 const res = this._getFromResource(resources[id]);
                 loader.reset();
-                this._freeLoaders.push(loader);
+                this._freeLoaders[baseURL].push(loader);
                 resolve(res);
             });
         });

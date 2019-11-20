@@ -6,10 +6,9 @@ interface SoundDisplayProperties {
     resource: Resource;
     onPlay: (resource: Resource) => void;
     onStop: (resource: Resource) => void;
-    onReupload: (resource: Resource) => void;
-    onDelete: (resource: Resource) => void;
     onInfoChange: (kind: string, value: string) => void;
     onInfoSubmit: (kind: string, value: string) => void;
+    locked?: boolean;
 }
 
 export default class SoundDisplayComponent extends React.Component<SoundDisplayProperties> {
@@ -18,15 +17,12 @@ export default class SoundDisplayComponent extends React.Component<SoundDisplayP
             <ResourceInfoComponent
                 id={this.props.resource.id}
                 name={this.props.resource.name}
+                filename={this.props.resource.filename}
                 creator={this.props.resource.creator}
                 description={this.props.resource.description}
                 onInfoChange={this.props.onInfoChange}
                 onInfoSubmit={this.props.onInfoSubmit}
             />
-            <div className="resource-options">
-                <button className="reupload-button" onClick={this._handleReupload}>Reupload</button>
-                <button className="delete-button" onClick={this._handleDelete}>Delete</button>
-            </div>
         </div>;
     }
     private _handlePlay = () => {
@@ -34,11 +30,5 @@ export default class SoundDisplayComponent extends React.Component<SoundDisplayP
     }
     private _handleStop = () => {
         this.props.onStop(this.props.resource);
-    }
-    private _handleReupload = () => {
-        this.props.onReupload(this.props.resource);
-    }
-    private _handleDelete = () => {
-        this.props.onDelete(this.props.resource);
     }
 }

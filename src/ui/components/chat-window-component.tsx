@@ -7,6 +7,7 @@ interface ChatWindowProperties {
     chatEntryValue: string;
     onMessageEntryChange: (msg: string) => void;
     onMessageEntrySubmit: (msg: string) => void;
+    setMessageEntryValue: (func: (value: string) => void) => void;
 }
 
 export default class ChatWindowComponent extends React.Component<ChatWindowProperties>{
@@ -22,6 +23,7 @@ export default class ChatWindowComponent extends React.Component<ChatWindowPrope
                 onChange={this.props.onMessageEntryChange}
                 onSubmit={this.props.onMessageEntrySubmit}
                 submitOnEnter
+                setValue={this.props.setMessageEntryValue}
             />
         </div>;
     }

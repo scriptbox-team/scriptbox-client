@@ -52,6 +52,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         this._spriteData = new Map<string, SpriteData>();
         this._currentTextures = new Map<string, TextureData>();
         this._app.renderer.autoResize = true;
+        this._app.renderer.backgroundColor = 0x88D2F8;
         this._textureFetcher = new ResourceFetcher("image", (res) => {
             const result = res.texture.baseTexture;
             result.scaleMode = PIXI.SCALE_MODES.NEAREST;

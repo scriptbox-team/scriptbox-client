@@ -13,6 +13,8 @@ interface ComponentListProperties {
     onDelete: (resource: ComponentInfo) => void;
     onEntityControlChange: (control: boolean) => void;
     onComponentEnableStateChanged: (componentID: string, state: boolean) => void;
+    onMetaChange: (componentID: string, option: string, newValue: string) => void;
+    onMetaSubmit: (componentID: string, option: string, newValue: string) => void;
     // onInfoChange: (resource: ComponentInfo, kind: string, value: string) => void;
     // onInfoSubmit: (resource: ComponentInfo, kind: string, value: string) => void;
 }
@@ -32,9 +34,9 @@ export default class ComponentListComponent extends React.Component<ComponentLis
         this._onDelete = this._onDelete.bind(this);
     }
     public render() {
-        return <div className="resource-list">
+        return <div className="component-list">
             <GridListComponent<ComponentInfo, string>
-                class="resource-select"
+                class="component-select"
                 direction="vertical"
                 resources={this.props.components}
                 onClick={this._setComponent}
@@ -60,10 +62,12 @@ export default class ComponentListComponent extends React.Component<ComponentLis
                             onOptionUpdate={this._reportOptionUpdate}
                             onDelete={() => this._onDelete(component)}
                             onToggleEnableState={this._onToggleEnableState}
+                            onMetaChange={(id, option, newVal) => this._onMetaChange(id, option, newVal)}
+                            onMetaSubmit={(id, option, newVal) => this._onMetaSubmit(id, option, newVal)}
                         />;
                     }
                 }
-                return <div className="resource-display">Choose a component to inspect.</div>;
+                return <div className="component-display">Choose a component to inspect.</div>;
             })()}
         </div>;
     }
@@ -86,5 +90,11 @@ export default class ComponentListComponent extends React.Component<ComponentLis
         if (this.state.selectedComponentID !== undefined) {
             this.props.onComponentEnableStateChanged(this.state.selectedComponentID, toggleTo);
         }
+    }
+    private _onMetaChange(id: string, option: string, newValue: string) {
+        this.props.onMetaChange(id, option, newValue);
+    }
+    private _onMetaSubmit(id: string, option: string, newValue: string) {
+        this.props.onMetaSubmit(id, option, newValue);
     }
 }

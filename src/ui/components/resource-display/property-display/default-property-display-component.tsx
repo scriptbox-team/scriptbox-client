@@ -9,8 +9,7 @@ interface DefaultPropertyDisplayProperties {
 
 export default class DefaultPropertyDisplayComponent extends React.Component<DefaultPropertyDisplayProperties> {
     public render() {
-        return <input
-            type="text"
+        return <textarea
             value={this.props.displayValue}
             placeholder={this.props.type}
             readOnly={this.props.readOnly}

@@ -56,6 +56,35 @@ export default class GameUIProxy extends GameUI {
                 this.onEntityControl(componentID !== null ? componentID : undefined);
             }
         });
+        ipcMain.on(ipcMessages.CloneResource, (event: any, resourceID: string) => {
+            if (this.onCloneResource !== undefined) {
+                this.onCloneResource(resourceID);
+            }
+        });
+        ipcMain.on(ipcMessages.SearchResourceRepo, (event: any, search: string) => {
+            if (this.onSearchResourceRepo !== undefined) {
+                this.onSearchResourceRepo(search);
+            }
+        });
+        ipcMain.on(ipcMessages.RequestEditScript, (event: any, scriptID: string) => {
+            if (this.onRequestEditScript !== undefined) {
+                this.onRequestEditScript(scriptID);
+            }
+        });
+        ipcMain.on(ipcMessages.EditScript, (event: any, scriptID: string, script: string) => {
+            if (this.onEditScript !== undefined) {
+                this.onEditScript(scriptID, script);
+            }
+        });
+        ipcMain.on(ipcMessages.ModifyComponentMeta, (
+                event: any,
+                componentID: string,
+                option: string,
+                value: string) => {
+            if (this.onModifyComponentMeta !== undefined) {
+                this.onModifyComponentMeta(componentID, option, value);
+            }
+        });
     }
     public render() {
         if (!this._webContents.isDestroyed()) {
@@ -80,6 +109,16 @@ export default class GameUIProxy extends GameUI {
     public setEntityData(components: ComponentInfo[], entityID: string, controlled: boolean): void {
         if (!this._webContents.isDestroyed()) {
             this._webContents.send(ipcMessages.UpdateEntityInspect, components, entityID, controlled);
+        }
+    }
+    public setResourceRepoList(resources: Resource[], search: string): void {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.ResourceRepoList, resources, search);
+        }
+    }
+    public setEditingScriptText(scriptID: string, script: string): void {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.ScriptText, scriptID, script);
         }
     }
 }
