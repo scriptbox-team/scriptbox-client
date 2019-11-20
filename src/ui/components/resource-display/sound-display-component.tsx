@@ -17,6 +17,7 @@ export default class SoundDisplayComponent extends React.Component<SoundDisplayP
             <ResourceInfoComponent
                 id={this.props.resource.id}
                 name={this.props.resource.name}
+                filename={this.props.resource.filename}
                 creator={this.props.resource.creator}
                 description={this.props.resource.description}
                 onInfoChange={this.props.onInfoChange}

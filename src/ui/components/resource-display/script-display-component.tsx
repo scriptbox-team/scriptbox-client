@@ -16,13 +16,12 @@ export default class ScriptDisplayComponent extends React.Component<ScriptDispla
             <ResourceInfoComponent
                 id={this.props.resource.id}
                 name={this.props.resource.name}
+                filename={this.props.resource.filename}
                 creator={this.props.resource.creator}
                 description={this.props.resource.description}
                 onInfoChange={this.props.onInfoChange}
                 onInfoSubmit={this.props.onInfoSubmit}
             />
-            <div className="resource-options">
-            </div>
         </div>;
     }
 }
