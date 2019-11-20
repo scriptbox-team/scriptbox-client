@@ -280,6 +280,7 @@ export default class Game {
      * @memberof Game
      */
     private _tick() {
+        this._windowInput.queryGamepads();
         this._screenRenderer.update();
         this._uiManager.render();
         if (this._networkSystem.connected) {

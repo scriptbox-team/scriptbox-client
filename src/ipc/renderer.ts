@@ -68,6 +68,9 @@ windowInputPure.onMouseReleased = (event) => {
 windowInputPure.onMouseMoved = (event) => {
     ipcRenderer.send(ipcMessages.MouseMove, event);
 };
+ipcRenderer.on(ipcMessages.QueryGamepads, (event: any) => {
+    windowInputPure.queryGamepads();
+});
 
 const screenRendererPure = new ScreenRendererPure(1920, 1080);
 
