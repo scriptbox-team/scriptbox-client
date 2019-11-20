@@ -17,6 +17,7 @@ export default abstract class GameUI extends UIScreen {
     public onSearchResourceRepo?: (search: string) => void;
     public onRequestEditScript?: (scriptID: string) => void;
     public onEditScript?: (scriptID: string, script: string) => void;
+    public onModifyComponentMeta?: (componentID: string, option: string, value: string) => void;
     public abstract addChatMessage(message: string): void;
     public abstract setResourceList(resources: Resource[]): void;
     public abstract inspect(entityID: string | undefined): void;

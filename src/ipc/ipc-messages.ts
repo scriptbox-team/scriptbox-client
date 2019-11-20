@@ -48,6 +48,7 @@ enum ipcMessages {
     LoginUIChangeMenu = "LoginUIChangeMenu",
     Login = "Login",
     Signup = "Signup",
-    Connect = "Connect"
+    Connect = "Connect",
+    ModifyComponentMeta = "ModifyComponentMeta"
 }
 export default ipcMessages;

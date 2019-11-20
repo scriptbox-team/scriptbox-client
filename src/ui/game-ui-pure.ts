@@ -32,6 +32,7 @@ export default class GameUIPure extends GameUI {
     private _inspectedEntity?: string;
     private _controllingInspectedEntity: boolean;
     private _modifiedAttributes: {[resourceID: string]: {[property: string]: string | undefined}};
+    private _modifiedComponentMeta: {[resourceID: string]: {[property: string]: string | undefined}};
     private _uploadWindowVisible: boolean = false;
     private _uploadID?: string;
     private _editingScript?: string;
@@ -45,6 +46,7 @@ export default class GameUIPure extends GameUI {
         this._repoResources = [];
         this._entityData = [];
         this._modifiedAttributes = {};
+        this._modifiedComponentMeta = {};
         this._controllingInspectedEntity = false;
         this._repoWindowVisible = false;
         this._reportComponentEnableStateChange = this._reportComponentEnableStateChange.bind(this);
@@ -96,7 +98,6 @@ export default class GameUIPure extends GameUI {
                             this._resourcePropertyChanged(resource, kind, newValue);
                         },
                         onInfoSubmit: (resource: Resource, kind: string, newValue: string) => {
-                            console.log("info submit.");
                             this._resourcePropertySubmit(resource, kind, newValue);
                         },
                         onResourceChange: (resourceID?: string) => {
@@ -185,7 +186,6 @@ export default class GameUIPure extends GameUI {
                             {
                                 resources: this._repoResources,
                                 onSearch: (search) => {
-                                    console.log("searching...");
                                     this._repoSearchTerm = search;
                                     this._submitSearch(search);
                                 },
@@ -231,6 +231,17 @@ export default class GameUIPure extends GameUI {
                                 onEntityControlChange: (control: boolean) => this._reportControlChange(control),
                                 onComponentEnableStateChanged: (componentID: string, state: boolean) => {
                                     this._reportComponentEnableStateChange(componentID, state);
+                                },
+                                onMetaChange: (resourceID: string, option: string, value: string) => {
+                                    this._setModifiedComponentMeta(resourceID, option, value);
+                                },
+                                onMetaSubmit: (resourceID: string, option: string, value: string) => {
+                                    if (this.onModifyComponentMeta !== undefined) {
+                                        this.onModifyComponentMeta(resourceID, option, value);
+                                    }
+                                    (this._entityData.find((info) => info.id === resourceID)! as any)[option] = value;
+                                    console.log((this._entityData.find((info) => info.id === resourceID)!));
+                                    this._unsetModifiedComponentMeta(resourceID, option);
                                 }
                             },
                             React.createElement(
@@ -373,7 +384,16 @@ export default class GameUIPure extends GameUI {
 
     public setEntityData(components: ComponentInfo[], entityID: string, controlled: boolean) {
         if (entityID === this._inspectedEntity) {
-            this._entityData = components;
+            const modifiedComponents = Array.from(components);
+            for (const resource of modifiedComponents) {
+                for (const key of Object.keys(resource)) {
+                    const val = this._getModifiedComponentMeta(resource.id, key);
+                    if (val !== undefined) {
+                        (resource as any)[key] = val;
+                    }
+                }
+            }
+            this._entityData = modifiedComponents;
         }
         this._controllingInspectedEntity = controlled;
     }
@@ -397,14 +417,6 @@ export default class GameUIPure extends GameUI {
             return;
         }
         const modifiedResources = Array.from(resources);
-        for (const resource of modifiedResources) {
-            for (const key of Object.keys(resource)) {
-                const val = this._getModified(resource.id, key);
-                if (val !== undefined) {
-                    (resource as any)[key] = val;
-                }
-            }
-        }
         this._repoResources = modifiedResources;
     }
 
@@ -486,11 +498,32 @@ export default class GameUIPure extends GameUI {
         this._modifiedAttributes[resourceID][property] = value;
     }
 
-    private _unsetModified(resourceID: string, property: string) {
-        if (this._modifiedAttributes[resourceID] === undefined) {
-            this._modifiedAttributes[resourceID] = {};
+    private _unsetModified(componentID: string, property: string) {
+        if (this._modifiedAttributes[componentID] === undefined) {
+            this._modifiedAttributes[componentID] = {};
         }
-        this._modifiedAttributes[resourceID][property] = undefined;
+        this._modifiedAttributes[componentID][property] = undefined;
+    }
+
+    private _getModifiedComponentMeta(componentID: string, property: string) {
+        if (this._modifiedComponentMeta[componentID] === undefined) {
+            return undefined;
+        }
+        return this._modifiedComponentMeta[componentID][property];
+    }
+
+    private _setModifiedComponentMeta(componentID: string, property: string, value: string) {
+        if (this._modifiedComponentMeta[componentID] === undefined) {
+            this._modifiedComponentMeta[componentID] = {};
+        }
+        this._modifiedComponentMeta[componentID][property] = value;
+    }
+
+    private _unsetModifiedComponentMeta(componentID: string, property: string) {
+        if (this._modifiedComponentMeta[componentID] === undefined) {
+            this._modifiedComponentMeta[componentID] = {};
+        }
+        this._modifiedComponentMeta[componentID][property] = undefined;
     }
 
     private _applyScript() {

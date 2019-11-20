@@ -76,6 +76,15 @@ export default class GameUIProxy extends GameUI {
                 this.onEditScript(scriptID, script);
             }
         });
+        ipcMain.on(ipcMessages.ModifyComponentMeta, (
+                event: any,
+                componentID: string,
+                option: string,
+                value: string) => {
+            if (this.onModifyComponentMeta !== undefined) {
+                this.onModifyComponentMeta(componentID, option, value);
+            }
+        });
     }
     public render() {
         if (!this._webContents.isDestroyed()) {

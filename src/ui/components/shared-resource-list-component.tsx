@@ -24,7 +24,7 @@ export default class SharedResourceListComponent extends React.Component<SharedR
         this._setResource = this._setResource.bind(this);
     }
     public render() {
-        return <div className="resource-list">
+        return <div className="shared-list">
             <GridListComponent
                 class="resource-select"
                 direction="horizontal"
@@ -52,7 +52,7 @@ export default class SharedResourceListComponent extends React.Component<SharedR
                         />;
                     }
                 }
-                return <div className="resource-display">Choose a resource to inspect.</div>;
+                return <div className="shared-display">Choose a resource to inspect.</div>;
             })()}
         </div>;
     }

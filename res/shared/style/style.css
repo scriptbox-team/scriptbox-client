@@ -2,6 +2,55 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    background-color: #2b2b2baa;
+    border: 1px solid #DDDDDDaa;
+    color: #eeeeee;
+    text-shadow: 0px 0px 4px #00000044;
+}
+
+input {
+    background-color: #2b2b2bbb;
+    border: 1px solid #888888aa;
+    color: #eeeeee;
+    text-shadow: 0px 0px 4px #00000044;
+}
+
+textarea {
+    background-color: #2b2b2bbb;
+    border: 1px solid #888888aa;
+    color: #eeeeee;
+    text-shadow: 0px 0px 4px #00000044;
+}
+
+button {
+    background-color: #2b2b2bbb;
+    border: 1px solid #888888aa;
+    color: #eeeeee;
+    text-shadow: 0px 0px 4px #00000044;
+}
+
+::-webkit-scrollbar {
+    background-color: #2b2b2bbb;
+    border: 1px solid #888888aa;
+    text-shadow: 0px 0px 4px #00000044;
+}
+
+::-webkit-scrollbar-button {
+    background-color: #2b2b2bbb;
+    border: 1px solid #b9b1b1aa;
+    color: #eeeeee;
+    text-shadow: 0px 0px 4px #00000044;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #2b2b2bbb;
+    border: 1px solid #888888aa;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #2b2b2bbb;
+    border: 1px solid #888888aa;
+    text-shadow: 0px 0px 4px #00000044;
 }
 
 #screen {
@@ -28,7 +77,10 @@ body {
 }
 
 .chat-window {
-    background-color: #FFFFFFFF;
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
     display: flex;
     flex-flow: column;
     height: 100%;
@@ -52,11 +104,10 @@ body {
 }
 
 .upload {
-    background-color: #FFFFFFFF;
-}
-
-.entity-inspection {
-    background-color: #FFFFFFFF;
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
 }
 
 .scrollable {
@@ -97,16 +148,92 @@ body {
 }
 
 .resource-select {
-    background-color: #FFFFFFFF;
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
     flex: 1 1 auto;
 }
 
 .resource-display {
-    background-color: #FFFFFFFF;
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
     flex: 0 1 30vmin;
 }
 
 .resource-display .table-data input {
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+.shared-list {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.shared-select {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
+    flex: 1 1 auto;
+}
+
+.shared-display {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
+    flex: 0 1 30vmin;
+}
+
+.shared-display .table-data input {
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+.script-edit {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
+    flex: 0 1 30vmin;
+}
+
+.script-edit .table-data input {
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+.component-list {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.component-select {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
+    flex: 1 1 auto;
+}
+
+.component-display {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
+    flex: 0 1 30vmin;
+}
+
+.component-display .table-data input {
     width: 100%;
     margin: 0px;
     box-sizing: border-box;

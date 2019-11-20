@@ -1,5 +1,7 @@
 import React from "react";
 import ComponentOption, { ComponentOptionType } from "resource-management/component-option";
+
+import TextEntryComponent from "../text-entry-component";
 import BooleanDisplayComponent from "./property-display/boolean-display-component";
 import DefaultPropertyDisplayComponent from "./property-display/default-property-display-component";
 import NumberDisplayComponent from "./property-display/number-display-component";
@@ -12,13 +14,15 @@ interface ComponentDisplayProperties {
     enabled: boolean;
     options: ComponentOption[];
     onOptionUpdate: (option: ComponentOption, newValue: string) => void;
+    onMetaChange: (componentID: string, option: string, newValue: string) => void;
+    onMetaSubmit: (componentID: string, option: string, newValue: string) => void;
     onDelete: () => void;
     onToggleEnableState: (state: boolean) => void;
 }
 
 export default class ComponentDisplayComponent extends React.Component<ComponentDisplayProperties> {
     public render() {
-        return <div className="component-display-component">
+        return <div className="component-display">
             <input
                 type="checkbox"
                 checked={this.props.enabled}
@@ -26,8 +30,25 @@ export default class ComponentDisplayComponent extends React.Component<Component
                     this._onToggleEnableState((event.target as any).checked);
                 }}
             />;
-            <div className="component-name">{this.props.name} (ID: {this.props.id})</div>
-            <div className="component-description">{this.props.description}</div>
+            <TextEntryComponent
+                class="component-name"
+                value={this.props.name}
+                onChange={(newVal) => this._onMetaChange("name", newVal)}
+                onSubmit={(newVal) => this._onMetaSubmit("name", newVal)}
+                submitOnEnter
+                submitOnUnfocus
+                pretty
+            />
+            <div className="component-id">(ID: {this.props.id})</div>
+            <TextEntryComponent
+                class="component-description"
+                value={this.props.description}
+                onChange={(newVal) => this._onMetaChange("description", newVal)}
+                onSubmit={(newVal) => this._onMetaSubmit("description", newVal)}
+                submitOnEnter
+                submitOnUnfocus
+                pretty
+            />
             <div className="table component-options-table">{
                 this.props.options.map((option: ComponentOption) => {
                     return <div key={option.id} className="table-row">
@@ -83,6 +104,12 @@ export default class ComponentDisplayComponent extends React.Component<Component
                 <button className="delete-button" onClick={this._handleDelete}>Delete</button>
             </div>
         </div>;
+    }
+    private _onMetaChange(option: string, newValue: string) {
+        this.props.onMetaChange(this.props.id, option, newValue);
+    }
+    private _onMetaSubmit(option: string, newValue: string) {
+        this.props.onMetaSubmit(this.props.id, option, newValue);
     }
     private _onChange(option: ComponentOption, newValue: string) {
         this.props.onOptionUpdate(option, newValue);

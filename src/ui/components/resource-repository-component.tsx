@@ -25,10 +25,10 @@ export default class ResourceRepositoryComponent extends
         };
     }
     public render() {
-        return <div className="resource-repository-view">
-            <div className="resource-search-bar">
+        return <div className="shared-component-search">
+            <div className="shared-search-bar">
                 Search: <TextEntryComponent
-                    class="resource-search"
+                    class="shared-search"
                     value={this.state.searchValue}
                     onChange={(val) => {
                         this.setState({searchValue: val});

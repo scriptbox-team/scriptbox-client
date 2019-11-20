@@ -127,6 +127,9 @@ gameUIPure.onRequestEditScript = (scriptID: string) => {
 gameUIPure.onEditScript = (scriptID: string, script: string) => {
     ipcRenderer.send(ipcMessages.EditScript, scriptID, script);
 };
+gameUIPure.onModifyComponentMeta = (componentID: string, option: string, value: string) => {
+    ipcRenderer.send(ipcMessages.ModifyComponentMeta, componentID, option, value);
+};
 
 ipcRenderer.on(ipcMessages.SetupResourceIP, (event: any, ip: string) => {
     resourceAPIInterfacePure.setIP(ip);

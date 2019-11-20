@@ -38,6 +38,7 @@ import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
 import ServerResourceRepoListPacket from "networking/packets/server-resource-repo-list-packet";
 import ServerScriptTextPacket from "networking/packets/server-script-text-packet";
+import ClientModifyComponentMetaPacket from "networking/packets/client-modify-component-meta-packet";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
@@ -227,6 +228,14 @@ export default class Game {
                 new ClientNetEvent(
                     ClientEventType.EditScript,
                     new ClientEditScriptPacket(scriptID, script)
+                )
+            );
+        };
+        this._uiManager.gameUI.onModifyComponentMeta = (componentID: string, option: string, value: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.ModifyComponentMeta,
+                    new ClientModifyComponentMetaPacket(componentID, option, value)
                 )
             );
         };
