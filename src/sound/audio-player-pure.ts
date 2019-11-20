@@ -13,14 +13,12 @@ export default class AudioPlayerPure extends AudioPlayer {
         super();
         this._soundFetcher = new ResourceFetcher<PIXI.sound.Sound>("audio", (res) => {
             console.log(res);
-            return res.sound;
+            return PIXI.sound.Sound.from({source: res.data});
         });
         this._activeSounds = {};
     }
     public async play(resourceIP: string, sound: AudioObject) {
-        const url = IPConverter.toHTTP(resourceIP);
-        const audioPath = path.join(url, "audio", sound.resource);
-        const soundResource = PIXI.sound.Sound.from(audioPath);
+        const soundResource = await this._soundFetcher.get(resourceIP, sound.resource);
         console.log(soundResource);
         soundResource.volume = sound.volume;
         soundResource.loop = sound.loop;
