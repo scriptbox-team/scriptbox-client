@@ -27,7 +27,7 @@ export default class SharedResourceListComponent extends React.Component<SharedR
         return <div className="shared-list">
             <GridListComponent
                 class="resource-select"
-                direction="horizontal"
+                direction="vertical"
                 resources={this.props.resources}
                 onClick={this._setResource}
             >
