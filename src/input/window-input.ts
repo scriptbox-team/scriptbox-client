@@ -15,4 +15,5 @@ export default abstract class WindowInput {
     public onMousePressed?: (e: MouseInputEvent) => void;
     public onMouseReleased?: (e: MouseInputEvent) => void;
     public onMouseMoved?: (e: MouseInputEvent) => void;
+    public abstract queryGamepads(): void;
 }

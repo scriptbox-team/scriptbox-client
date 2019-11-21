@@ -1,4 +1,4 @@
-import { ipcMain } from "electron";
+import { ipcMain, WebContents } from "electron";
 import ipcMessages from "ipc/ipc-messages";
 import KeyInputEvent from "./key-input-event";
 import MouseInputEvent from "./mouse-input-event";
@@ -12,8 +12,10 @@ import WindowInput from "./window-input";
  * @extends {WindowInput}
  */
 export default class WindowInputProxy extends WindowInput {
-    constructor() {
+    private _webContents: WebContents;
+    constructor(webContents: WebContents) {
         super();
+        this._webContents = webContents;
         ipcMain.on(ipcMessages.KeyPress, (event: any, inputEvent: KeyInputEvent) => {
             if (this.onKeyPressed !== undefined) {
                 this.onKeyPressed(inputEvent);
@@ -39,5 +41,10 @@ export default class WindowInputProxy extends WindowInput {
                 this.onMouseMoved(inputEvent);
             }
         });
+    }
+    public queryGamepads() {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.QueryGamepads);
+        }
     }
 }

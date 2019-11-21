@@ -49,6 +49,8 @@ enum ipcMessages {
     Login = "Login",
     Signup = "Signup",
     Connect = "Connect",
-    ModifyComponentMeta = "ModifyComponentMeta"
+    ModifyComponentMeta = "ModifyComponentMeta",
+
+    QueryGamepads = "QueryGamepads"
 }
 export default ipcMessages;

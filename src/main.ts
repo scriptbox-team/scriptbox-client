@@ -39,7 +39,7 @@ function createWindow() {
   });
 
   game = new Game(
-    new WindowInputProxy(),
+    new WindowInputProxy(mainWindow.webContents),
     new ScreenRendererProxy(mainWindow.webContents),
     new AudioPlayerProxy(mainWindow.webContents),
     new UIManager(new LoginUIProxy(mainWindow.webContents), new GameUIProxy(mainWindow.webContents)),

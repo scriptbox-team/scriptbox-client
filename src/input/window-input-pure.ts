@@ -19,22 +19,10 @@ export default class WindowInputPure extends WindowInput {
         const screen = document.getElementById("screen")!;
 
         screen.addEventListener("keydown", (ev) => {
-            const code = ev.keyCode;
-            if (this.onKeyPressed !== undefined && !this._keysPressed.has(ev.keyCode)) {
-                this._keysPressed.add(ev.keyCode);
-                const type = InputType.Press;
-                const e = new KeyInputEvent(0, type, code);
-                this.onKeyPressed(e);
-            }
+            this._handlePress(ev.keyCode);
         });
         screen.addEventListener("keyup", (ev) => {
-            const code = ev.keyCode;
-            if (this.onKeyReleased !== undefined && this._keysPressed.has(ev.keyCode)) {
-                this._keysPressed.delete(ev.keyCode);
-                const type = InputType.Release;
-                const e = new KeyInputEvent(0, type, code);
-                this.onKeyReleased(e);
-            }
+            this._handleRelease(ev.keyCode);
         });
         screen.addEventListener("mousedown", (ev) => {
             const button = ev.button;
@@ -65,5 +53,61 @@ export default class WindowInputPure extends WindowInput {
                 this.onMouseMoved(e);
             }
         });
+    }
+    public queryGamepads() {
+        const gamepads = navigator.getGamepads();
+        for (const gamepad of gamepads) {
+            if (gamepad !== null) {
+                const lr = gamepad.axes[0];
+                const ud = gamepad.axes[1];
+                const deadZone = 0.5;
+                if (lr < -deadZone) {
+                    this._handlePress(37);
+                    this._handleRelease(39);
+                }
+                else if (lr > deadZone) {
+                    this._handlePress(39);
+                    this._handleRelease(37);
+                }
+                else {
+                    this._handleRelease(37);
+                    this._handleRelease(39);
+                }
+                if (ud < -deadZone) {
+                    this._handlePress(38);
+                    this._handleRelease(40);
+                }
+                else if (ud > deadZone) {
+                    this._handlePress(40);
+                    this._handleRelease(38);
+                }
+                else {
+                    this._handleRelease(38);
+                    this._handleRelease(40);
+                }
+                if (gamepad.buttons[0].pressed) {
+                    this._handlePress(90);
+                }
+                else {
+                    this._handleRelease(90);
+                }
+            }
+        }
+    }
+    private _handlePress(keyCode: number) {
+        if (this.onKeyPressed !== undefined && !this._keysPressed.has(keyCode)) {
+            this._keysPressed.add(keyCode);
+            const type = InputType.Press;
+            const e = new KeyInputEvent(0, type, keyCode);
+            this.onKeyPressed(e);
+        }
+    }
+    private _handleRelease(keyCode: number) {
+            if (this.onKeyReleased !== undefined && this._keysPressed.has(keyCode)) {
+                this._keysPressed.delete(keyCode);
+                const type = InputType.Release;
+                const e = new KeyInputEvent(0, type, keyCode);
+                this.onKeyReleased(e);
+            }
     }
 }

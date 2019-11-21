@@ -20,6 +20,9 @@ textarea {
     border: 1px solid #888888aa;
     color: #eeeeee;
     text-shadow: 0px 0px 4px #00000044;
+    overflow: scroll;
+    overflow-wrap: normal;
+    white-space: nowrap;
 }
 
 button {
@@ -89,11 +92,25 @@ button {
 .resources {
     bottom: 1vmin;
     width: 100%;
-    height: 15vmin;
+    height: 20vmin;
     padding-left: 6vmin;
     padding-right: 6vmin;
     box-sizing: border-box;
     position: absolute;
+}
+
+.shared-component-search {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    position: absolute;
+}
+
+.shared-repository {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
 }
 
 .tools {
@@ -152,6 +169,18 @@ button {
     color: #eeeeee;
     border: 1px solid #666666;
     text-shadow: 0px 0px 4px #00000044;
+    height: 100%;
+    overflow-y: scroll;
+    flex: 1 1 auto;
+}
+
+.component-select {
+    background-color: #2b2b2baa;
+    color: #eeeeee;
+    border: 1px solid #666666;
+    text-shadow: 0px 0px 4px #00000044;
+    height: 100%;
+    overflow-y: scroll;
     flex: 1 1 auto;
 }
 
@@ -160,7 +189,7 @@ button {
     color: #eeeeee;
     border: 1px solid #666666;
     text-shadow: 0px 0px 4px #00000044;
-    flex: 0 1 30vmin;
+    flex: 0 1 45vmin;
 }
 
 .resource-display .table-data input {
@@ -203,6 +232,8 @@ button {
     border: 1px solid #666666;
     text-shadow: 0px 0px 4px #00000044;
     flex: 0 1 30vmin;
+    width: 100%;
+    height: 40vmin;
 }
 
 .script-edit .table-data input {
@@ -262,4 +293,8 @@ button {
 
 .resource-display {
     overflow-y: auto;
+}
+
+.titled-window {
+    height: 100%;
 }

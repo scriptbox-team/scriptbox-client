@@ -14,6 +14,8 @@ interface TextureData {
 interface SpriteData {
     globalX: number;
     globalY: number;
+    xScale: number;
+    yScale: number;
     sprite: PIXI.Sprite;
 }
 
@@ -85,6 +87,8 @@ export default class ScreenRendererPure extends ScreenRenderer {
             spriteData = {
                 globalX: 0,
                 globalY: 0,
+                xScale: 1,
+                yScale: 1,
                 sprite: new PIXI.Sprite()
             };
             this._spriteData.set(renderObject.id, spriteData);
@@ -97,8 +101,13 @@ export default class ScreenRendererPure extends ScreenRenderer {
         const localVals = this._camera.transform(spriteData.globalX, spriteData.globalY);
         spriteData.sprite.x = localVals.x;
         spriteData.sprite.y = localVals.y;
+        spriteData.xScale = renderObject.scale.x;
+        spriteData.yScale = renderObject.scale.y;
         spriteData.sprite.zIndex = renderObject.depth;
-        spriteData.sprite.scale = new PIXI.Point(this._camera.xScale, this._camera.yScale);
+        spriteData.sprite.scale = new PIXI.Point(
+            this._camera.xScale * spriteData.xScale,
+            this._camera.yScale * spriteData.yScale
+        );
         spriteData.sprite.texture.frame = this._makeFrameRectangle(
             spriteData.sprite.texture,
             renderObject.textureSubregion
@@ -163,7 +172,10 @@ export default class ScreenRendererPure extends ScreenRenderer {
             const localVals = this._camera.transform(spriteData.globalX, spriteData.globalY);
             spriteData.sprite.x = localVals.x;
             spriteData.sprite.y = localVals.y;
-            spriteData.sprite.scale = new PIXI.Point(this._camera.xScale, this._camera.yScale);
+            spriteData.sprite.scale = new PIXI.Point(
+                this._camera.xScale * spriteData.xScale,
+                this._camera.yScale * spriteData.yScale
+            );
         }
         if (this.reportCameraChange !== undefined) {
             this.reportCameraChange(this._camera);

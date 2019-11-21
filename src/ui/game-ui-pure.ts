@@ -168,7 +168,7 @@ export default class GameUIPure extends GameUI {
                         key: "shared-repository",
                         class: "shared-repository",
                         style: {
-                            top: "30vmin",
+                            top: "20vmin",
                             left: "30vmin",
                             width: "60vmin",
                             height: "60vmin",
@@ -206,9 +206,9 @@ export default class GameUIPure extends GameUI {
                         key: "entity-inspection",
                         class: "entity-inspection",
                         style: {
-                            top: "50vmin",
-                            left: "50vmin",
-                            width: "30vmin",
+                            top: "40vmin",
+                            left: "5vmin",
+                            width: "60vmin",
                             height: "30vmin",
                             position: "absolute"
                         }
