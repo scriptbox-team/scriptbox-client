@@ -76,7 +76,7 @@ export default class ScreenRendererPure extends ScreenRenderer {
         // TODO: Allow players to delete render objects
         if (renderObject.deleted) {
             const spriteToDelete = this._spriteData.get(renderObject.id);
-            if (spriteToDelete !== undefined) {
+            if (spriteToDelete !== undefined && spriteToDelete !== null) {
                 spriteToDelete.sprite.destroy();
             }
             this._spriteData.delete(renderObject.id);
@@ -123,7 +123,9 @@ export default class ScreenRendererPure extends ScreenRenderer {
                 // This is so we can make sure by the time the texture loads it's still relevant
                 const nextTexData = this._currentTextures.get(renderObject.id);
                 if (spriteData !== undefined && time > nextTexData!.time) {
-                    spriteData.sprite.texture.destroy();
+                    if (spriteData.sprite.texture) {
+                        spriteData.sprite.texture.destroy();
+                    }
                     spriteData.sprite.texture = new PIXI.Texture(
                         newBaseTex
                     );
