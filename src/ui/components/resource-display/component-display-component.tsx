@@ -10,7 +10,6 @@ import StringDisplayComponent from "./property-display/string-display-component"
 interface ComponentDisplayProperties {
     id: string;
     name: string;
-    description: string;
     enabled: boolean;
     options: ComponentOption[];
     onOptionUpdate: (option: ComponentOption, newValue: string) => void;
@@ -40,15 +39,6 @@ export default class ComponentDisplayComponent extends React.Component<Component
                 pretty
             />
             <div className="component-id">(ID: {this.props.id})</div>
-            <TextEntryComponent
-                class="component-description"
-                value={this.props.description}
-                onChange={(newVal) => this._onMetaChange("description", newVal)}
-                onSubmit={(newVal) => this._onMetaSubmit("description", newVal)}
-                submitOnEnter
-                submitOnUnfocus
-                pretty
-            />
             <div className="table component-options-table">{
                 this.props.options.map((option: ComponentOption) => {
                     return <div key={option.id} className="table-row">

@@ -57,7 +57,6 @@ export default class ComponentListComponent extends React.Component<ComponentLis
                             id={component.id}
                             name={component.name}
                             enabled={component.enabled}
-                            description={component.description}
                             options={component.options}
                             onOptionUpdate={this._reportOptionUpdate}
                             onDelete={() => this._onDelete(component)}
