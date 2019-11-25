@@ -8,9 +8,9 @@ export default class LoginUIProxy extends LoginUI {
     constructor(webContents: WebContents) {
         super();
         this._webContents = webContents;
-        ipcMain.on(ipcMessages.Login, (event: any, username: string, password: string) => {
+        ipcMain.on(ipcMessages.Login, (event: any, token: string) => {
             if (this.onLogin !== undefined) {
-                this.onLogin(username, password);
+                this.onLogin(token);
             }
         });
         ipcMain.on(ipcMessages.Signup, (event: any, username: string, email: string, password: string) => {
@@ -32,6 +32,11 @@ export default class LoginUIProxy extends LoginUI {
     public setMenu(menu: string) {
         if (!this._webContents.isDestroyed()) {
             this._webContents.send(ipcMessages.LoginUIChangeMenu, menu);
+        }
+    }
+    public setStatus(status: string) {
+        if (!this._webContents.isDestroyed()) {
+            this._webContents.send(ipcMessages.SetLoginStatus, status);
         }
     }
 }
