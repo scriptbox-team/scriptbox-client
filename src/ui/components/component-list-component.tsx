@@ -15,6 +15,7 @@ interface ComponentListProperties {
     onComponentEnableStateChanged: (componentID: string, state: boolean) => void;
     onMetaChange: (componentID: string, option: string, newValue: string) => void;
     onMetaSubmit: (componentID: string, option: string, newValue: string) => void;
+    onMakePrefab: () => void;
     // onInfoChange: (resource: ComponentInfo, kind: string, value: string) => void;
     // onInfoSubmit: (resource: ComponentInfo, kind: string, value: string) => void;
 }
@@ -32,42 +33,53 @@ export default class ComponentListComponent extends React.Component<ComponentLis
         this._onEntityControlChange = this._onEntityControlChange.bind(this);
         this._onToggleEnableState = this._onToggleEnableState.bind(this);
         this._onDelete = this._onDelete.bind(this);
+        this._onMakePrefab = this._onMakePrefab.bind(this);
     }
     public render() {
-        return <div className="component-list">
-            <GridListComponent<ComponentInfo, string>
-                class="component-select"
-                direction="vertical"
-                resources={this.props.components}
-                onClick={this._setComponent}
-            >
-            {this.props.children}
-            </GridListComponent>
-            <NamedImageButtonComponent
-                id="control"
-                name={this.props.entityControlledByPlayer ? "Release" : "Control"}
-                image=""
-                onClick={() => this._onEntityControlChange(!this.props.entityControlledByPlayer)}
-            />
-            {(() => {
-                if (this.state.selectedComponentID !== undefined) {
-                    const component = this._getComponent(this.state.selectedComponentID);
-                    if (component !== undefined) {
-                        return <ComponentDisplayComponent
-                            id={component.id}
-                            name={component.name}
-                            enabled={component.enabled}
-                            options={component.options}
-                            onOptionUpdate={this._reportOptionUpdate}
-                            onDelete={() => this._onDelete(component)}
-                            onToggleEnableState={this._onToggleEnableState}
-                            onMetaChange={(id, option, newVal) => this._onMetaChange(id, option, newVal)}
-                            onMetaSubmit={(id, option, newVal) => this._onMetaSubmit(id, option, newVal)}
-                        />;
+        return <div className="component-inspection">
+            <div className="component-list">
+                <GridListComponent<ComponentInfo, string>
+                    class="component-select"
+                    direction="vertical"
+                    resources={this.props.components}
+                    onClick={this._setComponent}
+                >
+                {this.props.children}
+                </GridListComponent>
+                {(() => {
+                    if (this.state.selectedComponentID !== undefined) {
+                        const component = this._getComponent(this.state.selectedComponentID);
+                        if (component !== undefined) {
+                            return <ComponentDisplayComponent
+                                id={component.id}
+                                name={component.name}
+                                enabled={component.enabled}
+                                options={component.options}
+                                onOptionUpdate={this._reportOptionUpdate}
+                                onDelete={() => this._onDelete(component)}
+                                onToggleEnableState={this._onToggleEnableState}
+                                onMetaChange={(id, option, newVal) => this._onMetaChange(id, option, newVal)}
+                                onMetaSubmit={(id, option, newVal) => this._onMetaSubmit(id, option, newVal)}
+                            />;
+                        }
                     }
-                }
-                return <div className="component-display">Choose a component to inspect.</div>;
-            })()}
+                    return <div className="component-display">Choose a component to inspect.</div>;
+                })()}
+            </div>
+            <div className="entity-buttons">
+                <NamedImageButtonComponent
+                    id="control"
+                    name={this.props.entityControlledByPlayer ? "Release" : "Control"}
+                    image=""
+                    onClick={() => this._onEntityControlChange(!this.props.entityControlledByPlayer)}
+                />
+                <NamedImageButtonComponent
+                    id="make-prefab"
+                    name="Make Prefab"
+                    image=""
+                    onClick={() => this._onMakePrefab()}
+                />
+            </div>
         </div>;
     }
     private _setComponent(id?: string) {
@@ -95,5 +107,8 @@ export default class ComponentListComponent extends React.Component<ComponentLis
     }
     private _onMetaSubmit(id: string, option: string, newValue: string) {
         this.props.onMetaSubmit(id, option, newValue);
+    }
+    private _onMakePrefab() {
+        this.props.onMakePrefab();
     }
 }

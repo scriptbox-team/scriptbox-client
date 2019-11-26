@@ -133,11 +133,13 @@ button {
 
 .chat-scroll {
     flex: 1 1 auto;
+    overflow-y: none;
 }
 
 .chat-display {
     flex: 1 1 auto;
     display: flex;
+    overflow-y: auto;
 }
 
 .chat-entry {

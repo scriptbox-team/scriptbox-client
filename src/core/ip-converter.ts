@@ -16,6 +16,9 @@ export default class IPConverter {
     public static toHTTP(ipAndPort: string) {
         return IPConverter.to("http", ipAndPort);
     }
+    public static toHTTPS(ipAndPort: string) {
+        return IPConverter.to("https", ipAndPort);
+    }
     public static toWS(ipAndPort: string) {
         return IPConverter.to("ws", ipAndPort);
     }

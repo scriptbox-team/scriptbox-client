@@ -24,6 +24,7 @@ import ResourceAPIInterfaceProxy from "networking/resource-api-interface-proxy";
 import UIManager from "ui/ui-manager";
 import LoginUIProxy from "ui/login-ui-proxy";
 import AudioPlayerProxy from "sound/audio-player-proxy";
+import LoginAPIInterfaceProxy from "networking/login-api-interface-proxy";
 /* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
@@ -43,7 +44,8 @@ function createWindow() {
     new ScreenRendererProxy(mainWindow.webContents),
     new AudioPlayerProxy(mainWindow.webContents),
     new UIManager(new LoginUIProxy(mainWindow.webContents), new GameUIProxy(mainWindow.webContents)),
-    new ResourceAPIInterfaceProxy(mainWindow.webContents)
+    new ResourceAPIInterfaceProxy(mainWindow.webContents),
+    new LoginAPIInterfaceProxy(mainWindow.webContents)
   );
 
   mainWindow.on("ready-to-show", () => {

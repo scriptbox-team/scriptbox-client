@@ -17,7 +17,7 @@ export default class InputHandler {
     // TODO: Replace all "| undefined" definitions possible with ? after var name
     public onKeyRelease: ((e: KeyInputEvent) => void) | undefined;
     public onKeyPress: ((e: KeyInputEvent) => void) | undefined;
-    public onPlace: ((prefab: string, x: number, y: number) => void) | undefined;
+    public onPlace: ((x: number, y: number) => void) | undefined;
     public onErase: ((id: string) => void) | undefined;
     public onEdit: ((id: string | undefined) => void) | undefined;
 
@@ -85,7 +85,7 @@ export default class InputHandler {
             }
             case ToolType.Place: {
                 const clickPos = this._camera.invTransform(event.x, event.y);
-                this.onPlace!("", clickPos.x, clickPos.y);
+                this.onPlace!(clickPos.x, clickPos.y);
                 break;
             }
             case ToolType.Erase: {

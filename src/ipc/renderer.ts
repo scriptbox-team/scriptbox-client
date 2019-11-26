@@ -23,7 +23,7 @@ import "source-map-support/register";
 import {setDebugLogTypes, DebugLogType} from "core/debug-logger";
 import { ipcRenderer } from "electron";
 import { ToolType } from "input/tool-type";
-import WindowInput from "input/window-input-pure";
+import WindowInputPure from "input/window-input-pure";
 import RenderObject from "resource-management/render-object";
 import ScreenRendererPure from "rendering/screen-renderer-pure";
 import ipcMessages from "./ipc-messages";
@@ -36,9 +36,10 @@ import LoginUIPure from "ui/login-ui-pure";
 import Camera from "rendering/camera";
 import AudioPlayerPure from "sound/audio-player-pure";
 import AudioObject from "resource-management/audio-object";
+import LoginAPIInterfacePure from "networking/login-api-interface-pure";
 /* tslint:enable */
 
-const windowInputPure = new WindowInput();
+const windowInputPure = new WindowInputPure();
 
 // We need to set up the debug log types again because this is (possibly) a different context
 // Could just make all the debug stuff go to the console or something
@@ -142,6 +143,9 @@ const resourceAPIInterfacePure = new ResourceAPIInterfacePure();
 resourceAPIInterfacePure.onTokenRequest = (tokenType: TokenType) => {
     ipcRenderer.send(ipcMessages.ResourceAPITokenRequest, tokenType);
 };
+
+const loginAPIInterfacePure = new LoginAPIInterfacePure();
+
 // Manually hook up the UI manager to the file sender so we don't have to go through the process
 // This avoids copying + reviving the file information which would be a massive pain
 gameUIPure.onResourceUpload = (files: FileList, resourceID?: string) => {
@@ -162,6 +166,12 @@ gameUIPure.onComponentEnableState = (componentID: string, state: boolean) => {
 };
 gameUIPure.onEntityControl = (entity?: string) => {
     ipcRenderer.send(ipcMessages.SetEntityControl, entity);
+};
+gameUIPure.onMakePrefab = (entityID: string) => {
+    ipcRenderer.send(ipcMessages.CreatePrefab, entityID);
+};
+gameUIPure.onResourceSelect = (resourceID: string | undefined) => {
+    ipcRenderer.send(ipcMessages.ResourceSelect, resourceID);
 };
 
 ipcRenderer.on(ipcMessages.GameUIRender, (event: any) => {
@@ -200,12 +210,35 @@ ipcRenderer.on(ipcMessages.LoginUIRender, (event: any) => {
 ipcRenderer.on(ipcMessages.LoginUIChangeMenu, (event: any, menu: string) => {
     loginUIPure.setMenu(menu);
 });
+ipcRenderer.on(ipcMessages.SetLoginStatus, (event: any, status: string) => {
+    loginUIPure.setStatus(status);
+});
 loginUIPure.onConnect = (server: string) => {
     ipcRenderer.send(ipcMessages.Connect, server);
 };
-loginUIPure.onLogin = (username: string, password: string) => {
-    ipcRenderer.send(ipcMessages.Login, username, password);
+loginUIPure.onLoginAttempt = (username: string, password: string) => {
+    loginAPIInterfacePure.login(username, password)
+        .then((res) => {
+            loginUIPure.login(res);
+        })
+        .catch((err) => {
+            loginUIPure.setStatus(err);
+        });
 };
+loginUIPure.onLogin = (token: string) => {
+    ipcRenderer.send(ipcMessages.Login, token);
+};
+
 loginUIPure.onSignup = (username: string, email: string, password: string) => {
-    ipcRenderer.send(ipcMessages.Signup, username, email, password);
+    loginAPIInterfacePure.signup(username, email, password)
+        .then((res) => {
+            loginUIPure.setStatus(res);
+        })
+        .catch((err) => {
+            loginUIPure.setStatus(err);
+        });
 };
+
+ipcRenderer.on(ipcMessages.SetupLoginIP, (event: any, ip: string) => {
+    loginAPIInterfacePure.setIP(ip);
+});

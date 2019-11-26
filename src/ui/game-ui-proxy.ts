@@ -85,6 +85,16 @@ export default class GameUIProxy extends GameUI {
                 this.onModifyComponentMeta(componentID, option, value);
             }
         });
+        ipcMain.on(ipcMessages.CreatePrefab, (event: any, entityID: string) => {
+            if (this.onMakePrefab !== undefined) {
+                this.onMakePrefab(entityID);
+            }
+        });
+        ipcMain.on(ipcMessages.ResourceSelect, (event: any, resourceID: string) => {
+            if (this.onResourceSelect !== undefined) {
+                this.onResourceSelect(resourceID !== null ? resourceID : undefined);
+            }
+        });
     }
     public render() {
         if (!this._webContents.isDestroyed()) {
