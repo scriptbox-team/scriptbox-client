@@ -12,7 +12,6 @@ export default class AudioPlayerPure extends AudioPlayer {
     constructor() {
         super();
         this._soundFetcher = new ResourceFetcher<PIXI.sound.Sound>("audio", (res) => {
-            console.log(res);
             return PIXI.sound.Sound.from({source: res.data});
         });
         this._activeSounds = {};

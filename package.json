@@ -22,6 +22,8 @@
     "start": "npm run start-electron",
     "start-electron": "electron ./dist/electron/main.js",
     "start-web": "npm run serve",
+    "soak-test": "npm-run-all --parallel soak-single soak-single soak-single soak-single soak-single soak-single",
+    "soak-single": "cd ./dist/electron && node main-soak-test.js",
     "manual-test": "node ./dist/electron/manual_tests/main.js",
     "serve": "live-server dist/web"
   },
