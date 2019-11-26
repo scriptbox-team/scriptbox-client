@@ -10,14 +10,14 @@ export default class TitledWindowComponent extends React.Component<TitledWindowP
     public render() {
         return <div className="titled-window">
             <div className="window-titlebar">
-                <div className="window-title">{this.props.title}</div>
+                <span className="window-title">{this.props.title}</span>
                 {(() => {
                     if (this.props.closeable) {
-                        return <div className="window-close-button">
+                        return <span className="window-close-button">
                             <button className="window-close-button" onClick={this.props.onClose}>
                                 <span className="x-button">x</span>
                             </button>
-                        </div>;
+                        </span>;
                     }
                 })()}
             </div>

@@ -15,9 +15,21 @@ export default class ClickDetector {
                 clickable.position.y
             );
             const transformedBottomRight = camera.transform(
-                clickable.position.x + clickable.textureSubregion.width,
-                clickable.position.y + clickable.textureSubregion.height
+                clickable.position.x + clickable.textureSubregion.width * clickable.scale.x,
+                clickable.position.y + clickable.textureSubregion.height * clickable.scale.y
             );
+
+            if (transformedBottomRight.x < transformedTopLeft.x) {
+                const tmp = transformedBottomRight.x;
+                transformedBottomRight.x = transformedTopLeft.x;
+                transformedTopLeft.x = tmp;
+            }
+
+            if (transformedBottomRight.y < transformedTopLeft.y) {
+                const tmp = transformedBottomRight.y;
+                transformedBottomRight.y = transformedTopLeft.y;
+                transformedTopLeft.y = tmp;
+            }
 
             if (x >= transformedTopLeft.x && x < transformedBottomRight.x
                     && y >= transformedTopLeft.y && y < transformedBottomRight.y) {

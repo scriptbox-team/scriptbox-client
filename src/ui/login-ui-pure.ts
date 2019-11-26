@@ -4,6 +4,7 @@ import * as ReactDOM from "react-dom";
 import ConnectComponent from "./components/menus/connect-component";
 import LoginComponent from "./components/menus/login-component";
 import SignupComponent from "./components/menus/signup-component";
+import TitleComponent from "./components/title-component";
 import UIElementComponent from "./components/ui-element-component";
 import LoginUI from "./login-ui";
 
@@ -18,14 +19,20 @@ export default class LoginUIPure extends LoginUI {
         this._connect = this._connect.bind(this);
     }
     public render() {
-        let elems: Array<React.ComponentElement<any, any>> = [];
+        let elems: Array<React.ComponentElement<any, any>> = [
+            React.createElement(TitleComponent,
+                {
+                    title: "Scriptbox"
+                }
+            )
+        ];
         switch (this._currentMenu) {
             case "login": {
-                elems = [
+                elems = elems.concat([
                     React.createElement(UIElementComponent,
                         {
-                            key: "login-window",
-                            class: "login-window"
+                            key: "login-element",
+                            class: "login-element"
                         },
                         React.createElement(
                             LoginComponent,
@@ -37,15 +44,15 @@ export default class LoginUIPure extends LoginUI {
                             []
                         )
                     )
-                ];
+                ]);
                 break;
             }
             case "signup": {
-                elems = [
+                elems = elems.concat([
                     React.createElement(UIElementComponent,
                         {
-                            key: "login-window",
-                            class: "login-window"
+                            key: "signup-element",
+                            class: "signup-element"
                         },
                         React.createElement(
                             SignupComponent,
@@ -57,15 +64,15 @@ export default class LoginUIPure extends LoginUI {
                             []
                         )
                     )
-                ];
+                ]);
                 break;
             }
             case "connect": {
-                elems = [
+                elems = elems.concat([
                     React.createElement(UIElementComponent,
                         {
-                            key: "connect-window",
-                            class: "connect-window"
+                            key: "connect-element",
+                            class: "connect-element"
                         },
                         React.createElement(
                             ConnectComponent,
@@ -75,7 +82,7 @@ export default class LoginUIPure extends LoginUI {
                             []
                         )
                     )
-                ];
+                ]);
                 break;
             }
         }
