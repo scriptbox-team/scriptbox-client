@@ -22,10 +22,14 @@ export default class LoginAPIInterfacePure extends LoginAPIInterface {
         };
         return new Promise<string>((resolve, reject) => {
             request.onload = () => {
-                resolve(request.responseText);
+                if (request.status !== 200) {
+                    reject(request.responseText);
+                }
+                else {
+                    resolve(request.responseText);
+                }
             };
             request.onerror = (err) => {
-                console.log(`Problem uploading files! ${err}`);
                 reject(err);
             };
             request.send(formData);
@@ -45,10 +49,14 @@ export default class LoginAPIInterfacePure extends LoginAPIInterface {
         };
         return new Promise<string>((resolve, reject) => {
             request.onload = () => {
-                resolve(request.responseText);
+                if (request.status !== 200) {
+                    reject(request.responseText);
+                }
+                else {
+                    resolve(request.responseText);
+                }
             };
             request.onerror = (err) => {
-                console.log(`Problem uploading files! ${err}`);
                 reject(err);
             };
             request.send(formData);

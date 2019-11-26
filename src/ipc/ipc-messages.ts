@@ -43,6 +43,8 @@ enum ipcMessages {
     EditScript = "EditScript",
     RequestEditScript = "RequestEditScript",
     SearchResourceRepo = "SearchResourceRepo",
+    CreatePrefab = "CreatePrefab",
+    ResourceSelect = "ChangeResource",
 
     LoginUIRender = "LoginUIRender",
     LoginUIChangeMenu = "LoginUIChangeMenu",

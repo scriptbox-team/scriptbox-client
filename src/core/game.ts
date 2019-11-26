@@ -18,6 +18,7 @@ import ClientExecuteScriptPacket from "networking/packets/client-execute-script-
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
 import ClientModifyComponentMetaPacket from "networking/packets/client-modify-component-meta-packet";
 import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
+import ClientPrefabCreationPacket from "networking/packets/client-prefab-creation-packet";
 import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
 import ClientRequestEditScriptPacket from "networking/packets/client-request-edit-script-packet";
 import ClientSearchResourceRepoPacket from "networking/packets/client-search-resource-repo-packet";
@@ -59,6 +60,7 @@ export default class Game {
     private _resourceAPIURL?: string;
     private _loginToken?: string;
     private _loginInterface: LoginAPIInterface;
+    private _selectedResource?: string;
     /**
      * Creates an instance of Game.
      * This will take in different parameters depending on whether it's running through electron or browser.
@@ -243,6 +245,17 @@ export default class Game {
                 )
             );
         };
+        this._uiManager.gameUI.onMakePrefab = (entityID: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.CreatePrefab,
+                    new ClientPrefabCreationPacket(entityID)
+                )
+            );
+        };
+        this._uiManager.gameUI.onResourceSelect = (resourceID: string | undefined) => {
+            this._selectedResource = resourceID;
+        };
         this._uiManager.loginUI.onLogin = (token: string) => {
             this._loginToken = token;
             this._uiManager.loginUI.setMenu("connect");
@@ -337,8 +350,9 @@ export default class Game {
                 new ClientNetEvent(ClientEventType.Input, packet)
             );
         };
-        this._inputHandler.onPlace = (prefabID: string, x: number, y: number) => {
-            const packet = new ClientEntityCreationPacket(prefabID, x, y);
+        this._inputHandler.onPlace = (x: number, y: number) => {
+            const prefabID = this._selectedResource === undefined ? "" : this._selectedResource;
+            const packet = new ClientEntityCreationPacket(prefabID!, x, y);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.EntityCreation, packet)
             );

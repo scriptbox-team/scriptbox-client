@@ -167,6 +167,12 @@ gameUIPure.onComponentEnableState = (componentID: string, state: boolean) => {
 gameUIPure.onEntityControl = (entity?: string) => {
     ipcRenderer.send(ipcMessages.SetEntityControl, entity);
 };
+gameUIPure.onMakePrefab = (entityID: string) => {
+    ipcRenderer.send(ipcMessages.CreatePrefab, entityID);
+};
+gameUIPure.onResourceSelect = (resourceID: string | undefined) => {
+    ipcRenderer.send(ipcMessages.ResourceSelect, resourceID);
+};
 
 ipcRenderer.on(ipcMessages.GameUIRender, (event: any) => {
     gameUIPure.render();
