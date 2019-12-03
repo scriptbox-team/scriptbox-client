@@ -29,28 +29,28 @@ export default class SignupComponent extends React.Component<SignupProperties, S
     }
     public render() {
         return <div className="signup-window">
-            <TextEntryComponent
+            Username: <TextEntryComponent
                 class="username-entry"
                 value={this.state.username}
                 onChange={this._changeUsername}
-            />
-            <TextEntryComponent
+            /><br/>
+            Email: <TextEntryComponent
                 class="email-entry"
                 value={this.state.email}
                 onChange={this._changeEmail}
-            />
-            <TextEntryComponent
+            /><br/>
+            Password: <TextEntryComponent
                 class="password-entry"
                 value={this.state.password}
                 onChange={this._changePassword}
                 hide
-            />
-            <TextEntryComponent
+            /><br/>
+            Password again: <TextEntryComponent
                 class="password-entry"
                 value={this.state.passwordAgain}
                 onChange={this._changeReenteredPassword}
                 hide
-            />
+            /><br/>
             <span className="status">{this.props.status}</span>
             <NamedImageButtonComponent
                 id="login"

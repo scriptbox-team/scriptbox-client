@@ -25,17 +25,17 @@ export default class LoginComponent extends React.Component<LoginProperties, Log
     }
     public render() {
         return <div className="login-window">
-            <TextEntryComponent
+            Username: <TextEntryComponent
                 class="username-entry"
                 value={this.state.username}
                 onChange={this._changeUsername}
-            />
-            <TextEntryComponent
+            /><br/>
+            Password: <TextEntryComponent
                 class="password-entry"
                 value={this.state.password}
                 onChange={this._changePassword}
                 hide
-            />
+            /><br/>
             <NamedImageButtonComponent
                 id="login"
                 image=""
