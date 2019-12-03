@@ -101,7 +101,7 @@ export default class GameUIPure extends GameUI {
                             this._resourcePropertySubmit(resource, kind, newValue);
                         },
                         onResourceChange: (resourceID?: string) => {
-                            this._selectedResource = resourceID;
+                            this._selectResource(resourceID);
                         },
                         selectedResourceID: this._selectedResource
                         // TODO: Change functions like "report xxx" to better names
@@ -242,6 +242,11 @@ export default class GameUIPure extends GameUI {
                                     (this._entityData.find((info) => info.id === resourceID)! as any)[option] = value;
                                     console.log((this._entityData.find((info) => info.id === resourceID)!));
                                     this._unsetModifiedComponentMeta(resourceID, option);
+                                },
+                                onMakePrefab: () => {
+                                    if (this._inspectedEntity !== undefined) {
+                                        this.onMakePrefab!(this._inspectedEntity);
+                                    }
                                 }
                             },
                             React.createElement(
@@ -450,6 +455,7 @@ export default class GameUIPure extends GameUI {
     }
 
     private _reportResourceDeletion = (resourceID: string) => {
+        this._selectResource(undefined);
         this.onResourceDelete!(resourceID);
     }
     private _reportComponentDeletion = (componentID: string) => {
@@ -560,6 +566,13 @@ export default class GameUIPure extends GameUI {
     private _cloneResource(resource: Resource) {
         if (this.onCloneResource !== undefined) {
             this.onCloneResource(resource.id);
+        }
+    }
+
+    private _selectResource(resourceID: string | undefined) {
+        this._selectedResource = resourceID;
+        if (this.onResourceSelect !== undefined) {
+            this.onResourceSelect(this._selectedResource);
         }
     }
 }

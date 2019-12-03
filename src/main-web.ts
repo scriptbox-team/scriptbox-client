@@ -1,5 +1,6 @@
 import Game from "core/game";
 import WindowInputPure from "input/window-input-pure";
+import LoginAPIInterfacePure from "networking/login-api-interface-pure";
 import ResourceAPIInterfacePure from "networking/resource-api-interface-pure";
 import ScreenRendererPure from "rendering/screen-renderer-pure";
 import AudioPlayerPure from "sound/audio-player-pure";
@@ -15,6 +16,7 @@ const game = new Game(
     new ScreenRendererPure(1920, 1080),
     new AudioPlayerPure(),
     new UIManager(new LoginUIPure(), new GameUIPure()),
-    new ResourceAPIInterfacePure()
+    new ResourceAPIInterfacePure(),
+    new LoginAPIInterfacePure()
 );
 game.start();

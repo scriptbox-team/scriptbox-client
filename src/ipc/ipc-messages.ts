@@ -43,13 +43,17 @@ enum ipcMessages {
     EditScript = "EditScript",
     RequestEditScript = "RequestEditScript",
     SearchResourceRepo = "SearchResourceRepo",
+    CreatePrefab = "CreatePrefab",
+    ResourceSelect = "ChangeResource",
 
     LoginUIRender = "LoginUIRender",
     LoginUIChangeMenu = "LoginUIChangeMenu",
     Login = "Login",
     Signup = "Signup",
     Connect = "Connect",
+    SetLoginStatus = "SetLoginStatus",
     ModifyComponentMeta = "ModifyComponentMeta",
+    SetupLoginIP = "SetupLoginIP",
 
     QueryGamepads = "QueryGamepads"
 }
