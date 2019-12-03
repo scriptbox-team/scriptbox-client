@@ -85,6 +85,10 @@ export default class InputHandler {
             }
             case ToolType.Place: {
                 const clickPos = this._camera.invTransform(event.x, event.y);
+                if (event.button === 2) {
+                    clickPos.x = Math.floor(clickPos.x / 32) * 32;
+                    clickPos.y = Math.floor(clickPos.y / 32) * 32;
+                }
                 this.onPlace!(clickPos.x, clickPos.y);
                 break;
             }
