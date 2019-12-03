@@ -39,12 +39,12 @@ export default class NetworkSystem {
      *
      * @memberof NetworkSystem
      */
-    public connect(address: string, userToken: string) {
+    public connect(address: string, username: string, userToken: string) {
         this._serverAddress = address;
         this._netConnection = new NetConnection({address: this._serverAddress});
         this._networkRecievingSubsystem.setNetConnection(this._netConnection);
         this._networkSendingSubsystem.setNetConnection(this._netConnection);
-        this._netConnection.connect(userToken);
+        this._netConnection.connect(username, userToken);
     }
 
     /**

@@ -95,13 +95,13 @@ export default class LoginUIPure extends LoginUI {
     public setStatus(status: string) {
         this._statusMessage = status;
     }
-    public login(token: string) {
-        this._login(token);
+    public login(username: string, token: string) {
+        this._login(username, token);
     }
-    private _login(token: string) {
+    private _login(username: string, token: string) {
         // Temporary code
         // Eventually this should interface with the login server
-        this.onLogin(token);
+        this.onLogin(username, token);
     }
     private _loginAttempt(username: string, password: string) {
         // Temporary code

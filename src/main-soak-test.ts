@@ -23,12 +23,14 @@ import GameUIMock from "ui/game-ui-mock";
 import LoginUIMock from "ui/login-ui-mock";
 import UIManager from "ui/ui-manager";
 import GameSoak from "core/game-soak";
+import LoginAPIInterfaceMock from "networking/login-api-interface-mock";
 
 const game = new GameSoak(
   new WindowInputMock(),
   new ScreenRendererMock(),
   new AudioPlayerMock(),
   new UIManager(new LoginUIMock(), new GameUIMock()),
-  new ResourceAPIInterfaceMock()
+  new ResourceAPIInterfaceMock(),
+  new LoginAPIInterfaceMock()
 );
 game.start();

@@ -8,9 +8,9 @@ export default class LoginUIProxy extends LoginUI {
     constructor(webContents: WebContents) {
         super();
         this._webContents = webContents;
-        ipcMain.on(ipcMessages.Login, (event: any, token: string) => {
+        ipcMain.on(ipcMessages.Login, (event: any, username: string, token: string) => {
             if (this.onLogin !== undefined) {
-                this.onLogin(token);
+                this.onLogin(username, token);
             }
         });
         ipcMain.on(ipcMessages.Signup, (event: any, username: string, email: string, password: string) => {

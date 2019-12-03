@@ -59,6 +59,7 @@ export default class Game {
     private _resourceAPIInterface: ResourceAPIInterface;
     private _resourceAPIURL?: string;
     private _loginToken?: string;
+    private _loginUsername?: string;
     private _loginInterface: LoginAPIInterface;
     private _selectedResource?: string;
     /**
@@ -256,14 +257,15 @@ export default class Game {
         this._uiManager.gameUI.onResourceSelect = (resourceID: string | undefined) => {
             this._selectedResource = resourceID;
         };
-        this._uiManager.loginUI.onLogin = (token: string) => {
+        this._uiManager.loginUI.onLogin = (username: string, token: string) => {
             this._loginToken = token;
+            this._loginUsername = username;
             this._uiManager.loginUI.setMenu("connect");
         };
         this._uiManager.loginUI.onLoginAttempt = (username: string, password: string) => {
             this._loginInterface.login(username, password)
                 .then((res) => {
-                    this._uiManager.loginUI.onLogin(res);
+                    this._uiManager.loginUI.onLogin(username, res);
                 })
                 .catch((err) => {
                     this._uiManager.loginUI.setStatus(err);
@@ -304,7 +306,7 @@ export default class Game {
     }
 
     private _connect(address: string) {
-        this._networkSystem.connect(address, this._loginToken!);
+        this._networkSystem.connect(address, this._loginUsername!, this._loginToken!);
     }
 
     /**

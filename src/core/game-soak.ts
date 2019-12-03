@@ -6,6 +6,7 @@ import MouseInputEvent from "input/mouse-input-event";
 import { ToolType } from "input/tool-type";
 import WindowInput from "input/window-input";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
+import LoginAPIInterface from "networking/login-api-interface";
 import NetworkSystem from "networking/network-system";
 import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
 import ClientCloneResourcePacket from "networking/packets/client-clone-resource-packet";
@@ -15,7 +16,9 @@ import ClientEntityDeletionPacket from "networking/packets/client-entity-deletio
 import ClientEntityInspectionPacket from "networking/packets/client-entity-inspection-packet";
 import ClientExecuteScriptPacket from "networking/packets/client-execute-script-packet";
 import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
+import ClientModifyComponentMetaPacket from "networking/packets/client-modify-component-meta-packet";
 import ClientModifyMetadataPacket from "networking/packets/client-modify-metadata-packet";
+import ClientPrefabCreationPacket from "networking/packets/client-prefab-creation-packet";
 import ClientRemoveComponentPacket from "networking/packets/client-remove-component-packet";
 import ClientRequestEditScriptPacket from "networking/packets/client-request-edit-script-packet";
 import ClientSearchResourceRepoPacket from "networking/packets/client-search-resource-repo-packet";
@@ -29,6 +32,8 @@ import ServerDisconnectionPacket from "networking/packets/server-disconnection-p
 import ServerDisplayPacket from "networking/packets/server-display-packet";
 import ServerEntityInspectionListingPacket from "networking/packets/server-entity-inspection-listing-packet";
 import ServerResourceListingPacket from "networking/packets/server-resource-listing-packet";
+import ServerResourceRepoListPacket from "networking/packets/server-resource-repo-list-packet";
+import ServerScriptTextPacket from "networking/packets/server-script-text-packet";
 import ServerSoundPacket from "networking/packets/server-sound-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
@@ -36,9 +41,6 @@ import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
-import ServerResourceRepoListPacket from "networking/packets/server-resource-repo-list-packet";
-import ServerScriptTextPacket from "networking/packets/server-script-text-packet";
-import ClientModifyComponentMetaPacket from "networking/packets/client-modify-component-meta-packet";
 import SoakAI from "./soak-ai";
 
 /**
@@ -47,7 +49,7 @@ import SoakAI from "./soak-ai";
  * @export
  * @class Game
  */
-export default class GameSoak {
+export default class Game {
     private _windowInput: WindowInput;
     private _screenRenderer: ScreenRenderer;
     private _audioPlayer: AudioPlayer;
@@ -58,7 +60,10 @@ export default class GameSoak {
     private _resourceAPIInterface: ResourceAPIInterface;
     private _resourceAPIURL?: string;
     private _loginToken?: string;
+    private _loginUsername?: string;
+    private _loginInterface: LoginAPIInterface;
     private _soakAI: SoakAI;
+    private _selectedResource?: string;
     /**
      * Creates an instance of Game.
      * This will take in different parameters depending on whether it's running through electron or browser.
@@ -70,7 +75,8 @@ export default class GameSoak {
             screenRenderer: ScreenRenderer,
             audioPlayer: AudioPlayer,
             uiManager: UIManager,
-            fileSender: ResourceAPIInterface) {
+            fileSender: ResourceAPIInterface,
+            loginInterface: LoginAPIInterface) {
         setDebugLogTypes([]);
 
         this._connect = this._connect.bind(this);
@@ -81,6 +87,7 @@ export default class GameSoak {
         this._inputHandler = new InputHandler();
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
+        this._loginInterface = loginInterface;
         this._hookupInputs();
         this._networkSystem = new NetworkSystem();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
@@ -243,11 +250,39 @@ export default class GameSoak {
                 )
             );
         };
-        this._uiManager.loginUI.onLogin = (username: string, password: string) => {
-            // We'll just use the login token like a username for now
-            // Eventually this will retrieve the login token from the login server
-            this._loginToken = username;
+        this._uiManager.gameUI.onMakePrefab = (entityID: string) => {
+            this._networkSystem.queue(
+                new ClientNetEvent(
+                    ClientEventType.CreatePrefab,
+                    new ClientPrefabCreationPacket(entityID)
+                )
+            );
+        };
+        this._uiManager.gameUI.onResourceSelect = (resourceID: string | undefined) => {
+            this._selectedResource = resourceID;
+        };
+        this._uiManager.loginUI.onLogin = (username: string, token: string) => {
+            this._loginToken = token;
+            this._loginUsername = username;
             this._uiManager.loginUI.setMenu("connect");
+        };
+        this._uiManager.loginUI.onLoginAttempt = (username: string, password: string) => {
+            this._loginInterface.login(username, password)
+                .then((res) => {
+                    this._uiManager.loginUI.onLogin(username, res);
+                })
+                .catch((err) => {
+                    this._uiManager.loginUI.setStatus(err);
+                });
+        };
+        this._uiManager.loginUI.onSignup = (username: string, email: string, password: string) => {
+            this._loginInterface.signup(username, email, password)
+                .then((res) => {
+                    this._uiManager.loginUI.setStatus(res);
+                })
+                .catch((err) => {
+                    this._uiManager.loginUI.setStatus(err);
+                });
         };
         this._uiManager.loginUI.onConnect = this._connect;
 
@@ -262,7 +297,8 @@ export default class GameSoak {
             );
         };
         this._gameLoop = new GameLoop(this._tick.bind(this), 60);
-        this._loginToken = `Bot ${Math.floor(Math.random() * 10000)}`;
+        this._loginUsername = `Bot ${Math.floor(Math.random() * 10000)}`;
+        this._loginToken = "";
         this._soakAI = new SoakAI(this._networkSystem, this._loginToken, Date.now() + 86400000);
         this._connect("::1:7777");
     }
@@ -273,11 +309,12 @@ export default class GameSoak {
      * @memberof Game
      */
     public start() {
+        this._loginInterface.setIP("::1:9000");
         this._gameLoop.start();
     }
 
     private _connect(address: string) {
-        this._networkSystem.connect(address, this._loginToken!);
+        this._networkSystem.connect(address, this._loginUsername!, this._loginToken!);
     }
 
     /**
@@ -324,8 +361,9 @@ export default class GameSoak {
                 new ClientNetEvent(ClientEventType.Input, packet)
             );
         };
-        this._inputHandler.onPlace = (prefabID: string, x: number, y: number) => {
-            const packet = new ClientEntityCreationPacket(prefabID, x, y);
+        this._inputHandler.onPlace = (x: number, y: number) => {
+            const prefabID = this._selectedResource === undefined ? "" : this._selectedResource;
+            const packet = new ClientEntityCreationPacket(prefabID!, x, y);
             this._networkSystem.queue(
                 new ClientNetEvent(ClientEventType.EntityCreation, packet)
             );

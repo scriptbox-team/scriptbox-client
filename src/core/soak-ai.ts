@@ -45,7 +45,7 @@ export default class SoakAI {
         this._position = pos;
     }
     public update() {
-        if (this._testing && this._random(250) === 0) {
+        if (this._testing && this._random(200) === 0) {
             const now = Date.now();
             if (now > this._testEndTime) {
                 console.log("Soak test client \"" + this._login
@@ -185,7 +185,7 @@ export default class SoakAI {
                     });
                     break;
                 }
-                case 16: case 17: {
+                case 16: case 17: case 18: {
                     // Create object
                     this._networkSystem.queue(
                         new ClientNetEvent(
@@ -199,7 +199,7 @@ export default class SoakAI {
                     );
                     break;
                 }
-                case 19: case 20: {
+                case 19: case 20: case 21: {
                     // Delete object
                     const objs = Array.from(this._visibleObjects.values());
                     if (objs.length > 0) {
@@ -236,18 +236,6 @@ export default class SoakAI {
                             ClientEventType.ChatMessage,
                             new ClientChatMessagePacket(
                                 ">> Math.sqrt(1 + Math.random() * 100) ** (Math.random() * 50)"
-                            )
-                        )
-                    );
-                    break;
-                }
-                case 24: {
-                    // Run script to teleport to start
-                    this._networkSystem.queue(
-                        new ClientNetEvent(
-                            ClientEventType.ChatMessage,
-                            new ClientChatMessagePacket(
-                                ">> entity.with(\"position\", (pos) => {pos.x = 0; pos.y = 0;});"
                             )
                         )
                     );
