@@ -41,6 +41,7 @@ import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
+import SoakAI from "./soak-ai";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
@@ -61,6 +62,7 @@ export default class Game {
     private _loginToken?: string;
     private _loginUsername?: string;
     private _loginInterface: LoginAPIInterface;
+    private _soakAI: SoakAI;
     private _selectedResource?: string;
     /**
      * Creates an instance of Game.
@@ -108,6 +110,7 @@ export default class Game {
                         this._resourceAPIURL,
                         renderObject
                     );
+                    this._soakAI.updateVisibleObject(renderObject);
                 }
             }
             this._inputHandler.updateClickableEntities(packet.displayPackage);
@@ -145,6 +148,7 @@ export default class Game {
         this._networkSystem.netEventHandler.addCameraUpdateDelegate(
                 (packet: ServerCameraUpdatePacket) => {
             this._screenRenderer.updateCamera(packet.x, packet.y, packet.scale, packet.scale);
+            this._soakAI.updatePosition({x: packet.x, y: packet.y});
         });
         this._uiManager.gameUI.onPlayerMessageEntry = (message: string) => {
             console.log("Sent message: " + message);
@@ -293,6 +297,10 @@ export default class Game {
             );
         };
         this._gameLoop = new GameLoop(this._tick.bind(this), 60);
+        this._loginUsername = `Bot ${Math.floor(Math.random() * 10000)}`;
+        this._loginToken = "";
+        this._soakAI = new SoakAI(this._networkSystem, this._loginToken, Date.now() + 86400000);
+        this._connect("::1:7777");
     }
 
     /**
@@ -319,6 +327,7 @@ export default class Game {
         this._windowInput.queryGamepads();
         this._screenRenderer.update();
         this._uiManager.render();
+        this._soakAI.update();
         if (this._networkSystem.connected) {
             this._networkSystem.sendMessages();
         }

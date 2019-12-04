@@ -81,7 +81,7 @@ export default class NetConnection {
      * @param {string} address The address to connect to
      * @memberof NetConnection
      */
-    public async connect(userToken: string) {
+    public async connect(username: string, userToken: string) {
         return new Promise((resolve, reject) => {
             try {
                 this.socket = new WebSocket(this.address);
@@ -93,7 +93,7 @@ export default class NetConnection {
                                 case ServerEventType.ConnectionInfoRequest: {
                                     const ev = new ClientNetEvent(
                                         ClientEventType.ConnectionInfo,
-                                        new ClientConnectionInfoPacket(userToken)
+                                        new ClientConnectionInfoPacket(userToken, username)
                                     );
                                     this.socket!.send(ev.serialize());
                                     break;

@@ -219,7 +219,7 @@ loginUIPure.onConnect = (server: string) => {
 loginUIPure.onLoginAttempt = (username: string, password: string) => {
     loginAPIInterfacePure.login(username, password)
         .then((res) => {
-            loginUIPure.login(res);
+            loginUIPure.login(username, res);
         })
         .catch((err) => {
             loginUIPure.setStatus(err);
