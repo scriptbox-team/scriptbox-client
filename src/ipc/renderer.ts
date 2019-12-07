@@ -225,8 +225,8 @@ loginUIPure.onLoginAttempt = (username: string, password: string) => {
             loginUIPure.setStatus(err);
         });
 };
-loginUIPure.onLogin = (token: string) => {
-    ipcRenderer.send(ipcMessages.Login, token);
+loginUIPure.onLogin = (username: string, token: string) => {
+    ipcRenderer.send(ipcMessages.Login, username, token);
 };
 
 loginUIPure.onSignup = (username: string, email: string, password: string) => {

@@ -21,7 +21,6 @@ export default class LoginAPIInterfaceProxy extends LoginAPIInterface {
     }
     public setIP(url: string) {
         if (!this._webContents.isDestroyed()) {
-            console.log(url);
             this._webContents.send(ipcMessages.SetupLoginIP, url);
         }
     }

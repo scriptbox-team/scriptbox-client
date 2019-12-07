@@ -240,7 +240,6 @@ export default class GameUIPure extends GameUI {
                                         this.onModifyComponentMeta(resourceID, option, value);
                                     }
                                     (this._entityData.find((info) => info.id === resourceID)! as any)[option] = value;
-                                    console.log((this._entityData.find((info) => info.id === resourceID)!));
                                     this._unsetModifiedComponentMeta(resourceID, option);
                                 },
                                 onMakePrefab: () => {

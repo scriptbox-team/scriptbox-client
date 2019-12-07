@@ -43,7 +43,6 @@ export default class LoginAPIInterfacePure extends LoginAPIInterface {
 
         const request = new XMLHttpRequest();
         request.open("POST", IPConverter.toHTTP(path.join(this._ip, "/signup")));
-        console.log(IPConverter.toHTTP(path.join(this._ip, "/signup")));
         request.onprogress = (ev: ProgressEvent) => {
             // Some sort of progress thing here?
         };

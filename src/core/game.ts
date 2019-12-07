@@ -41,6 +41,7 @@ import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
+import ConfigurationLoader from "./configuration-loader";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
@@ -58,10 +59,13 @@ export default class Game {
     private _gameLoop: GameLoop;
     private _resourceAPIInterface: ResourceAPIInterface;
     private _resourceAPIURL?: string;
+    private _loginAPIURL?: string;
     private _loginToken?: string;
     private _loginUsername?: string;
     private _loginInterface: LoginAPIInterface;
     private _selectedResource?: string;
+    private _address?: string;
+    private _configurationLoader: ConfigurationLoader;
     /**
      * Creates an instance of Game.
      * This will take in different parameters depending on whether it's running through electron or browser.
@@ -74,7 +78,8 @@ export default class Game {
             audioPlayer: AudioPlayer,
             uiManager: UIManager,
             fileSender: ResourceAPIInterface,
-            loginInterface: LoginAPIInterface) {
+            loginInterface: LoginAPIInterface,
+            configurationLoader: ConfigurationLoader) {
         setDebugLogTypes([]);
 
         this._connect = this._connect.bind(this);
@@ -86,10 +91,17 @@ export default class Game {
         this._uiManager = uiManager;
         this._resourceAPIInterface = fileSender;
         this._loginInterface = loginInterface;
+        this._configurationLoader = configurationLoader;
         this._hookupInputs();
         this._networkSystem = new NetworkSystem();
         this._networkSystem.netEventHandler.addConnectionDelegate((packet: ServerConnectionPacket) => {
-            this._resourceAPIURL = packet.resourceServerIP;
+            let resourceServerIP = "::1:7778";
+            if (this._address !== undefined) {
+                resourceServerIP
+                    = `${this._address.substr(0, this._address.lastIndexOf(":"))}:${packet.resourceServerIP}`;
+            }
+            console.log(resourceServerIP);
+            this._resourceAPIURL = resourceServerIP;
             this._resourceAPIInterface.setIP(this._resourceAPIURL);
             this._uiManager.setUI("game");
             console.log("Connected to server.");
@@ -294,18 +306,19 @@ export default class Game {
         };
         this._gameLoop = new GameLoop(this._tick.bind(this), 60);
     }
-
     /**
      * Start the game.
      *
      * @memberof Game
      */
-    public start() {
-        this._loginInterface.setIP("::1:9000");
+    public async start() {
+        await this.loadConfiguration("./config.json");
+        this._loginInterface.setIP(this._loginAPIURL!);
         this._gameLoop.start();
     }
 
     private _connect(address: string) {
+        this._address = address;
         this._networkSystem.connect(address, this._loginUsername!, this._loginToken!);
     }
 
@@ -322,6 +335,11 @@ export default class Game {
         if (this._networkSystem.connected) {
             this._networkSystem.sendMessages();
         }
+    }
+
+    private async loadConfiguration(path: string) {
+        const config = await this._configurationLoader.loadConfig(path);
+        this._loginAPIURL = config.loginIP;
     }
 
     private _hookupInputs() {
