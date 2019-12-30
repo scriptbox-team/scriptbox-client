@@ -11,6 +11,13 @@ interface SoundDisplayProperties {
     locked?: boolean;
 }
 
+/**
+ * A component for displaying the information of a sound resource.
+ *
+ * @export
+ * @class SoundDisplayComponent
+ * @extends {React.Component<SoundDisplayProperties>}
+ */
 export default class SoundDisplayComponent extends React.Component<SoundDisplayProperties> {
     public render() {
         return <div className="resource-display-component">

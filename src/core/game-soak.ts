@@ -45,6 +45,7 @@ import SoakAI from "./soak-ai";
 
 /**
  * The base class of the game. Contains all of the systems necessary to run the game, and the game loop.
+ * This is a special version for use with a soak test.
  *
  * @export
  * @class Game
@@ -309,7 +310,7 @@ export default class Game {
      * @memberof Game
      */
     public start() {
-        this._loginInterface.setIP("::1:9000");
+        this._loginInterface.setURL("http://[::1]:9000/");
         this._gameLoop.start();
     }
 

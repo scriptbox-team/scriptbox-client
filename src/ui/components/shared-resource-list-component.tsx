@@ -18,6 +18,13 @@ interface SharedResourceListProperties {
     selectedResourceID?: string;
 }
 
+/**
+ * A component for displaying a list of resources in the shared resources window.
+ *
+ * @export
+ * @class SharedResourceListComponent
+ * @extends {React.Component<SharedResourceListProperties>}
+ */
 export default class SharedResourceListComponent extends React.Component<SharedResourceListProperties> {
     constructor(props: SharedResourceListProperties) {
         super(props);
@@ -26,7 +33,7 @@ export default class SharedResourceListComponent extends React.Component<SharedR
     public render() {
         return <div className="shared-list">
             <GridListComponent
-                class="resource-select"
+                class="shared-resource-select"
                 direction="vertical"
                 resources={this.props.resources}
                 onClick={this._setResource}

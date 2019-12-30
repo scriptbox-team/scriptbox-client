@@ -7,6 +7,13 @@ interface BooleanDisplayProperties {
     onChange: (newValue: string) => void;
 }
 
+/**
+ * A react component for displaying an individual boolean property of a game entity component.
+ *
+ * @export
+ * @class BooleanDisplayComponent
+ * @extends {React.Component<BooleanDisplayProperties>}
+ */
 export default class BooleanDisplayComponent extends React.Component<BooleanDisplayProperties> {
     public render() {
         return <input

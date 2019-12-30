@@ -10,6 +10,13 @@ interface ScriptDisplayProperties {
     locked?: boolean;
 }
 
+/**
+ * A component for displaying the information of a script resource.
+ *
+ * @export
+ * @class ScriptDisplayComponent
+ * @extends {React.Component<ScriptDisplayProperties>}
+ */
 export default class ScriptDisplayComponent extends React.Component<ScriptDisplayProperties> {
     public render() {
         return <div className="resource-display-component">

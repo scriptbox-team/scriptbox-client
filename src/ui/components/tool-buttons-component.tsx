@@ -13,6 +13,13 @@ interface ToolButtonsProperties {
     onChange: (id: string) => void;
 }
 
+/**
+ * A component that displays several buttons that are used for different tools.
+ *
+ * @export
+ * @class ToolButtonsComponent
+ * @extends {React.Component<ToolButtonsProperties>}
+ */
 export default class ToolButtonsComponent extends React.Component<ToolButtonsProperties> {
     constructor(props: ToolButtonsProperties) {
         super(props);

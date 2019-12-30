@@ -19,6 +19,13 @@ interface ComponentDisplayProperties {
     onToggleEnableState: (state: boolean) => void;
 }
 
+/**
+ * A component for displaying all the information of a game entity component.
+ *
+ * @export
+ * @class ComponentDisplayComponent
+ * @extends {React.Component<ComponentDisplayProperties>}
+ */
 export default class ComponentDisplayComponent extends React.Component<ComponentDisplayProperties> {
     public render() {
         return <div className="component-display">

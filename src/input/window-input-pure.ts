@@ -13,6 +13,10 @@ import WindowInput from "./window-input";
  */
 export default class WindowInputPure extends WindowInput {
     private _keysPressed: Set<number>;
+    /**
+     * Creates an instance of WindowInputPure.
+     * @memberof WindowInputPure
+     */
     constructor() {
         super();
         this._keysPressed = new Set<number>();
@@ -54,6 +58,12 @@ export default class WindowInputPure extends WindowInput {
             }
         });
     }
+    /**
+     * Query gamepads for input.
+     * Gamepad inputs will be spoofed as key presses.
+     *
+     * @memberof WindowInputPure
+     */
     public queryGamepads() {
         const gamepads = navigator.getGamepads();
         for (const gamepad of gamepads) {
@@ -94,6 +104,13 @@ export default class WindowInputPure extends WindowInput {
             }
         }
     }
+    /**
+     * Handle a key press.
+     *
+     * @private
+     * @param {number} keyCode The key code of the key that was pressed.
+     * @memberof WindowInputPure
+     */
     private _handlePress(keyCode: number) {
         if (this.onKeyPressed !== undefined && !this._keysPressed.has(keyCode)) {
             this._keysPressed.add(keyCode);
@@ -102,6 +119,13 @@ export default class WindowInputPure extends WindowInput {
             this.onKeyPressed(e);
         }
     }
+    /**
+     * Handle a key release.
+     *
+     * @private
+     * @param {number} keyCode The key code of the key that was released.
+     * @memberof WindowInputPure
+     */
     private _handleRelease(keyCode: number) {
             if (this.onKeyReleased !== undefined && this._keysPressed.has(keyCode)) {
                 this._keysPressed.delete(keyCode);

@@ -7,6 +7,13 @@ interface DefaultPropertyDisplayProperties {
     onChange: (newValue: string) => void;
 }
 
+/**
+ * A component for displaying a generic property of a game entity component.
+ *
+ * @export
+ * @class DefaultPropertyDisplayComponent
+ * @extends {React.Component<DefaultPropertyDisplayProperties>}
+ */
 export default class DefaultPropertyDisplayComponent extends React.Component<DefaultPropertyDisplayProperties> {
     public render() {
         return <textarea

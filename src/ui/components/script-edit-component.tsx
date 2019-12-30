@@ -8,6 +8,13 @@ interface ScriptEditProperties {
     onChange: (val: string) => void;
 }
 
+/**
+ * A component for displaying a script editing window.
+ *
+ * @export
+ * @class ScriptEditComponent
+ * @extends {React.Component<ScriptEditProperties>}
+ */
 export default class ScriptEditComponent extends React.Component<ScriptEditProperties> {
     constructor(props: ScriptEditProperties) {
         super(props);

@@ -8,6 +8,13 @@ interface ResourceOptionsProperties {
     onShareChange: (share: boolean) => void;
 }
 
+/**
+ * A component for displaying the options of a component.
+ *
+ * @export
+ * @class ResourceOptionsComponent
+ * @extends {React.Component<ResourceOptionsProperties>}
+ */
 export default class ResourceOptionsComponent extends React.Component<ResourceOptionsProperties> {
     public render() {
         return <div className="resource-options">

@@ -1,3 +1,4 @@
+import ConfigurationLoaderWeb from "core/configuration-loader-web";
 import Game from "core/game";
 import WindowInputPure from "input/window-input-pure";
 import LoginAPIInterfacePure from "networking/login-api-interface-pure";
@@ -17,6 +18,17 @@ const game = new Game(
     new AudioPlayerPure(),
     new UIManager(new LoginUIPure(), new GameUIPure()),
     new ResourceAPIInterfacePure(),
-    new LoginAPIInterfacePure()
+    new LoginAPIInterfacePure(),
+    new ConfigurationLoaderWeb()
 );
+
+/*
+game.loadConfiguration("./config.json")
+    .then(() => {
+        game.start();
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+    */
 game.start();

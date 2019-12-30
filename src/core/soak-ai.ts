@@ -1,11 +1,11 @@
-import NetworkSystem from "networking/network-system";
-import RenderObject from "resource-management/render-object";
+import { DeviceType, InputType } from "input/input-event";
 import ClientNetEvent, { ClientEventType } from "networking/client-net-event";
-import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
-import { InputType, DeviceType } from "input/input-event";
+import NetworkSystem from "networking/network-system";
+import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
 import ClientEntityCreationPacket from "networking/packets/client-entity-creation-packet";
 import ClientEntityDeletionPacket from "networking/packets/client-entity-deletion-packet";
-import ClientChatMessagePacket from "networking/packets/client-chat-message-packet";
+import ClientKeyboardInputPacket from "networking/packets/client-keyboard-input-packet";
+import RenderObject from "resource-management/render-object";
 
 enum UpcomingEvent {
     UpRelease,
@@ -14,6 +14,13 @@ enum UpcomingEvent {
     RightRelease,
 }
 
+/**
+ * A set of behaviours that are used to run the soak test AI.
+ * This includes random movement, script execution, and deleting and creating entities.
+ *
+ * @export
+ * @class SoakAI
+ */
 export default class SoakAI {
     private _upcomingEvents: Array<{time: number, event: UpcomingEvent}>;
     private _visibleObjects: Map<string, RenderObject>;
@@ -22,6 +29,13 @@ export default class SoakAI {
     private _testing: boolean;
     private _testEndTime: number;
     private _login: string;
+    /**
+     * Creates an instance of SoakAI.
+     * @param {NetworkSystem} networkSystem The network system to send the behaviours to.
+     * @param {string} login The username to use for logging in.
+     * @param {number} testEndTime The amount of time to continue running for.
+     * @memberof SoakAI
+     */
     constructor(networkSystem: NetworkSystem, login: string, testEndTime: number) {
         this._networkSystem = networkSystem;
         this._upcomingEvents = [];
@@ -34,6 +48,13 @@ export default class SoakAI {
         + "\" connected at " + new Date().toString() + ". Test will end at "
         + new Date(this._testEndTime).toString() + ".");
     }
+    /**
+     * Update which objects are in view for the AI.
+     *
+     * @param {RenderObject} visibleObject The objects which are visible to the AI
+     * @returns
+     * @memberof SoakAI
+     */
     public updateVisibleObject(visibleObject: RenderObject) {
         if (visibleObject.deleted) {
             this._visibleObjects.delete(visibleObject.id);
@@ -41,9 +62,21 @@ export default class SoakAI {
         }
         this._visibleObjects.set(visibleObject.id, visibleObject);
     }
+    /**
+     * Update the position of the AI.
+     *
+     * @param {{x: number, y: number}} pos The new position of the AI.
+     * @memberof SoakAI
+     */
     public updatePosition(pos: {x: number, y: number}) {
         this._position = pos;
     }
+    /**
+     * Perform any per-tick behaviours.
+     *
+     * @returns
+     * @memberof SoakAI
+     */
     public update() {
         if (this._testing && this._random(200) === 0) {
             const now = Date.now();
@@ -244,6 +277,14 @@ export default class SoakAI {
             }
         }
     }
+    /**
+     * Generate a random integer
+     *
+     * @private
+     * @param {number} num The exclusive ceiling of the number to generate
+     * @returns The generated number
+     * @memberof SoakAI
+     */
     private _random(num: number) {
         return Math.floor(Math.random() * num);
     }

@@ -10,6 +10,13 @@ interface DefaultResourceDisplayProperties {
     locked?: boolean;
 }
 
+/**
+ * A component for displaying a generic resource's information.
+ *
+ * @export
+ * @class DefaultResourceDisplayComponent
+ * @extends {React.Component<DefaultResourceDisplayProperties>}
+ */
 export default class DefaultResourceDisplayComponent extends React.Component<DefaultResourceDisplayProperties> {
     public render() {
         return <div className="resource-display-component">

@@ -8,6 +8,13 @@ interface FileUploaderState {
     files: FileList | undefined;
 }
 
+/**
+ * A component for displaying a file upload window
+ *
+ * @export
+ * @class FileUploaderComponent
+ * @extends {React.Component<FileUploaderProperties, FileUploaderState>}
+ */
 export default class FileUploaderComponent extends React.Component<FileUploaderProperties, FileUploaderState> {
     constructor(props: FileUploaderProperties) {
         super(props);

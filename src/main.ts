@@ -25,6 +25,7 @@ import UIManager from "ui/ui-manager";
 import LoginUIProxy from "ui/login-ui-proxy";
 import AudioPlayerProxy from "sound/audio-player-proxy";
 import LoginAPIInterfaceProxy from "networking/login-api-interface-proxy";
+import ConfigurationLoaderNode from "core/configuration-loader-node";
 /* tslint:enable */
 
 let mainWindow: Electron.BrowserWindow | null;
@@ -45,7 +46,8 @@ function createWindow() {
     new AudioPlayerProxy(mainWindow.webContents),
     new UIManager(new LoginUIProxy(mainWindow.webContents), new GameUIProxy(mainWindow.webContents)),
     new ResourceAPIInterfaceProxy(mainWindow.webContents),
-    new LoginAPIInterfaceProxy(mainWindow.webContents)
+    new LoginAPIInterfaceProxy(mainWindow.webContents),
+    new ConfigurationLoaderNode()
   );
 
   mainWindow.on("ready-to-show", () => {
@@ -59,7 +61,7 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+ //  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {

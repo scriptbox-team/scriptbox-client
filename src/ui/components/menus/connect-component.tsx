@@ -11,6 +11,13 @@ interface ConnectState {
     ip: string;
 }
 
+/**
+ * A react component for the connection window
+ *
+ * @export
+ * @class ConnectComponent
+ * @extends {React.Component<ConnectProperties, ConnectState>}
+ */
 export default class ConnectComponent extends React.Component<ConnectProperties, ConnectState> {
     constructor(props: ConnectProperties) {
         super(props);
@@ -27,6 +34,7 @@ export default class ConnectComponent extends React.Component<ConnectProperties,
             />
             <NamedImageButtonComponent
                 id="connect"
+                class="connect-button"
                 image=""
                 name="Connect"
                 onClick={this._connect}

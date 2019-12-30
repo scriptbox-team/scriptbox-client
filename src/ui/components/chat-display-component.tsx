@@ -6,6 +6,13 @@ interface ChatDisplayProperties {
     messages: string[];
 }
 
+/**
+ * A component for displaying the chat messages.
+ *
+ * @export
+ * @class ChatDisplayComponent
+ * @extends {React.Component<ChatDisplayProperties>}
+ */
 export default class ChatDisplayComponent extends React.Component<ChatDisplayProperties> {
     constructor(props: ChatDisplayProperties) {
         super(props);

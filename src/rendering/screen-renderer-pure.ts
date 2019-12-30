@@ -165,6 +165,15 @@ export default class ScreenRendererPure extends ScreenRenderer {
         // Eventually will handle interpolation
     }
 
+    /**
+     * Update the camera information.
+     *
+     * @param {number} x The new camera x
+     * @param {number} y The new camera y
+     * @param {number} xScale The new camera x scale
+     * @param {number} yScale The new camera y scale
+     * @memberof ScreenRendererPure
+     */
     public updateCamera(x: number, y: number, xScale: number, yScale: number) {
         this._camera.x = Math.round(x);
         this._camera.y = Math.round(y);
@@ -184,7 +193,13 @@ export default class ScreenRendererPure extends ScreenRenderer {
         }
     }
 
-    public resize() {
+    /**
+     * Resize the display winndow.
+     *
+     * @private
+     * @memberof ScreenRendererPure
+     */
+    private resize() {
         this._app.renderer.resize(window.innerWidth, window.innerHeight);
         this._camera.viewWidth = this._app.renderer.width;
         this._camera.viewHeight = this._app.renderer.height;
@@ -193,6 +208,15 @@ export default class ScreenRendererPure extends ScreenRenderer {
         }
     }
 
+    /**
+     * Create a PIXI rectangle that is restricted by its texture.
+     *
+     * @private
+     * @param {PIXI.Texture} tex The texture to restrict the rectangle by.
+     * @param {{x: number, y: number, width: number, height: number}} rect The rectangle data
+     * @returns {PIXI.Rectangle} The resulting PIXI rectangle.
+     * @memberof ScreenRendererPure
+     */
     private _makeFrameRectangle(
             tex: PIXI.Texture,
             rect: {x: number, y: number, width: number, height: number}): PIXI.Rectangle {
@@ -203,6 +227,16 @@ export default class ScreenRendererPure extends ScreenRenderer {
         return new PIXI.Rectangle(x, y, width, height);
     }
 
+    /**
+     * Ensure a value is between a minimum and a maximum value.
+     *
+     * @private
+     * @param {number} val The value to clamp
+     * @param {number} min The minimum value it can be
+     * @param {number} max The maximum value it can be
+     * @returns The clamped value
+     * @memberof ScreenRendererPure
+     */
     private _clamp(val: number, min: number, max: number) {
         return Math.min(max, Math.max(val, min));
     }

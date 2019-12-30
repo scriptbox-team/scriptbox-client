@@ -13,6 +13,13 @@ interface ScriptDisplayState {
     args: string;
 }
 
+/**
+ * A componnet for the unique options that a script resource has.
+ *
+ * @export
+ * @class ScriptOptionsComponent
+ * @extends {React.Component<ScriptOptionsProperties, ScriptDisplayState>}
+ */
 export default class ScriptOptionsComponent extends React.Component<ScriptOptionsProperties, ScriptDisplayState> {
     constructor(props: ScriptOptionsProperties) {
         super(props);

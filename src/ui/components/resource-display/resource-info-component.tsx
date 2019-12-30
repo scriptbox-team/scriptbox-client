@@ -12,6 +12,13 @@ interface ResourceInfoProperties {
     locked?: boolean;
 }
 
+/**
+ * A component for displaying the meta information of a resource.
+ *
+ * @export
+ * @class ResourceInfoComponent
+ * @extends {React.Component<ResourceInfoProperties>}
+ */
 export default class ResourceInfoComponent extends React.Component<ResourceInfoProperties> {
     public render() {
         return <div className="resource-info">

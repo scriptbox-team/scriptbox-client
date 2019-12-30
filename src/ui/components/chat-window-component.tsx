@@ -10,6 +10,13 @@ interface ChatWindowProperties {
     setMessageEntryValue: (func: (value: string) => void) => void;
 }
 
+/**
+ * A component for a full chat window, both the display and the text entry.
+ *
+ * @export
+ * @class ChatWindowComponent
+ * @extends {React.Component<ChatWindowProperties>}
+ */
 export default class ChatWindowComponent extends React.Component<ChatWindowProperties>{
     public render() {
         const className = "chat-window";

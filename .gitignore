@@ -1,3 +1,6 @@
 node_modules
 dist
 dist-web
+
+# Distributable
+scriptbox-client-win32-x64/
