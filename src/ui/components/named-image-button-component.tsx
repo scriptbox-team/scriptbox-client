@@ -4,9 +4,18 @@ interface NamedImageButtonProperties<T> {
     id: T;
     image: string;
     name: string;
+    class?: string;
     onClick: () => void;
 }
 
+/**
+ * A component for a clickable button which can have an image displayed
+ *
+ * @export
+ * @class NamedImageButtonComponent
+ * @extends {React.Component<NamedImageButtonProperties<T>>}
+ * @template T
+ */
 export default class NamedImageButtonComponent<T> extends React.Component<NamedImageButtonProperties<T>> {
     constructor(props: NamedImageButtonProperties<T>) {
         super(props);
@@ -22,10 +31,11 @@ export default class NamedImageButtonComponent<T> extends React.Component<NamedI
         return false;
     }
     public render() {
-        return <button className="named-image-button" onClick={this._onClick}>
-            <div className="named-image-button-container">
-                <div className="named-image-button-name">{this.props.name}</div>
-                <img className="named-image-button-image" src={this.props.image} />
+        const cl = !this.props.class ? "" : this.props.class;
+        return <button className={"named-image-button " + cl} onClick={this._onClick}>
+            <div className={"named-image-button-container " + cl}>
+                <div className={"named-image-button-name " + cl}>{this.props.name}</div>
+                <img className={"named-image-button-image " + cl} src={this.props.image} />
             </div>
         </button>;
     }

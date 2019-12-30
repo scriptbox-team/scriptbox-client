@@ -24,6 +24,14 @@ interface ComponentListState {
     selectedComponentID?: string;
 }
 
+/**
+ * A component for displaying a list of game entity components.
+ * These game entity components can be switched between by clicking on its button on the left.
+ *
+ * @export
+ * @class ComponentListComponent
+ * @extends {React.Component<ComponentListProperties, ComponentListState>}
+ */
 export default class ComponentListComponent extends React.Component<ComponentListProperties, ComponentListState> {
     constructor(props: ComponentListProperties) {
         super(props);

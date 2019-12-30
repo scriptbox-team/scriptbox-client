@@ -14,6 +14,13 @@ interface LoginState {
     password: string;
 }
 
+/**
+ * A react component for the login window.
+ *
+ * @export
+ * @class LoginComponent
+ * @extends {React.Component<LoginProperties, LoginState>}
+ */
 export default class LoginComponent extends React.Component<LoginProperties, LoginState> {
     constructor(props: LoginProperties) {
         super(props);
@@ -38,12 +45,14 @@ export default class LoginComponent extends React.Component<LoginProperties, Log
             /><br/>
             <NamedImageButtonComponent
                 id="login"
+                class="login-button"
                 image=""
                 name="Login"
                 onClick={this._login}
             />
             <NamedImageButtonComponent
                 id="signup"
+                class="signup-button"
                 image=""
                 name="Sign Up"
                 onClick={this._signup}

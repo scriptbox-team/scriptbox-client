@@ -5,7 +5,7 @@ import MouseInputEvent from "./mouse-input-event";
 import WindowInput from "./window-input";
 
 /**
- * A proxy used to get window input from WindowInputPure through the IPC for Electron
+ * A mock for a WindowInput that doesn't have any behaviour.
  *
  * @export
  * @class WindowInputProxy

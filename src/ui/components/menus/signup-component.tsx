@@ -16,6 +16,13 @@ interface SignupState {
     passwordAgain: string;
 }
 
+/**
+ * A react component for the signup window.
+ *
+ * @export
+ * @class SignupComponent
+ * @extends {React.Component<SignupProperties, SignupState>}
+ */
 export default class SignupComponent extends React.Component<SignupProperties, SignupState> {
     constructor(props: SignupProperties) {
         super(props);
@@ -54,12 +61,14 @@ export default class SignupComponent extends React.Component<SignupProperties, S
             <span className="status">{this.props.status}</span>
             <NamedImageButtonComponent
                 id="login"
+                class="login-button"
                 image=""
                 name="Login"
                 onClick={this._login}
             />
             <NamedImageButtonComponent
                 id="signup"
+                class="signup-button"
                 image=""
                 name="Sign Up"
                 onClick={this._signup}

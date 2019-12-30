@@ -3,6 +3,14 @@ import ipcMessages from "ipc/ipc-messages";
 import { TokenType } from "./packets/server-token-packet";
 import ResourceAPIInterface from "./resource-api-interface";
 
+/**
+ * A mock of the Resource API.
+ * This has no behaviour.
+ *
+ * @export
+ * @class ResourceAPIInterfaceMock
+ * @extends {ResourceAPIInterface}
+ */
 export default class ResourceAPIInterfaceMock extends ResourceAPIInterface {
     public send(fileList: FileList) {
         // This shouldn't happen since this should only be called browser-side

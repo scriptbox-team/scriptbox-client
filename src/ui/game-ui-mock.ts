@@ -6,6 +6,14 @@ import Resource from "resource-management/resource";
 
 import GameUI from "./game-ui";
 
+/**
+ * A mock of the Game UI.
+ * This has no behaviour.
+ *
+ * @export
+ * @class GameUIMock
+ * @extends {GameUI}
+ */
 export default class GameUIMock extends GameUI {
     public render() { }
     public addChatMessage(message: string) { }

@@ -53,7 +53,7 @@ enum ipcMessages {
     Connect = "Connect",
     SetLoginStatus = "SetLoginStatus",
     ModifyComponentMeta = "ModifyComponentMeta",
-    SetupLoginIP = "SetupLoginIP",
+    SetupLoginURL = "SetupLoginIP",
 
     QueryGamepads = "QueryGamepads"
 }

@@ -22,6 +22,13 @@ interface ResourceDisplayProperties {
     shared?: boolean;
 }
 
+/**
+ * A component for displaying all of the information of a single resource.
+ *
+ * @export
+ * @class ResourceDisplayComponent
+ * @extends {React.Component<ResourceDisplayProperties>}
+ */
 export default class ResourceDisplayComponent extends React.Component<ResourceDisplayProperties> {
     constructor(props: ResourceDisplayProperties) {
         super(props);

@@ -10,6 +10,13 @@ interface ImageDisplayProperties {
     locked?: boolean;
 }
 
+/**
+ * A component for displaying an iamge resource's information.
+ *
+ * @export
+ * @class ImageDisplayComponent
+ * @extends {React.Component<ImageDisplayProperties>}
+ */
 export default class ImageDisplayComponent extends React.Component<ImageDisplayProperties> {
     public render() {
         return <div className="resource-display-component">

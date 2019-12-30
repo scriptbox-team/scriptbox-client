@@ -7,6 +7,13 @@ interface NumberDisplayProperties {
     onChange: (newValue: string) => void;
 }
 
+/**
+ * A component for displaying a number property of a game entity component.
+ *
+ * @export
+ * @class NumberDisplayComponent
+ * @extends {React.Component<NumberDisplayProperties>}
+ */
 export default class NumberDisplayComponent extends React.Component<NumberDisplayProperties> {
     public render() {
         return <input

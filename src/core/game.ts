@@ -37,10 +37,12 @@ import ServerScriptTextPacket from "networking/packets/server-script-text-packet
 import ServerSoundPacket from "networking/packets/server-sound-packet";
 import ServerTokenPacket, { TokenType } from "networking/packets/server-token-packet";
 import ResourceAPIInterface from "networking/resource-api-interface";
+import path from "path";
 import Camera from "rendering/camera";
 import ScreenRenderer from "rendering/screen-renderer";
 import AudioPlayer from "sound/audio-player";
 import UIManager from "ui/ui-manager";
+
 import ConfigurationLoader from "./configuration-loader";
 
 /**
@@ -100,7 +102,6 @@ export default class Game {
                 resourceServerIP
                     = `${this._address.substr(0, this._address.lastIndexOf(":"))}:${packet.resourceServerIP}`;
             }
-            console.log(resourceServerIP);
             this._resourceAPIURL = resourceServerIP;
             this._resourceAPIInterface.setIP(this._resourceAPIURL);
             this._uiManager.setUI("game");
@@ -312,8 +313,8 @@ export default class Game {
      * @memberof Game
      */
     public async start() {
-        await this.loadConfiguration("./config.json");
-        this._loginInterface.setIP(this._loginAPIURL!);
+        await this.loadConfiguration(path.join(__dirname, "..", "config.json"));
+        this._loginInterface.setURL(this._loginAPIURL!);
         this._gameLoop.start();
     }
 
@@ -337,9 +338,9 @@ export default class Game {
         }
     }
 
-    private async loadConfiguration(path: string) {
-        const config = await this._configurationLoader.loadConfig(path);
-        this._loginAPIURL = config.loginIP;
+    private async loadConfiguration(loadPath: string) {
+        const config = await this._configurationLoader.loadConfig(loadPath);
+        this._loginAPIURL = config.loginURL;
     }
 
     private _hookupInputs() {

@@ -16,6 +16,13 @@ interface ResourceRepositoryComponentState {
     selectedResourceID?: string;
 }
 
+/**
+ * A component for displaying a single resource within the shared resource repository.
+ *
+ * @export
+ * @class ResourceRepositoryComponent
+ * @extends {React.Component<ResourceRepositoryComponentProperties, ResourceRepositoryComponentState>}
+ */
 export default class ResourceRepositoryComponent extends
         React.Component<ResourceRepositoryComponentProperties, ResourceRepositoryComponentState> {
     public constructor(props: ResourceRepositoryComponentProperties) {

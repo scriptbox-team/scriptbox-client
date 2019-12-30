@@ -1,13 +1,29 @@
 import fs from "fs-extra";
+import ConfigurationLoader from "./configuration-loader";
 
 interface Configuration {
-    loginIP: string;
+    loginURL: string;
 }
 
-export default class ConfigurationLoaderMock {
+/**
+ * A mock for the configuration loader.
+ *
+ * @export
+ * @class ConfigurationLoaderMock
+ * @extends {ConfigurationLoader}
+ */
+export default class ConfigurationLoaderMock extends ConfigurationLoader {
+    /**
+     * Load the config.
+     * This just returns a default configuration.
+     *
+     * @param {string} path The path to load from. Not used.
+     * @returns {Promise<Configuration>} The configuration.
+     * @memberof ConfigurationLoaderMock
+     */
     public async loadConfig(path: string): Promise<Configuration> {
         return {
-            loginIP: "::1:9000"
+            loginURL: "http://[::1]:9000/"
         };
     }
 }

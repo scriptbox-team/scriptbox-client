@@ -14,6 +14,14 @@ interface ScrollableState {
 
 const AS_LENIENCY = 4;
 
+/**
+ * A component used to make a scrollable window.
+ * This has the capability to auto scroll.
+ *
+ * @export
+ * @class ScrollableComponent
+ * @extends {React.Component<ScrollableProperties, ScrollableState>}
+ */
 export default class ScrollableComponent extends React.Component<ScrollableProperties, ScrollableState>{
     private ref: React.RefObject<HTMLDivElement>;
     constructor(props: ScrollableProperties) {

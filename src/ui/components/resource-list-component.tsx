@@ -17,6 +17,13 @@ interface ResourceListProperties {
     selectedResourceID?: string;
 }
 
+/**
+ * A component for displaying a list of resources.
+ *
+ * @export
+ * @class ResourceListComponent
+ * @extends {React.Component<ResourceListProperties>}
+ */
 export default class ResourceListComponent extends React.Component<ResourceListProperties> {
     constructor(props: ResourceListProperties) {
         super(props);

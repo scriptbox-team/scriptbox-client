@@ -239,6 +239,6 @@ loginUIPure.onSignup = (username: string, email: string, password: string) => {
         });
 };
 
-ipcRenderer.on(ipcMessages.SetupLoginIP, (event: any, ip: string) => {
-    loginAPIInterfacePure.setIP(ip);
+ipcRenderer.on(ipcMessages.SetupLoginURL, (event: any, url: string) => {
+    loginAPIInterfacePure.setURL(url);
 });

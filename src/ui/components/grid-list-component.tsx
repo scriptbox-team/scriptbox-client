@@ -14,6 +14,15 @@ interface Resource<T> {
     name: string;
 }
 
+/**
+ * A component for displaying a list of resources within a grid
+ *
+ * @export
+ * @class GridListComponent
+ * @extends {React.Component<GridListProperties<T, T2>>}
+ * @template T
+ * @template T2
+ */
 export default class GridListComponent<T extends Resource<T2>, T2>
         extends React.Component<GridListProperties<T, T2>> {
     public render() {
@@ -25,6 +34,7 @@ export default class GridListComponent<T extends Resource<T2>, T2>
             return <NamedImageButtonComponent
                 {...resource}
                 id={resource.id}
+                class={this.props.class + "-element"}
                 image={resource.icon}
                 name={resource.name}
                 onClick={() => this.props.onClick(resource.id)}

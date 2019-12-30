@@ -21,6 +21,15 @@ import GameUI from "./game-ui";
 // TODO: Replace arrow function properties [public blah = () => {}] with binds
 // It turns out that this makes mocking more difficult, among other things
 
+/**
+ * The browser side of the game UI.
+ * This renders the UI using React.
+ * This individually controls the different windows contained within the game UI.
+ *
+ * @export
+ * @class GameUIPure
+ * @extends {GameUI}
+ */
 export default class GameUIPure extends GameUI {
     private _messages: string[] = [];
     private _chatEntryVal: string = "";
@@ -40,6 +49,10 @@ export default class GameUIPure extends GameUI {
     private _repoWindowVisible: boolean;
     private _repoSearchTerm: string | undefined;
     private _setChatMessageValue?: (value: string) => void;
+    /**
+     * Creates an instance of GameUIPure.
+     * @memberof GameUIPure
+     */
     constructor() {
         super();
         this._resources = [];
@@ -52,6 +65,11 @@ export default class GameUIPure extends GameUI {
         this._reportComponentEnableStateChange = this._reportComponentEnableStateChange.bind(this);
         this._reportControlChange = this._reportControlChange.bind(this);
     }
+    /**
+     * Render the UI screen.
+     *
+     * @memberof GameUIPure
+     */
     public render() {
         const elems = [
             React.createElement(UIElementComponent, {key: "chat", class: "chat"},
@@ -124,6 +142,7 @@ export default class GameUIPure extends GameUI {
                         {
                             id: "-2",
                             image: "",
+                            class: "find-resources",
                             name: "Find Resources!",
                             onClick: () => {
                                 this._repoWindowVisible = true;
@@ -349,6 +368,12 @@ export default class GameUIPure extends GameUI {
             document.getElementById("ui")
         );
     }
+    /**
+     * Add an incoming chat message to the chat.
+     *
+     * @param {string} message The message to add.
+     * @memberof GameUIPure
+     */
     public addChatMessage(message: string) {
         this._messages.push(message);
     }
@@ -368,6 +393,12 @@ export default class GameUIPure extends GameUI {
         option.currentValue = newValue;
     }
 
+    /**
+     * Set the player resource listing.
+     *
+     * @param {Resource[]} resources The list of resources to set for the player list.
+     * @memberof GameUIPure
+     */
     public setResourceList(resources: Resource[]) {
         const modifiedResources = Array.from(resources);
         for (const resource of modifiedResources) {
@@ -381,11 +412,24 @@ export default class GameUIPure extends GameUI {
         this._resources = modifiedResources;
     }
 
+    /**
+     * Set the entity inspection
+     *
+     * @param {(string | undefined)} entityID The ID of the entity to inspect or undefined to not inspect anything
+     * @memberof GameUIPure
+     */
     public inspect(entityID: string | undefined) {
         this._inspectedEntity = entityID;
         this._controllingInspectedEntity = false;
     }
-
+    /**
+     * Set the data of the entity being inspected
+     *
+     * @param {ComponentInfo[]} components The components of the inspected entity
+     * @param {string} entityID The ID of the received inspection data, used for checking purposes
+     * @param {boolean} controlled Whether the client is controlling the entity or not
+     * @memberof GameUIPure
+     */
     public setEntityData(components: ComponentInfo[], entityID: string, controlled: boolean) {
         if (entityID === this._inspectedEntity) {
             const modifiedComponents = Array.from(components);
@@ -415,7 +459,13 @@ export default class GameUIPure extends GameUI {
     public endFileUpload() {
         this.closeFileUploadWindow();
     }
-
+    /**
+     * Set the shared resource repository listing.
+     *
+     * @param {Resource[]} resources The list of resources to set for the repository.
+     * @param {string} search The search that the resource came from, used for checking purposes.
+     * @memberof GameUIPure
+     */
     public setResourceRepoList(resources: Resource[], search: string): void {
         if (search !== this._repoSearchTerm) {
             return;
@@ -423,7 +473,13 @@ export default class GameUIPure extends GameUI {
         const modifiedResources = Array.from(resources);
         this._repoResources = modifiedResources;
     }
-
+    /**
+     * Set the text of the script currently being edited.
+     *
+     * @param {string} scriptID The ID of the script being edited, used for checking purposes.
+     * @param {string} script The script text
+     * @memberof GameUIPure
+     */
     public setEditingScriptText(scriptID: string, script: string): void {
         if (this._editingScript === scriptID) {
             this._editingScriptText = script;

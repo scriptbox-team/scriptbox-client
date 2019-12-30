@@ -19,6 +19,14 @@ interface TextEntryState {
     value: string;
 }
 
+/**
+ * A component for creating a text entry.
+ * This text entry has a variety of options such as submitting when enter is hit, and when unfocused.
+ *
+ * @export
+ * @class TextEntryComponent
+ * @extends {React.Component<TextEntryProperties, TextEntryState>}
+ */
 export default class TextEntryComponent extends React.Component<TextEntryProperties, TextEntryState> {
     constructor(props: TextEntryProperties) {
         super(props);

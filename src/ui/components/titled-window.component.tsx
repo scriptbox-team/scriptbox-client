@@ -6,6 +6,13 @@ interface TitledWindowProperties {
     onClose: () => void;
 }
 
+/**
+ * A component that displays a generic window with a title.
+ *
+ * @export
+ * @class TitledWindowComponent
+ * @extends {React.Component<TitledWindowProperties>}
+ */
 export default class TitledWindowComponent extends React.Component<TitledWindowProperties> {
     public render() {
         return <div className="titled-window">
