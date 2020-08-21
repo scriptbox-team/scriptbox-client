@@ -48,7 +48,7 @@
     "@types/ws": "^6.0.1",
     "awesome-typescript-loader": "^5.2.1",
     "cpx": "^1.5.0",
-    "electron": "^4.2.12",
+    "electron": "^7.2.4",
     "electron-packager": "^14.1.1",
     "jest": "^24.9.0",
     "live-server": "^1.2.1",
