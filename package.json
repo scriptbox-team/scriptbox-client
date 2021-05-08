@@ -67,7 +67,7 @@
     "fs-extra": "^8.1.0",
     "is-ip": "^3.1.0",
     "isomorphic-ws": "^4.0.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "module-alias": "^2.2.0",
     "pixi-sound": "^3.0.4",
     "pixi.js": "^5.1.0",
